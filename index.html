@@ -748,48 +748,93 @@ button.danger:hover:not(:disabled) {
 
 .record {
   border-top: 1px solid var(--border-color);
-  padding: 12px 0;
-  font-size: 14px;
+  padding: 10px 0;
+  font-size: 13.5px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
 }
 
-.record-info { flex: 1; }
+.record-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .record-title-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   flex-wrap: wrap;
+  line-height: 1.25;
 }
-.record strong { color: var(--heading-color); }
-.record small { display: block; color: var(--text-muted); margin-top: 2px; }
-.record-actions { display: flex; gap: 7px; flex: none; flex-wrap: wrap; justify-content: flex-end; }
+
+.record strong {
+  color: var(--heading-color);
+  font-size: 14px;
+}
+
+.record small {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.record-meta-item {
+  white-space: nowrap;
+}
+
+.record-meta-sep {
+  opacity: 0.6;
+  user-select: none;
+}
+
+.record-notes {
+  font-size: 12px;
+  margin-top: 3px;
+  line-height: 1.3;
+  color: var(--label-color);
+  word-break: break-word;
+}
+
+.record-actions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
 
 .badge-status {
   font-size: 11px;
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 12px;
+  white-space: nowrap;
 }
 .badge-ok { background: #d1fae5; color: #065f46; }
 .badge-pend { background: #fee2e2; color: #991b1b; }
 
 .btn-small {
-  padding: 7px 12px;
-  font-size: 12.5px;
-  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 7px;
   cursor: pointer;
   border: 1.5px solid var(--btn-sec-border);
   background: var(--btn-sec-bg);
   color: var(--btn-sec-color);
   font-weight: 800;
   letter-spacing: 0.15px;
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -1180,9 +1225,9 @@ body.dark-mode .qr-mode-btn.active {
   .actions { grid-template-columns: 1fr; }
   button.action-btn { min-height: 52px; padding: 16px; font-size: 15.5px; }
   .history-filters { grid-template-columns: 1fr; }
-  .record { flex-direction: column; }
+  .record { flex-direction: column; align-items: stretch; gap: 8px; }
   .record-actions { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .btn-small { min-height: 44px; padding: 10px 6px; font-size: 12.5px; text-align: center; }
+  .btn-small { min-height: 40px; padding: 8px 6px; font-size: 12.5px; text-align: center; }
 }
 
 /* EVITA SOBREPOSIÇÃO NO CABEÇALHO EM TELAS ESTREITAS DE CELULAR */
@@ -1552,7 +1597,7 @@ body.dark-mode .qr-mode-btn.active {
     <div style="margin-top:6px">
       <div style="display:flex;gap:6px">
         <input id="qrManualPaste" type="text" placeholder="Ou cole aqui o link lido pela câmera..." style="height:38px;font-size:13px">
-        <button type="button" class="action-btn primary" id="qrManualImportBtn" style="padding:0 12px;height:38px;font-size:13px;flex:none">✓ Importar</button>
+        <button type="button" class="action-btn primary" id="qrManualImportBtn" style="padding:0 12px;height:38px;font-size:13px;flex:none">Importar</button>
       </div>
     </div>
     <button type="button" class="action-btn secondary qr-modal-footer-btn" id="closeQrScanModal" style="width:100%">Fechar Câmera</button>
@@ -1808,6 +1853,43 @@ const localDateTime = (d = new Date()) => {
 
 const formatDateTime = v => v ? new Date(v).toLocaleString('pt-BR') : 'Não informado';
 
+function formatShortDateTime(v) {
+  if (!v) return 'N/D';
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return String(v);
+  const z = n => String(n).padStart(2, '0');
+  return `${z(d.getDate())}/${z(d.getMonth() + 1)}/${d.getFullYear()} ${z(d.getHours())}:${z(d.getMinutes())}`;
+}
+
+function formatCompactHistorySchedule(started, ended) {
+  const mins = calcDurationMinutes(started, ended);
+  const durPart = mins !== null ? ` (${formatDuration(mins)})` : '';
+
+  if (started && ended) {
+    const s = new Date(started);
+    const e = new Date(ended);
+    if (!isNaN(s.getTime()) && !isNaN(e.getTime())) {
+      const z = n => String(n).padStart(2, '0');
+      const sameDay = s.getFullYear() === e.getFullYear() &&
+        s.getMonth() === e.getMonth() &&
+        s.getDate() === e.getDate();
+      const sDate = `${z(s.getDate())}/${z(s.getMonth() + 1)}/${s.getFullYear()}`;
+      const sTime = `${z(s.getHours())}:${z(s.getMinutes())}`;
+      const eTime = `${z(e.getHours())}:${z(e.getMinutes())}`;
+
+      if (sameDay) {
+        return `${sDate} ${sTime}–${eTime}${durPart}`;
+      }
+      const eDate = `${z(e.getDate())}/${z(e.getMonth() + 1)}/${e.getFullYear()}`;
+      return `${sDate} ${sTime} – ${eDate} ${eTime}${durPart}`;
+    }
+  }
+
+  if (started) return `Início: ${formatShortDateTime(started)}`;
+  if (ended) return `Fim: ${formatShortDateTime(ended)}`;
+  return 'Data não informada';
+}
+
 function calcDurationMinutes(started, ended) {
   if (!started || !ended) return null;
   const s = new Date(started);
@@ -1911,7 +1993,7 @@ document.querySelectorAll('.btn-now[data-target]').forEach(btn => {
     saveDraft();
 
     btn.classList.add('confirmed');
-    btn.textContent = '✓ Preenchido';
+    btn.textContent = 'Preenchido';
     clearTimeout(btn._feedbackTimer);
     btn._feedbackTimer = setTimeout(() => {
       btn.classList.remove('confirmed');
@@ -1946,7 +2028,7 @@ function syncNoAssetTagUI() {
   input.readOnly = isNoId;
   input.classList.toggle('no-id-mode', isNoId);
   btn.classList.toggle('active', isNoId);
-  btn.textContent = isNoId ? '✓ Sem ID' : 'Sem ID';
+  btn.textContent = 'Sem ID';
 }
 
 document.getElementById('btnNoAssetTag').addEventListener('click', () => {
@@ -1996,7 +2078,7 @@ sections.forEach((s) => {
   btnAllOk.type = 'button';
   btnAllOk.className = 'btn-check-all';
   btnAllOk.title = 'Marcar todos os itens desta seção como Ok';
-  btnAllOk.textContent = '✓ Marcar Todos Ok';
+  btnAllOk.textContent = 'Marcar Todos Ok';
   btnAllOk.onclick = () => {
     hapticTap();
     if (!firstInteractionDone && !document.getElementById('started').value) {
@@ -2016,11 +2098,11 @@ sections.forEach((s) => {
     saveDraft();
 
     btnAllOk.classList.add('confirmed');
-    btnAllOk.textContent = '✓ Todos Marcados!';
+    btnAllOk.textContent = 'Todos Marcados!';
     clearTimeout(btnAllOk._feedbackTimer);
     btnAllOk._feedbackTimer = setTimeout(() => {
       btnAllOk.classList.remove('confirmed');
-      btnAllOk.textContent = '✓ Marcar Todos Ok';
+      btnAllOk.textContent = 'Marcar Todos Ok';
     }, 950);
   };
 
@@ -2033,8 +2115,8 @@ sections.forEach((s) => {
   sectionEl.append(head);
   
   const statusLabels = {
-    'Ok': { text: '✓ Ok', tip: 'Item verificado e funcionando normalmente' },
-    'N/A': { text: '— N/A', tip: 'Item não se aplica a este equipamento' },
+    'Ok': { text: 'Ok', tip: 'Item verificado e funcionando normalmente' },
+    'N/A': { text: 'N/A', tip: 'Item não se aplica a este equipamento' },
     'Pend.': { text: 'Pendente', tip: 'Item com pendência ou problema (abre campo para descrever)' }
   };
 
@@ -2422,18 +2504,31 @@ function renderHistory() {
 
     titleRow.append(strong, badge);
 
-    const mins = calcDurationMinutes(r.started, r.ended);
-    const durationStr = mins !== null ? ` • Duração: ${formatDuration(mins)}` : '';
-
     const small = document.createElement('small');
-    small.textContent = `Início: ${formatDateTime(r.started)} • Fim: ${formatDateTime(r.ended)}${durationStr} • Cliente: ${r.client || 'N/D'} • Técnico: ${r.tech || 'N/D'}`;
+    const metaSegments = [
+      formatCompactHistorySchedule(r.started, r.ended),
+      `Cliente: ${r.client || 'N/D'}`,
+      `Técnico: ${r.tech || 'N/D'}`
+    ];
+
+    metaSegments.forEach((segText, idx) => {
+      if (idx > 0) {
+        const sep = document.createElement('span');
+        sep.className = 'record-meta-sep';
+        sep.textContent = '•';
+        small.append(sep);
+      }
+      const span = document.createElement('span');
+      span.className = 'record-meta-item';
+      span.textContent = segText;
+      small.append(span);
+    });
 
     info.append(titleRow, small);
 
     if (r.notes) {
       const p = document.createElement('div');
-      p.style.fontSize = '12px';
-      p.style.marginTop = '4px';
+      p.className = 'record-notes';
       p.textContent = 'Obs.: ' + r.notes;
       info.append(p);
     }
@@ -2445,14 +2540,14 @@ function renderHistory() {
     editBtn.type = 'button';
     editBtn.className = 'btn-small';
     editBtn.title = 'Carregar esta máquina no formulário para editar';
-    editBtn.textContent = 'Editar Registro';
+    editBtn.textContent = 'Editar';
     editBtn.onclick = () => { hapticTap(); loadRecordForEditing(originalIndex); };
 
     const pdfBtn = document.createElement('button');
     pdfBtn.type = 'button';
     pdfBtn.className = 'btn-small btn-pdf-item';
     pdfBtn.title = 'Gerar relatório individual em PDF desta máquina';
-    pdfBtn.textContent = 'PDF Individual';
+    pdfBtn.textContent = 'PDF';
     pdfBtn.onclick = () => { hapticTap(); printHistoryRecord(originalIndex); };
 
     const delBtn = document.createElement('button');
@@ -3741,634 +3836,4 @@ async function generatePcSendQr() {
     }
     if (chunks.length === 0) chunks.push('');
 
-    const transferId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    for (let seq = 0; seq < chunks.length; seq++) {
-      const res = await fetch(`https://ntfy.sh/${encodeURIComponent(topicId)}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          id: transferId,
-          seq,
-          tot: chunks.length,
-          enc: encMode,
-          data: chunks[seq]
-        })
-      });
-      if (!res.ok) throw new Error('Falha ao publicar pacote de envio.');
-    }
-
-    const baseUrl = window.location.origin + window.location.pathname;
-    const txUrl = `${baseUrl}#tx=${topicId}.${keyToken}`;
-    renderQrToCanvas(document.getElementById('pcSendQrCanvas'), txUrl);
-    setPcTxStatus('online', `Pronto! Leia este QR no celular para receber ${recordsToSend.length} máquina(s).`);
-  } catch (err) {
-    try {
-      pcSendOfflinePages = await buildPaginatedQrChunks(recordsToSend);
-      pcSendOfflinePageIdx = 0;
-      renderPcSendOfflinePage();
-    } catch (e2) {
-      setPcTxStatus('error', 'Erro ao gerar QR Code de envio.');
-    }
-  }
-}
-
-async function startPcSendMode() {
-  stopPcReceiveListener();
-  document.getElementById('btnPcModeReceive').classList.remove('active');
-  document.getElementById('btnPcModeSend').classList.add('active');
-  document.getElementById('pcReceivePane').style.display = 'none';
-  document.getElementById('pcSendPane').style.display = 'block';
-  populatePcSendClientSelect();
-  await generatePcSendQr();
-}
-
-async function openPcQrHubModal(initialMode = 'receive') {
-  document.getElementById('pcQrHubModal').style.display = 'flex';
-  syncBodyModalLock();
-  forceWakeLockForQr = true;
-  syncWakeLock();
-
-  if (initialMode === 'send') {
-    await startPcSendMode();
-  } else {
-    await startPcReceiveMode();
-  }
-}
-
-document.getElementById('btnPcModeReceive').onclick = () => { hapticTap(); startPcReceiveMode(); };
-document.getElementById('btnPcModeSend').onclick = () => { hapticTap(); startPcSendMode(); };
-document.getElementById('pcSendClientSelect').addEventListener('change', generatePcSendQr);
-document.getElementById('pcSendPrevBtn').onclick = () => {
-  hapticTap();
-  if (pcSendOfflinePageIdx > 0) {
-    pcSendOfflinePageIdx--;
-    renderPcSendOfflinePage();
-  }
-};
-document.getElementById('pcSendNextBtn').onclick = () => {
-  hapticTap();
-  if (pcSendOfflinePageIdx < pcSendOfflinePages.length - 1) {
-    pcSendOfflinePageIdx++;
-    renderPcSendOfflinePage();
-  }
-};
-document.getElementById('closePcReceiveModal').onclick = closePcQrHubModal;
-document.getElementById('closePcQrTopBtn').onclick = closePcQrHubModal;
-document.getElementById('pcQrHubModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('pcQrHubModal')) closePcQrHubModal();
-});
-
-/* Fluxo no Celular: Ao ler o QR Code de recebimento do PC (#rx=...) ou envio do PC (#tx=...) */
-let activeMobileSendTarget = null;
-
-function parseSessionTokenFromText(rawText, prefix) {
-  let token = String(rawText || '').trim();
-  const hashPrefix = '#' + prefix;
-  const idx = token.indexOf(hashPrefix);
-  if (idx !== -1) token = token.slice(idx + hashPrefix.length);
-  else if (token.startsWith(prefix)) token = token.slice(prefix.length);
-  else return null;
-
-  const dotIdx = token.indexOf('.');
-  if (dotIdx === -1) return null;
-  const topicId = token.slice(0, dotIdx).trim();
-  const keyToken = token.slice(dotIdx + 1).trim();
-  if (!topicId || !keyToken) return null;
-  return { topicId, keyToken };
-}
-
-function parseRxTargetFromText(rawText) {
-  return parseSessionTokenFromText(rawText, 'rx=');
-}
-
-function parseTxTargetFromText(rawText) {
-  return parseSessionTokenFromText(rawText, 'tx=');
-}
-
-async function receiveRecordsFromPcTxTarget(txTarget) {
-  if (!navigator.onLine) {
-    showNotice('Conecte o celular à internet (Wi-Fi ou 4G) para receber os dados enviados pelo PC.', true);
-    return false;
-  }
-
-  showNotice('Recebendo máquinas enviadas pelo PC...');
-  try {
-    let parsedMessages = [];
-    for (let attempt = 0; attempt < 2; attempt++) {
-      const res = await fetch(`https://ntfy.sh/${encodeURIComponent(txTarget.topicId)}/json?poll=1`, {
-        cache: 'no-store'
-      });
-      if (!res.ok) throw new Error('Falha ao buscar dados enviados pelo PC.');
-      const text = await res.text();
-      const lines = text.trim().split('\n').filter(Boolean);
-      const msgs = [];
-      for (const line of lines) {
-        try {
-          const env = JSON.parse(line);
-          if (env && env.event === 'message' && env.message) {
-            const payload = JSON.parse(env.message);
-            if (payload && payload.id && typeof payload.seq === 'number' && typeof payload.tot === 'number') {
-              msgs.push(payload);
-            }
-          }
-        } catch (e) {}
-      }
-      if (msgs.length > 0 && msgs.length >= msgs[0].tot) {
-        parsedMessages = msgs;
-        break;
-      }
-      parsedMessages = msgs;
-      if (attempt === 0) await new Promise(r => setTimeout(r, 600));
-    }
-
-    if (!parsedMessages.length) {
-      showNotice('Nenhum dado encontrado neste QR Code (sessão expirada). Gere um novo QR no PC.', true);
-      return false;
-    }
-
-    const first = parsedMessages[0];
-    const ordered = new Array(first.tot).fill(null);
-    parsedMessages.forEach(m => {
-      if (m.id === first.id && m.seq >= 0 && m.seq < first.tot) {
-        ordered[m.seq] = m.data;
-      }
-    });
-
-    if (ordered.some(part => part === null)) {
-      showNotice('Transferência incompleta. Leia o QR Code do PC novamente.', true);
-      return false;
-    }
-
-    const fullB64 = ordered.join('');
-    let tokenStr = '';
-    if (first.enc === 'aes') {
-      if (txTarget.keyToken === 'plain' || !window.crypto || !window.crypto.subtle) {
-        throw new Error('Navegador sem suporte à descriptografia.');
-      }
-      const rawKeyBytes = base64UrlToBytes(txTarget.keyToken);
-      const aesKey = await crypto.subtle.importKey('raw', rawKeyBytes, { name: 'AES-GCM' }, false, ['decrypt']);
-      const combined = base64UrlToBytes(fullB64);
-      const iv = combined.slice(0, 12);
-      const cipher = combined.slice(12);
-      const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, cipher);
-      tokenStr = new TextDecoder().decode(plainBuf);
-    } else {
-      tokenStr = new TextDecoder().decode(base64UrlToBytes(fullB64));
-    }
-
-    return await importIncomingTokenToHistory(tokenStr, 'PC (via QR Code)');
-  } catch (err) {
-    showNotice(err.message || 'Erro ao receber os dados do PC.', true);
-    return false;
-  }
-}
-
-function getRecordsForMobileSendSelection() {
-  const clientVal = document.getElementById('mobileSendClientSelect').value;
-  if (clientVal === 'all') return history.slice();
-  return history.filter(r => (r.client || '').trim() === clientVal);
-}
-
-function updateMobileSendSummary() {
-  const selected = getRecordsForMobileSendSelection();
-  const box = document.getElementById('mobileSendSummaryBox');
-  const sendBtn = document.getElementById('confirmMobileSendBtn');
-
-  if (!selected.length) {
-    box.textContent = 'Nenhuma máquina salva neste navegador para enviar. Abra o app pelo ícone instalado na tela inicial e toque em "QR Code PC / Celular".';
-    sendBtn.disabled = true;
-    return;
-  }
-
-  sendBtn.disabled = false;
-  const names = selected.map(r => `${r.machine}${formatAssetTagBadge(r.assetTag, 'hash')}`).join(', ');
-  box.textContent = `${selected.length} máquina(s) selecionada(s): ${names}`;
-}
-
-function openMobileSendToPcModal(rxTarget) {
-  activeMobileSendTarget = rxTarget;
-  document.getElementById('mobileSendStatusMsg').textContent = '';
-
-  const clients = [...new Set(history.map(r => (r.client || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  const sel = document.getElementById('mobileSendClientSelect');
-  sel.replaceChildren();
-
-  const optAll = document.createElement('option');
-  optAll.value = 'all';
-  optAll.textContent = `Todas as máquinas salvas (${history.length})`;
-  sel.append(optAll);
-
-  clients.forEach(c => {
-    const count = history.filter(r => (r.client || '').trim() === c).length;
-    const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = `${c} (${count})`;
-    sel.append(opt);
-  });
-
-  updateMobileSendSummary();
-  document.getElementById('mobileSendToPcModal').style.display = 'flex';
-  syncBodyModalLock();
-}
-
-function closeMobileSendModal() {
-  activeMobileSendTarget = null;
-  document.getElementById('mobileSendToPcModal').style.display = 'none';
-  syncBodyModalLock();
-}
-
-document.getElementById('mobileSendClientSelect').addEventListener('change', updateMobileSendSummary);
-document.getElementById('closeMobileSendModal').onclick = closeMobileSendModal;
-document.getElementById('closeMobileSendTopBtn').onclick = closeMobileSendModal;
-document.getElementById('mobileSendToPcModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('mobileSendToPcModal')) closeMobileSendModal();
-});
-
-document.getElementById('confirmMobileSendBtn').onclick = async () => {
-  hapticTap();
-  if (!activeMobileSendTarget) return;
-  if (!navigator.onLine) {
-    document.getElementById('mobileSendStatusMsg').textContent = 'Sem internet no celular. Conecte ao Wi-Fi ou 4G para enviar ao PC.';
-    return;
-  }
-
-  const recordsToSend = getRecordsForMobileSendSelection();
-  if (!recordsToSend.length) return;
-
-  const btn = document.getElementById('confirmMobileSendBtn');
-  const statusEl = document.getElementById('mobileSendStatusMsg');
-  btn.disabled = true;
-  statusEl.textContent = 'Compactando e criptografando dados...';
-
-  try {
-    const packedToken = await packRecordsToToken(recordsToSend);
-    const plainBytes = new TextEncoder().encode(packedToken);
-    let payloadB64 = '';
-    let encMode = 'none';
-
-    if (activeMobileSendTarget.keyToken !== 'plain' && window.crypto && window.crypto.subtle) {
-      const rawKeyBytes = base64UrlToBytes(activeMobileSendTarget.keyToken);
-      const aesKey = await crypto.subtle.importKey('raw', rawKeyBytes, { name: 'AES-GCM' }, false, ['encrypt']);
-      const iv = new Uint8Array(12);
-      crypto.getRandomValues(iv);
-      const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, plainBytes);
-      const combined = new Uint8Array(iv.length + cipherBuf.byteLength);
-      combined.set(iv, 0);
-      combined.set(new Uint8Array(cipherBuf), iv.length);
-      payloadB64 = bytesToBase64Url(combined);
-      encMode = 'aes';
-    } else {
-      payloadB64 = bytesToBase64Url(plainBytes);
-    }
-
-    const CHUNK_SIZE = 2400;
-    const chunks = [];
-    for (let i = 0; i < payloadB64.length; i += CHUNK_SIZE) {
-      chunks.push(payloadB64.slice(i, i + CHUNK_SIZE));
-    }
-    if (chunks.length === 0) chunks.push('');
-
-    const transferId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    for (let seq = 0; seq < chunks.length; seq++) {
-      statusEl.textContent = `Enviando pacote ${seq + 1} de ${chunks.length} para o PC...`;
-      const res = await fetch(`https://ntfy.sh/${encodeURIComponent(activeMobileSendTarget.topicId)}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          id: transferId,
-          seq,
-          tot: chunks.length,
-          enc: encMode,
-          data: chunks[seq]
-        })
-      });
-      if (!res.ok) throw new Error('Falha no envio para o PC.');
-    }
-
-    closeMobileSendModal();
-    showNotice(`✓ ${recordsToSend.length} máquina(s) enviada(s) para o PC com sucesso!`);
-  } catch (err) {
-    statusEl.textContent = 'Erro ao enviar para o PC. Verifique se a janela do QR Code ainda está aberta no computador.';
-    btn.disabled = false;
-  }
-};
-
-/* CONTROLE DO MODAL DE EXPORTAÇÃO QR CODE OFFLINE (Celular -> Celular) */
-let qrPagesState = [];
-let qrCurrentPageIdx = 0;
-
-function renderCurrentQrPage() {
-  const page = qrPagesState[qrCurrentPageIdx];
-  if (!page) return;
-
-  const totalPages = qrPagesState.length;
-  document.getElementById('qrPageBadge').textContent =
-    `QR ${qrCurrentPageIdx + 1} de ${totalPages} • ${page.records.length} máquina(s)`;
-
-  const names = page.records.map(r => `${r.machine}${formatAssetTagBadge(r.assetTag, 'hash')}`).join(', ');
-  document.getElementById('qrMachinesPreview').textContent = `Máquinas neste QR: ${names}`;
-
-  const navBox = document.getElementById('qrNavControls');
-  if (totalPages > 1) {
-    navBox.style.display = 'grid';
-    document.getElementById('qrPrevBtn').disabled = (qrCurrentPageIdx === 0);
-    document.getElementById('qrNextBtn').disabled = (qrCurrentPageIdx === qrPagesState.length - 1);
-  } else {
-    navBox.style.display = 'none';
-  }
-
-  renderQrToCanvas(document.getElementById('qrCanvas'), page.url);
-}
-
-async function openQrExportForRecords(records) {
-  if (!records || !records.length) {
-    alert('Nenhuma máquina salva para gerar QR Code.');
-    return;
-  }
-  try {
-    qrPagesState = await buildPaginatedQrChunks(records);
-    qrCurrentPageIdx = 0;
-    forceWakeLockForQr = true;
-    syncWakeLock();
-    document.getElementById('qrExportModal').style.display = 'flex';
-    syncBodyModalLock();
-    renderCurrentQrPage();
-  } catch (err) {
-    alert('Não foi possível gerar o QR Code para esta seleção.');
-  }
-}
-
-function closeQrExportModal() {
-  document.getElementById('qrExportModal').style.display = 'none';
-  syncBodyModalLock();
-  forceWakeLockForQr = false;
-  syncWakeLock();
-}
-
-document.getElementById('openOfflineQrFromScanBtn').onclick = () => {
-  hapticTap();
-  closeQrScanModal();
-  if (!history.length) {
-    alert('Nenhuma máquina salva no histórico para gerar QR Code.');
-    return;
-  }
-  const filteredEntries = getFilteredHistoryEntries();
-  const list = filteredEntries.length ? filteredEntries.map(e => e.r) : history;
-  openQrExportForRecords(list);
-};
-
-document.getElementById('btnMobExportToScan').onclick = () => {
-  hapticTap();
-  closeQrExportModal();
-  openQrScannerModal();
-};
-
-document.getElementById('qrPrevBtn').onclick = () => {
-  hapticTap();
-  if (qrCurrentPageIdx > 0) {
-    qrCurrentPageIdx--;
-    renderCurrentQrPage();
-  }
-};
-
-document.getElementById('qrNextBtn').onclick = () => {
-  hapticTap();
-  if (qrCurrentPageIdx < qrPagesState.length - 1) {
-    qrCurrentPageIdx++;
-    renderCurrentQrPage();
-  }
-};
-
-document.getElementById('closeQrExportModal').onclick = closeQrExportModal;
-document.getElementById('closeQrExportTopBtn').onclick = closeQrExportModal;
-document.getElementById('qrExportModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('qrExportModal')) closeQrExportModal();
-});
-
-/* IMPORTAÇÃO UNIFICADA (Detecta #rx= para enviar ao PC, #tx= para receber do PC OU #qr= offline) */
-function getRecordFingerprint(r) {
-  return [
-    (r.machine || '').trim().toLowerCase(),
-    (r.assetTag || '').trim().toLowerCase(),
-    (r.started || '').trim(),
-    (r.ended || '').trim(),
-    (r.client || '').trim().toLowerCase()
-  ].join('|');
-}
-
-async function importIncomingTokenToHistory(rawQrText, sourceLabel = 'QR Code') {
-  try {
-    const incomingRecords = await decodeQrStringToRecords(rawQrText);
-    if (!incomingRecords || !incomingRecords.length) {
-      showNotice('QR Code inválido ou incompatível com o sistema Geset.', true);
-      return false;
-    }
-
-    const existingFingerprints = new Set(history.map(getRecordFingerprint));
-    const uniqueNew = [];
-    let duplicateCount = 0;
-
-    incomingRecords.forEach(rec => {
-      const fp = getRecordFingerprint(rec);
-      if (existingFingerprints.has(fp)) {
-        duplicateCount++;
-      } else {
-        existingFingerprints.add(fp);
-        uniqueNew.push(rec);
-      }
-    });
-
-    if (uniqueNew.length === 0) {
-      showNotice(`Todas as ${incomingRecords.length} máquina(s) recebidas já estão salvas neste aparelho.`);
-      return true;
-    }
-
-    const previewList = uniqueNew.slice(0, 5).map(r => r.machine).join(', ') +
-      (uniqueNew.length > 5 ? ` e mais ${uniqueNew.length - 5}` : '');
-    const dupNote = duplicateCount > 0 ? `\n(${duplicateCount} máquina(s) já existente(s) serão ignoradas)` : '';
-
-    if (!confirm(`Recebida(s) ${uniqueNew.length} nova(s) máquina(s) via ${sourceLabel}:\n${previewList}${dupNote}\n\nDeseja salvar no histórico deste aparelho?`)) {
-      return true;
-    }
-
-    history.push(...uniqueNew);
-    localStorage.setItem(storageKey, JSON.stringify(history));
-    renderHistory();
-    showNotice(`✓ ${uniqueNew.length} máquina(s) importada(s) com sucesso!`);
-    return true;
-  } catch (err) {
-    showNotice(err.message || 'Erro ao ler os dados do QR Code.', true);
-    return false;
-  }
-}
-
-async function handleScannedOrUrlPayload(rawText) {
-  const rxTarget = parseRxTargetFromText(rawText);
-  if (rxTarget) {
-    openMobileSendToPcModal(rxTarget);
-    return true;
-  }
-  const txTarget = parseTxTargetFromText(rawText);
-  if (txTarget) {
-    return await receiveRecordsFromPcTxTarget(txTarget);
-  }
-  return await importIncomingTokenToHistory(rawText, 'QR Code');
-}
-
-async function checkUrlHashForQrImport() {
-  const hash = window.location.hash || '';
-  if (!hash.startsWith('#qr=') && !hash.startsWith('#rx=') && !hash.startsWith('#tx=')) return;
-  window.history.replaceState(null, '', window.location.pathname + window.location.search);
-  await handleScannedOrUrlPayload(hash);
-}
-
-window.addEventListener('load', checkUrlHashForQrImport);
-window.addEventListener('hashchange', checkUrlHashForQrImport);
-
-/* Leitor Interno de QR Code */
-let scannerMediaStream = null;
-let scannerAnimationFrame = null;
-let jsQrLoadPromise = null;
-
-function ensureJsQrLoaded() {
-  if (window.jsQR) return Promise.resolve(window.jsQR);
-  if (jsQrLoadPromise) return jsQrLoadPromise;
-  jsQrLoadPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
-    script.onload = () => resolve(window.jsQR);
-    script.onerror = () => reject(new Error('Falha ao carregar decodificador JS.'));
-    document.head.appendChild(script);
-  });
-  return jsQrLoadPromise;
-}
-
-function stopCameraScanner() {
-  if (scannerAnimationFrame) {
-    cancelAnimationFrame(scannerAnimationFrame);
-    scannerAnimationFrame = null;
-  }
-  if (scannerMediaStream) {
-    scannerMediaStream.getTracks().forEach(t => t.stop());
-    scannerMediaStream = null;
-  }
-  const video = document.getElementById('scannerVideo');
-  if (video) video.srcObject = null;
-  document.getElementById('scannerVideoWrap').style.display = 'none';
-}
-
-function closeQrScanModal() {
-  stopCameraScanner();
-  document.getElementById('qrScanModal').style.display = 'none';
-  syncBodyModalLock();
-}
-
-async function openQrScannerModal() {
-  const modal = document.getElementById('qrScanModal');
-  const statusEl = document.getElementById('scannerStatusText');
-  const videoWrap = document.getElementById('scannerVideoWrap');
-  const video = document.getElementById('scannerVideo');
-  document.getElementById('qrManualPaste').value = '';
-  modal.style.display = 'flex';
-  syncBodyModalLock();
-
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    statusEl.textContent =
-      'Abra o app Câmera normal do celular, aponte para o QR Code do PC e toque no link.';
-    return;
-  }
-
-  try {
-    scannerMediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' } },
-      audio: false
-    });
-    video.srcObject = scannerMediaStream;
-    await video.play();
-    videoWrap.style.display = 'block';
-    statusEl.textContent = 'Aponte a câmera traseira para o QR Code na tela do PC:';
-
-    let nativeDetector = null;
-    if ('BarcodeDetector' in window) {
-      try {
-        nativeDetector = new BarcodeDetector({ formats: ['qr_code'] });
-      } catch (e) {
-        nativeDetector = null;
-      }
-    }
-
-    let fallbackJsQr = null;
-    let offCanvas = null;
-    let offCtx = null;
-
-    if (!nativeDetector) {
-      try {
-        fallbackJsQr = await ensureJsQrLoaded();
-        offCanvas = document.createElement('canvas');
-        offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
-      } catch (e) {
-        statusEl.textContent =
-          'Sem internet para carregar leitor: use o app Câmera normal do celular no QR Code.';
-        return;
-      }
-    }
-
-    let handling = false;
-    const scanLoop = async () => {
-      if (!scannerMediaStream || handling) return;
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        try {
-          let detectedVal = null;
-          if (nativeDetector) {
-            const codes = await nativeDetector.detect(video);
-            if (codes && codes.length > 0 && codes[0].rawValue) {
-              detectedVal = codes[0].rawValue;
-            }
-          } else if (fallbackJsQr && offCtx && video.videoWidth > 0) {
-            const scale = Math.min(1, 640 / video.videoWidth);
-            const w = Math.floor(video.videoWidth * scale);
-            const h = Math.floor(video.videoHeight * scale);
-            if (offCanvas.width !== w || offCanvas.height !== h) {
-              offCanvas.width = w;
-              offCanvas.height = h;
-            }
-            offCtx.drawImage(video, 0, 0, w, h);
-            const imgData = offCtx.getImageData(0, 0, w, h);
-            const res = fallbackJsQr(imgData.data, w, h, { inversionAttempts: 'dontInvert' });
-            if (res && res.data) {
-              detectedVal = res.data;
-            }
-          }
-
-          if (detectedVal) {
-            handling = true;
-            hapticTap();
-            closeQrScanModal();
-            await handleScannedOrUrlPayload(detectedVal);
-            return;
-          }
-        } catch (e) {}
-      }
-      scannerAnimationFrame = requestAnimationFrame(scanLoop);
-    };
-    scannerAnimationFrame = requestAnimationFrame(scanLoop);
-  } catch (err) {
-    statusEl.textContent =
-      'Permita o acesso à câmera ou use o app Câmera normal do celular para ler o QR Code.';
-  }
-}
-
-document.getElementById('qrManualImportBtn').onclick = async () => {
-  hapticTap();
-  const val = document.getElementById('qrManualPaste').value.trim();
-  if (!val) return;
-  closeQrScanModal();
-  await handleScannedOrUrlPayload(val);
-};
-
-document.getElementById('closeQrScanModal').onclick = closeQrScanModal;
-document.getElementById('closeQrScanTopBtn').onclick = closeQrScanModal;
-document.getElementById('qrScanModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('qrScanModal')) closeQrScanModal();
-});
-</script>
-</body>
-</html>
+    const transferId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6
