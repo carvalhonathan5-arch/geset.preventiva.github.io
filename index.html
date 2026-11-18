@@ -473,19 +473,12 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
 
 .hint { font-size: 12px; color: var(--text-muted); margin: 8px 0 0; }
 
-/* Filtros e Backup do Histórico */
+/* Filtros do Histórico */
 .history-filters {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr;
   gap: 8px;
   margin: 12px 0;
-}
-
-.history-tools {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 10px;
 }
 
 .record {
@@ -916,10 +909,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
 
       <section class="panel actions">
         <button class="action-btn primary full-span" id="finish">✓ Finalizar e Registrar Máquina</button>
-        <button class="action-btn accent" id="printPDF">🖨️ Exportar PDF</button>
-        <button class="action-btn secondary" id="openReportModal">📋 Texto para Chamado</button>
-        <button class="action-btn secondary" id="new">Nova Máquina</button>
-        <button class="action-btn secondary" id="export">Exportar CSV</button>
+        <button class="action-btn secondary full-span" id="new">Nova Máquina</button>
       </section>
 
       <section class="panel">
@@ -930,12 +920,6 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
         <p class="hint">Os registros ficam salvos localmente no navegador.</p>
         
         <button class="action-btn accent" id="printAllPDF" style="margin-top:10px;width:100%">🖨️ Gerar Relatório Geral Consolidado em PDF</button>
-
-        <div class="history-tools">
-          <button class="action-btn secondary" id="exportJSON" style="padding:10px;font-size:13px">💾 Backup JSON</button>
-          <button class="action-btn secondary" id="importJSON" style="padding:10px;font-size:13px">📂 Restaurar JSON</button>
-          <input type="file" id="importJSONFile" accept=".json,application/json" style="display:none">
-        </div>
 
         <div class="history-filters">
           <input id="historySearch" type="text" placeholder="🔍 Buscar máquina, ID, cliente ou técnico...">
@@ -2105,27 +2089,6 @@ function generateTextReportFromData(r) {
 
 const reportModal = document.getElementById('reportModal');
 
-document.getElementById('openReportModal').onclick = () => {
-  hapticTap();
-  if (!validateHeader()) return;
-  const deviceType = document.getElementById('deviceType').value;
-  const { cleanStates, cleanNotes } = getSanitizedStatesAndNotes(deviceType, itemStates, itemNotes);
-
-  document.getElementById('reportOutput').value = generateTextReportFromData({
-    machine: document.getElementById('machine').value.trim(),
-    assetTag: document.getElementById('assetTag').value.trim(),
-    deviceType,
-    client: document.getElementById('client').value.trim(),
-    tech: document.getElementById('tech').value.trim(),
-    started: document.getElementById('started').value,
-    ended: document.getElementById('ended').value || localDateTime(),
-    notes: document.getElementById('notes').value.trim(),
-    itemStates: cleanStates,
-    itemNotes: cleanNotes
-  });
-  reportModal.style.display = 'flex';
-};
-
 document.getElementById('closeModal').onclick = () => { reportModal.style.display = 'none'; };
 
 reportModal.addEventListener('click', (e) => {
@@ -2236,30 +2199,6 @@ function printHistoryRecord(index) {
   document.body.classList.add('print-single');
   window.print();
 }
-
-document.getElementById('printPDF').onclick = () => {
-  hapticTap();
-  if (!validateHeader()) return;
-  const deviceType = document.getElementById('deviceType').value;
-  const { cleanStates, cleanNotes } = getSanitizedStatesAndNotes(deviceType, itemStates, itemNotes);
-
-  preparePrintReport({
-    machine: document.getElementById('machine').value.trim(),
-    assetTag: document.getElementById('assetTag').value.trim(),
-    deviceType,
-    client: document.getElementById('client').value.trim(),
-    tech: document.getElementById('tech').value.trim(),
-    started: document.getElementById('started').value,
-    ended: document.getElementById('ended').value || localDateTime(),
-    notes: document.getElementById('notes').value.trim(),
-    itemStates: cleanStates,
-    itemNotes: cleanNotes
-  });
-
-  document.body.classList.remove('print-all');
-  document.body.classList.add('print-single');
-  window.print();
-};
 
 document.getElementById('printAllPDF').onclick = () => {
   hapticTap();
@@ -2473,105 +2412,6 @@ document.getElementById('new').onclick = () => {
     resetMachine();
   }
 };
-
-document.getElementById('export').onclick = () => {
-  hapticTap();
-  if (!history.length) { alert('Sem dados para exportar.'); return; }
-  const cols = ['Início', 'Conclusão', 'Duração (min)', 'Computador', 'ID', 'Tipo', 'Cliente', 'Técnico', 'Pendências nos Itens', 'Observações Gerais'];
-  const rows = [cols, ...history.map(r => {
-    const mins = calcDurationMinutes(r.started, r.ended);
-    const isNotebook = (r.deviceType === 'Notebook');
-    const pendDetails = [];
-    if (Array.isArray(r.itemStates)) {
-      allItemsFlat.forEach((item, idx) => {
-        if (isNotebook && item.desktopOnly) return;
-        if (r.itemStates[idx] === 'Pend.') {
-          const detail = (r.itemNotes && r.itemNotes[idx]) ? `: ${r.itemNotes[idx]}` : '';
-          pendDetails.push(`${item.id} (${item.text}${detail})`);
-        }
-      });
-    }
-    return [
-      r.started,
-      r.ended,
-      mins !== null ? mins : '',
-      r.machine,
-      r.assetTag,
-      r.deviceType,
-      r.client,
-      r.tech,
-      pendDetails.join(' | '),
-      r.notes
-    ];
-  })];
-  const csv = '\uFEFF' + rows.map(row => row.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(';')).join('\r\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = 'historico_preventivas_geset.csv';
-  a.click();
-};
-
-/* Backup e Restauração JSON */
-document.getElementById('exportJSON').onclick = () => {
-  hapticTap();
-  if (!history.length) { alert('Não há registros salvos para gerar backup.'); return; }
-  const payload = {
-    app: 'Preventiva TI Geset',
-    version: 3,
-    exportedAt: new Date().toISOString(),
-    records: history
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  const dateTag = new Date().toISOString().slice(0, 10);
-  a.href = URL.createObjectURL(blob);
-  a.download = `backup_preventivas_geset_${dateTag}.json`;
-  a.click();
-  showNotice(`Backup JSON exportado com ${history.length} registro(s).`);
-};
-
-document.getElementById('importJSON').onclick = () => {
-  hapticTap();
-  document.getElementById('importJSONFile').click();
-};
-
-document.getElementById('importJSONFile').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    try {
-      const parsed = JSON.parse(ev.target.result);
-      const importedRecords = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.records) ? parsed.records : null);
-
-      if (!importedRecords || !importedRecords.length) {
-        showNotice('O arquivo JSON não contém registros válidos.', true);
-        return;
-      }
-
-      const validRecords = importedRecords.filter(r => r && typeof r === 'object' && (r.machine || r.started));
-      if (!validRecords.length) {
-        showNotice('Nenhum registro compatível encontrado no arquivo.', true);
-        return;
-      }
-
-      if (!confirm(`Foram encontrados ${validRecords.length} registro(s) no backup.\nDeseja adicioná-los ao histórico atual?`)) {
-        return;
-      }
-
-      history.push(...validRecords);
-      localStorage.setItem(storageKey, JSON.stringify(history));
-      renderHistory();
-      showNotice(`${validRecords.length} registro(s) restaurado(s) com sucesso!`);
-    } catch (err) {
-      showNotice('Erro ao ler o arquivo JSON. Verifique se o arquivo é um backup válido.', true);
-    } finally {
-      e.target.value = '';
-    }
-  };
-  reader.readAsText(file);
-});
 
 document.getElementById('clear').onclick = () => {
   hapticTap();
@@ -3048,7 +2888,7 @@ async function decodeQrStringToRecords(rawQrText) {
   let jsonStr = '';
   if (token.startsWith('z.')) {
     if (typeof DecompressionStream === 'undefined') {
-      throw new Error('Este navegador não suporta descompressão nativa. Use o Backup JSON.');
+      throw new Error('Este navegador não suporta descompressão nativa.');
     }
     const compBytes = base64UrlToBytes(token.slice(2));
     const ds = new DecompressionStream('deflate-raw');
@@ -3418,7 +3258,7 @@ async function openQrExportForRecords(records) {
     document.getElementById('qrExportModal').style.display = 'flex';
     renderCurrentQrPage();
   } catch (err) {
-    alert('Não foi possível gerar o QR Code para esta seleção. Use o Backup JSON.');
+    alert('Não foi possível gerar o QR Code para esta seleção.');
   }
 }
 
