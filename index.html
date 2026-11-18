@@ -19,24 +19,34 @@
 :root {
   color-scheme: light;
   --primary-dark: #000C7B;
+  --primary-mid: #004fb0;
   --primary-blue: #0092FD;
+  --primary-soft: #e6f3ff;
+  --primary-soft-hover: #cfe8ff;
+  --primary-border: #93c5fd;
   --bg-color: #f0f4f9;
   --panel-bg: #ffffff;
   --text-color: #0f172a;
   --text-muted: #64748b;
   --border-color: #cbd5e1;
   --ok-color: #059669;
-  --na-color: #475569;
+  --ok-soft: #ecfdf5;
+  --na-color: #1e3a8a;
+  --na-soft: #eff6ff;
   --pend-color: #dc2626;
+  --pend-soft: #fef2f2;
   --input-bg: #ffffff;
   --label-color: #1e293b;
   --item-border: #f1f5f9;
   --heading-color: #000C7B;
-  --btn-sec-bg: #e2e8f0;
-  --btn-sec-hover: #cbd5e1;
-  --btn-status-bg: #f8fafc;
+  --btn-sec-bg: #e8f2ff;
+  --btn-sec-color: #000C7B;
+  --btn-sec-border: #93c5fd;
+  --btn-sec-hover: #d0e6ff;
+  --btn-status-bg: #f8fbff;
   --btn-danger-bg: #ffe4e6;
   --btn-danger-color: #be123c;
+  --btn-danger-border: #fecdd3;
   --bar-bg: #e2e8f0;
   --modal-overlay: rgba(15, 23, 42, 0.65);
   --pend-bg: #fef2f2;
@@ -45,20 +55,30 @@
 
 body.dark-mode {
   color-scheme: dark;
+  --primary-soft: rgba(0, 146, 253, 0.18);
+  --primary-soft-hover: rgba(0, 146, 253, 0.30);
+  --primary-border: rgba(56, 189, 248, 0.48);
   --bg-color: #0f172a;
   --panel-bg: #1e293b;
   --text-color: #f8fafc;
   --text-muted: #94a3b8;
   --border-color: #334155;
+  --ok-soft: rgba(5, 150, 105, 0.18);
+  --na-color: #0284c7;
+  --na-soft: rgba(0, 146, 253, 0.18);
+  --pend-soft: rgba(220, 38, 38, 0.18);
   --input-bg: #0f172a;
   --label-color: #cbd5e1;
   --item-border: #334155;
   --heading-color: #38bdf8;
-  --btn-sec-bg: #334155;
-  --btn-sec-hover: #475569;
+  --btn-sec-bg: #172554;
+  --btn-sec-color: #bae6fd;
+  --btn-sec-border: #1d4ed8;
+  --btn-sec-hover: #1e3a8a;
   --btn-status-bg: #0f172a;
   --btn-danger-bg: #451a22;
   --btn-danger-color: #fecdd3;
+  --btn-danger-border: #881337;
   --bar-bg: #334155;
   --modal-overlay: rgba(0, 0, 0, 0.78);
   --pend-bg: #2b1419;
@@ -74,6 +94,35 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+button {
+  font-family: inherit;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+button:hover:not(:disabled) .btn-ico {
+  transform: scale(1.18);
+}
+
 header {
   background: linear-gradient(135deg, #000C7B 0%, #004fb0 100%);
   color: white;
@@ -82,7 +131,7 @@ header {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  box-shadow: 0 4px 12px rgba(0, 12, 123, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 12, 123, 0.24);
 }
 
 .header-brand {
@@ -121,48 +170,71 @@ header p {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: none;
 }
 
 .smart-qr-btn {
-  background: #ffffff;
-  border: 1px solid #ffffff;
+  background: linear-gradient(135deg, #ffffff 0%, #eaf5ff 100%);
+  border: 1.5px solid #7dd3fc;
   color: #000C7B;
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 13px;
+  padding: 9px 16px;
+  border-radius: 22px;
+  font-size: 13.5px;
   font-weight: 800;
+  letter-spacing: 0.15px;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: transform 0.15s ease, opacity 0.2s ease;
+  justify-content: center;
+  gap: 7px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   white-space: nowrap;
   flex: none;
+}
+
+.smart-qr-btn:hover {
+  background: linear-gradient(135deg, #0092FD 0%, #0066dc 100%);
+  border-color: #ffffff;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 146, 253, 0.45);
 }
 
 .smart-qr-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.95);
 }
 
 .theme-toggle-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 146, 253, 0.22);
+  border: 1.5px solid rgba(179, 219, 255, 0.55);
   color: #ffffff;
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 13px;
+  padding: 9px 15px;
+  border-radius: 22px;
+  font-size: 13.5px;
   font-weight: 700;
+  letter-spacing: 0.15px;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  transition: all 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   backdrop-filter: blur(4px);
   white-space: nowrap;
   flex: none;
+}
+
+.theme-toggle-btn:hover {
+  background: #0092FD;
+  border-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 146, 253, 0.4);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.95);
 }
 
 /* CONTAINER PRINCIPAL: Grelha lateral no Desktop/Notebook */
@@ -217,22 +289,40 @@ header p {
 }
 
 .btn-now {
-  background: transparent;
-  border: 1px solid var(--primary-blue);
+  background: var(--primary-soft);
+  border: 1.5px solid var(--primary-border);
   color: var(--heading-color);
-  border-radius: 6px;
-  padding: 2px 7px;
-  font-size: 11px;
-  font-weight: 700;
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.15px;
   cursor: pointer;
   line-height: 1.25;
   flex: none;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.btn-now:hover, .btn-now.active {
+.btn-now:hover {
   background: var(--primary-blue);
+  border-color: var(--primary-blue);
   color: #ffffff;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(0, 146, 253, 0.32);
+}
+
+.btn-now.active, .btn-now.confirmed {
+  background: linear-gradient(135deg, #000C7B 0%, #0092FD 100%);
+  border-color: var(--primary-blue);
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(0, 146, 253, 0.35);
+}
+
+.btn-now:active {
+  transform: scale(0.94);
 }
 
 .two {
@@ -255,12 +345,20 @@ input[type=text], input[type=number], input[type=datetime-local], select, textar
   font-size: 14px;
   background: var(--input-bg);
   color: var(--text-color);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 146, 253, 0.18);
 }
 
 input.no-id-mode {
-  background: var(--btn-status-bg);
-  color: var(--text-muted);
-  font-weight: 600;
+  background: var(--primary-soft);
+  border-color: var(--primary-border);
+  color: var(--heading-color);
+  font-weight: 700;
 }
 
 input[type=text], input[type=number], input[type=datetime-local], select {
@@ -381,15 +479,39 @@ textarea {
 }
 
 .btn-check-all {
-  background: transparent;
-  border: 1px solid var(--ok-color);
-  color: var(--ok-color);
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 11.5px;
-  font-weight: 700;
+  background: var(--primary-soft);
+  border: 1.5px solid var(--primary-border);
+  color: var(--heading-color);
+  border-radius: 8px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.15px;
   cursor: pointer;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-check-all:hover {
+  background: linear-gradient(135deg, #000C7B 0%, #0092FD 100%);
+  border-color: var(--primary-blue);
+  color: #ffffff;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px rgba(0, 146, 253, 0.34);
+}
+
+.btn-check-all.confirmed {
+  background: var(--ok-color);
+  border-color: var(--ok-color);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.34);
+}
+
+.btn-check-all:active {
+  transform: scale(0.94);
 }
 
 /* ITENS DO CHECKLIST NO DESKTOP/NOTEBOOK */
@@ -423,19 +545,70 @@ textarea {
 }
 
 .status-btn {
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--btn-sec-border);
   background: var(--btn-status-bg);
-  color: var(--text-color);
+  color: var(--heading-color);
   border-radius: 8px;
-  padding: 6px 12px;
+  padding: 6px 13px;
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.2px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.status-btn.active-ok { background: var(--ok-color); color: #fff; border-color: var(--ok-color); }
-.status-btn.active-na { background: var(--na-color); color: #fff; border-color: var(--na-color); }
-.status-btn.active-pend { background: var(--pend-color); color: #fff; border-color: var(--pend-color); }
+.status-btn[data-status="Ok"]:hover:not(.active-ok) {
+  border-color: var(--ok-color);
+  background: var(--ok-soft);
+  color: var(--ok-color);
+  transform: translateY(-1.5px);
+  box-shadow: 0 3px 8px rgba(5, 150, 105, 0.18);
+}
+
+.status-btn[data-status="N/A"]:hover:not(.active-na) {
+  border-color: var(--primary-blue);
+  background: var(--primary-soft);
+  color: var(--heading-color);
+  transform: translateY(-1.5px);
+  box-shadow: 0 3px 8px rgba(0, 146, 253, 0.2);
+}
+
+.status-btn[data-status="Pend."]:hover:not(.active-pend) {
+  border-color: var(--pend-color);
+  background: var(--pend-soft);
+  color: var(--pend-color);
+  transform: translateY(-1.5px);
+  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.18);
+}
+
+.status-btn:active {
+  transform: scale(0.93);
+}
+
+.status-btn.active-ok {
+  background: var(--ok-color);
+  color: #fff;
+  border-color: var(--ok-color);
+  box-shadow: 0 3px 10px rgba(5, 150, 105, 0.34);
+}
+
+.status-btn.active-na {
+  background: var(--na-color);
+  color: #fff;
+  border-color: var(--na-color);
+  box-shadow: 0 3px 10px rgba(0, 12, 123, 0.3);
+}
+
+.status-btn.active-pend {
+  background: var(--pend-color);
+  color: #fff;
+  border-color: var(--pend-color);
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.34);
+}
 
 /* Campo de observação inline para item Pendente */
 .item-pend-note-wrap {
@@ -457,19 +630,93 @@ textarea {
 .actions .full-span { grid-column: 1 / -1; }
 
 button.action-btn {
-  border: 0;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 14px;
-  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid transparent;
+  border-radius: 11px;
+  padding: 14px 18px;
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: 0.25px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-button.primary { background: var(--primary-dark); color: #fff; }
-body.dark-mode button.primary { background: var(--primary-blue); }
-button.accent { background: var(--primary-blue); color: #fff; }
-button.secondary { background: var(--btn-sec-bg); color: var(--text-color); }
-button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color); }
+button.action-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.26), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+
+button.action-btn:hover:not(:disabled)::after {
+  left: 140%;
+}
+
+button.action-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+button.action-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.96);
+}
+
+button.primary {
+  background: linear-gradient(135deg, #000C7B 0%, #004fb0 55%, #0092FD 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 12, 123, 0.28);
+}
+
+button.primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0012a8 0%, #0066dc 55%, #1ca2ff 100%);
+  box-shadow: 0 7px 20px rgba(0, 146, 253, 0.38);
+}
+
+button.accent {
+  background: linear-gradient(135deg, #0092FD 0%, #004fb0 60%, #000C7B 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 146, 253, 0.28);
+}
+
+button.accent:hover:not(:disabled) {
+  background: linear-gradient(135deg, #24a3ff 0%, #0066dc 60%, #0014a8 100%);
+  box-shadow: 0 7px 20px rgba(0, 146, 253, 0.42);
+}
+
+button.secondary {
+  background: var(--btn-sec-bg);
+  color: var(--btn-sec-color);
+  border-color: var(--btn-sec-border);
+}
+
+button.secondary:hover:not(:disabled) {
+  background: var(--btn-sec-hover);
+  border-color: var(--primary-blue);
+  box-shadow: 0 5px 14px rgba(0, 146, 253, 0.22);
+}
+
+button.danger {
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-color);
+  border-color: var(--btn-danger-border);
+}
+
+button.danger:hover:not(:disabled) {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+  box-shadow: 0 5px 14px rgba(220, 38, 38, 0.32);
+}
 
 .hint { font-size: 12px; color: var(--text-muted); margin: 8px 0 0; }
 
@@ -500,7 +747,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
 }
 .record strong { color: var(--heading-color); }
 .record small { display: block; color: var(--text-muted); margin-top: 2px; }
-.record-actions { display: flex; gap: 6px; flex: none; flex-wrap: wrap; justify-content: flex-end; }
+.record-actions { display: flex; gap: 7px; flex: none; flex-wrap: wrap; justify-content: flex-end; }
 
 .badge-status {
   font-size: 11px;
@@ -512,20 +759,65 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
 .badge-pend { background: #fee2e2; color: #991b1b; }
 
 .btn-small {
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  border-radius: 8px;
   cursor: pointer;
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--btn-sec-border);
   background: var(--btn-sec-bg);
-  color: var(--text-color);
-  font-weight: 600;
+  color: var(--btn-sec-color);
+  font-weight: 800;
+  letter-spacing: 0.15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-small:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: #ffffff;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(0, 12, 123, 0.25);
+}
+
+body.dark-mode .btn-small:hover {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: #ffffff;
+}
+
+.btn-small.btn-pdf-item {
+  background: linear-gradient(135deg, #0092FD 0%, #004fb0 100%);
+  border-color: var(--primary-blue);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 146, 253, 0.24);
+}
+
+.btn-small.btn-pdf-item:hover {
+  background: linear-gradient(135deg, #1ea1ff 0%, #000C7B 100%);
+  border-color: var(--primary-dark);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 146, 253, 0.36);
 }
 
 .btn-small.btn-del {
   background: var(--btn-danger-bg);
   color: var(--btn-danger-color);
-  border-color: transparent;
+  border-color: var(--btn-danger-border);
+}
+
+.btn-small.btn-del:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.28);
+}
+
+.btn-small:active {
+  transform: scale(0.94);
 }
 
 .update-banner {
@@ -542,6 +834,12 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   margin-bottom: 14px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 146, 253, 0.25);
+  transition: transform 0.16s ease, box-shadow 0.18s ease;
+}
+
+.update-banner:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 146, 253, 0.35);
 }
 
 .update-banner-cta {
@@ -589,25 +887,6 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   max-height: 92vh;
   overflow-y: auto;
   border: 1px solid var(--border-color);
-}
-
-.modal-textarea {
-  width: 100%;
-  height: 240px;
-  font-family: monospace;
-  font-size: 13px;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  margin-bottom: 14px;
-  background: var(--input-bg);
-  color: var(--text-color);
-}
-
-.modal-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
 }
 
 /* Estilos dos Modais de QR Code */
@@ -730,7 +1009,6 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   .layout-container { grid-template-columns: 1fr; }
   .sidebar-panel { position: static; }
   .history-filters { grid-template-columns: 1fr; }
-  .modal-actions { grid-template-columns: 1fr; }
 }
 
 /* ADAPTAÇÃO EXCLUSIVA PARA DISPOSITIVOS MÓVEIS (Botões maiores para toque) */
@@ -740,38 +1018,41 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   header h1 { font-size: 16px; }
   header p { display: none; }
   .theme-text { display: none; }
-  .smart-qr-btn { min-height: 40px; padding: 8px 12px; font-size: 13.5px; }
+  .smart-qr-btn { min-height: 40px; padding: 8px 13px; font-size: 13.5px; }
   .theme-toggle-btn { min-height: 40px; padding: 8px 11px; font-size: 15px; }
   .wrap { padding: 14px 14px 84px; }
   .layout-container { grid-template-columns: 1fr; }
   .sidebar-panel { position: static; }
   .section h2 { font-size: 15px; }
-  .btn-now { padding: 4px 9px; font-size: 12px; }
+  .btn-now { padding: 4px 10px; font-size: 12px; }
   .item { padding: 14px 0; }
   .item-row { flex-direction: column; align-items: stretch; gap: 10px; }
   .status-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .status-btn { width: 100%; min-height: 52px; padding: 14px 10px; font-size: 16px; }
-  .btn-check-all { min-height: 36px; padding: 6px 10px; font-size: 12.5px; }
+  .btn-check-all { min-height: 36px; padding: 6px 11px; font-size: 12.5px; }
   .actions { grid-template-columns: 1fr; }
   button.action-btn { min-height: 52px; padding: 16px; font-size: 16px; }
   .history-filters { grid-template-columns: 1fr; }
-  .modal-actions { grid-template-columns: 1fr; }
   .record { flex-direction: column; }
-  .record-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .btn-small { min-height: 42px; padding: 10px 14px; font-size: 14px; text-align: center; }
+  .record-actions { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .btn-small { min-height: 44px; padding: 10px 8px; font-size: 13.5px; text-align: center; }
 }
 
 @media print {
   @page { size: A4 portrait; margin: 8mm 10mm; }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
   body { background: white !important; color: #000 !important; font-size: 10pt; line-height: 1.2; }
   header, main, .modal { display: none !important; }
   #printReport, #printConsolidatedReport { display: none !important; }
   body.print-single #printReport { display: block !important; }
   body.print-all #printConsolidatedReport { display: block !important; }
 
-  .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #000C7B; padding-bottom: 8px; margin-bottom: 12px; }
-  .print-logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 18pt; color: #000C7B; }
-  .print-logo-img { height: 42px; width: auto; object-fit: contain; }
+  .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #000C7B; padding-bottom: 8px; margin-bottom: 12px; gap: 16px; }
+  .print-logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 18pt; color: #000C7B; flex: none; }
+  .print-logo-img { height: 46px; width: auto; max-width: 180px; object-fit: contain; display: block; }
   .print-title { text-align: right; }
   .print-title h2 { margin: 0; font-size: 13pt; color: #000C7B; text-transform: uppercase; font-weight: 800; }
   .print-title p { margin: 2px 0 0; font-size: 8.5pt; color: #475569; }
@@ -798,7 +1079,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
 
 <header>
   <div class="header-brand">
-    <img src="logo.png" alt="Geset Logo" class="logo-header-img">
+    <img id="headerLogoImg" src="logo.png" alt="Geset Logo" class="logo-header-img">
     <div>
       <h1>Preventiva TI | Geset</h1>
       <p>Procedimento Operacional Padrão de Manutenção</p>
@@ -806,11 +1087,11 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   </div>
   <div class="header-actions">
     <button id="smartQrBtn" class="smart-qr-btn" type="button" title="Transferência por QR Code">
-      <span id="smartQrIcon">💻</span>
-      <span id="smartQrText">Receber QR</span>
+      <span id="smartQrIcon" class="btn-ico">💻</span>
+      <span id="smartQrText">Receber via QR</span>
     </button>
     <button id="themeToggle" class="theme-toggle-btn" type="button" title="Alternar Modo Escuro/Claro">
-      <span id="themeIcon">🌙</span>
+      <span id="themeIcon" class="btn-ico">🌙</span>
       <span id="themeText" class="theme-text">Modo Escuro</span>
     </button>
   </div>
@@ -867,14 +1148,14 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
           <div>
             <div class="label-row">
               <label class="label" for="started">Início *</label>
-              <button type="button" class="btn-now" data-target="started" title="Preencher com data/hora atual">Agora</button>
+              <button type="button" class="btn-now" data-target="started" title="Preencher com data/hora atual">⏱ Agora</button>
             </div>
             <input id="started" type="datetime-local">
           </div>
           <div>
             <div class="label-row">
               <label class="label" for="ended">Conclusão</label>
-              <button type="button" class="btn-now" data-target="ended" title="Preencher com data/hora atual">Agora</button>
+              <button type="button" class="btn-now" data-target="ended" title="Preencher com data/hora atual">⏱ Agora</button>
             </div>
             <input id="ended" type="datetime-local">
           </div>
@@ -908,8 +1189,8 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
       </section>
 
       <section class="panel actions">
-        <button class="action-btn primary full-span" id="finish">✓ Finalizar e Registrar Máquina</button>
-        <button class="action-btn secondary full-span" id="new">Nova Máquina</button>
+        <button type="button" class="action-btn primary full-span" id="finish"><span class="btn-ico">✓</span> Finalizar e Registrar Máquina</button>
+        <button type="button" class="action-btn secondary full-span" id="new"><span class="btn-ico">＋</span> Limpar e Iniciar Nova Máquina</button>
       </section>
 
       <section class="panel">
@@ -919,7 +1200,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
         </div>
         <p class="hint">Os registros ficam salvos localmente no navegador.</p>
         
-        <button class="action-btn accent" id="printAllPDF" style="margin-top:10px;width:100%">🖨️ Gerar Relatório Geral Consolidado em PDF</button>
+        <button type="button" class="action-btn accent" id="printAllPDF" style="margin-top:10px;width:100%"><span class="btn-ico">📄</span> Emitir Relatório Consolidado (PDF)</button>
 
         <div class="history-filters">
           <input id="historySearch" type="text" placeholder="🔍 Buscar máquina, ID, cliente ou técnico...">
@@ -934,25 +1215,11 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
         </div>
 
         <div id="history"></div>
-        <button class="action-btn danger" id="clear" style="margin-top:12px;width:100%">Apagar Histórico Local</button>
+        <button type="button" class="action-btn danger" id="clear" style="margin-top:12px;width:100%"><span class="btn-ico">🗑️</span> Apagar Histórico Local</button>
       </section>
     </div>
   </div>
 </main>
-
-<!-- Modal Relatório em Texto -->
-<div id="reportModal" class="modal">
-  <div class="modal-content">
-    <h3>Relatório em Texto para Chamados</h3>
-    <p class="hint" style="margin-top:0;margin-bottom:10px">Copie ou compartilhe o resumo diretamente no WhatsApp, e-mail ou sistema de tickets:</p>
-    <textarea id="reportOutput" class="modal-textarea" readonly></textarea>
-    <div class="modal-actions">
-      <button class="action-btn accent" id="shareReport">📤 Compartilhar</button>
-      <button class="action-btn primary" id="copyReport">📋 Copiar Texto</button>
-      <button class="action-btn secondary" id="closeModal">Fechar</button>
-    </div>
-  </div>
-</div>
 
 <!-- Modal 1: Receber no PC via QR Code (PC exibe QR, Celular lê e envia) -->
 <div id="pcReceiveModal" class="modal">
@@ -960,7 +1227,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
     <h3 style="margin-top:0;margin-bottom:6px">Receber Atendimentos do Celular</h3>
     <div class="qr-meta-pill">Sessão Criptografada • Sem Banco de Dados</div>
     <p class="hint" style="margin-top:4px;margin-bottom:8px">
-      Aponte a câmera do celular (ou toque em <strong>📷 Ler QR</strong> no topo do app do celular) para este código na tela do PC:
+      Aponte a câmera do celular (ou toque em <strong>📷 Ler QR Code</strong> no topo do app do celular) para este código na tela do PC:
     </p>
     <div class="qr-card-box">
       <canvas id="pcReceiveQrCanvas"></canvas>
@@ -969,7 +1236,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
       <span id="pcRxDot" class="rx-dot"></span>
       <span id="pcRxStatusText">Conectando canal de recebimento...</span>
     </div>
-    <button type="button" class="action-btn secondary" id="closePcReceiveModal" style="width:100%;margin-top:14px">Fechar</button>
+    <button type="button" class="action-btn secondary" id="closePcReceiveModal" style="width:100%;margin-top:14px"><span class="btn-ico">✕</span> Fechar Janela</button>
   </div>
 </div>
 
@@ -992,8 +1259,8 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
     <div id="mobileSendStatusMsg" class="hint" style="margin-bottom:12px;font-weight:700"></div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <button type="button" class="action-btn secondary" id="closeMobileSendModal">Cancelar</button>
-      <button type="button" class="action-btn primary" id="confirmMobileSendBtn">📤 Enviar para o PC</button>
+      <button type="button" class="action-btn secondary" id="closeMobileSendModal"><span class="btn-ico">✕</span> Cancelar</button>
+      <button type="button" class="action-btn primary" id="confirmMobileSendBtn"><span class="btn-ico">📤</span> Enviar ao PC</button>
     </div>
   </div>
 </div>
@@ -1011,10 +1278,10 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
     </div>
     <div id="qrMachinesPreview" class="qr-machines-list"></div>
     <div id="qrNavControls" class="qr-nav-grid" style="display:none">
-      <button type="button" class="action-btn secondary" id="qrPrevBtn" style="padding:10px;font-size:13px">◀ Anterior</button>
+      <button type="button" class="action-btn secondary" id="qrPrevBtn" style="padding:10px;font-size:13px">◀ QR Anterior</button>
       <button type="button" class="action-btn primary" id="qrNextBtn" style="padding:10px;font-size:13px">Próximo QR ▶</button>
     </div>
-    <button type="button" class="action-btn secondary" id="closeQrExportModal" style="width:100%">Fechar</button>
+    <button type="button" class="action-btn secondary" id="closeQrExportModal" style="width:100%"><span class="btn-ico">✕</span> Fechar Janela</button>
   </div>
 </div>
 
@@ -1033,11 +1300,11 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
       <label class="label" for="qrManualPaste" style="font-size:12px">Ou cole aqui o link lido pela câmera:</label>
       <div style="display:flex;gap:8px">
         <input id="qrManualPaste" type="text" placeholder="https://.../#rx=... ou #qr=...">
-        <button type="button" class="action-btn primary" id="qrManualImportBtn" style="padding:0 16px;height:42px;flex:none">Continuar</button>
+        <button type="button" class="action-btn primary" id="qrManualImportBtn" style="padding:0 16px;height:42px;flex:none">Importar →</button>
       </div>
     </div>
-    <button type="button" class="action-btn secondary" id="openOfflineQrFromScanBtn" style="width:100%;margin-top:12px">📱 Mostrar meu QR Offline (Celular → Celular)</button>
-    <button type="button" class="action-btn secondary" id="closeQrScanModal" style="width:100%;margin-top:8px">Fechar</button>
+    <button type="button" class="action-btn secondary" id="openOfflineQrFromScanBtn" style="width:100%;margin-top:12px"><span class="btn-ico">📱</span> Gerar QR Offline (Celular → Celular)</button>
+    <button type="button" class="action-btn secondary" id="closeQrScanModal" style="width:100%;margin-top:8px"><span class="btn-ico">✕</span> Fechar Janela</button>
   </div>
 </div>
 
@@ -1086,7 +1353,18 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   </div>
 </div>
 
-<div id="printConsolidatedReport"></div>
+<div id="printConsolidatedReport">
+  <div class="print-header">
+    <div class="print-logo">
+      <img src="logo.png" alt="Geset Logo" class="print-logo-img">
+    </div>
+    <div class="print-title">
+      <h2>Relatório Geral Consolidado</h2>
+      <p>Geset Gestão de Tecnologia • Suporte Operacional</p>
+    </div>
+  </div>
+  <div id="printConsolidatedBody"></div>
+</div>
 
 <script>
 let hasUnsavedChanges = false;
@@ -1246,11 +1524,11 @@ function applySmartQrButtonMode(mobileWithCam) {
 
   if (mobileWithCam) {
     icon.textContent = '📷';
-    text.textContent = 'Ler QR';
+    text.textContent = 'Ler QR Code';
     btn.title = 'Ler QR Code do PC ou de outro celular';
   } else {
     icon.textContent = '💻';
-    text.textContent = 'Receber QR';
+    text.textContent = 'Receber via QR';
     btn.title = 'Exibir QR Code no PC para receber atendimentos do celular';
   }
 }
@@ -1416,7 +1694,7 @@ function updateDurationDisplay() {
   el.textContent = mins !== null ? formatDuration(mins) : 'Hora final anterior à inicial';
 }
 
-/* Botões rápidos "Agora" */
+/* Botões rápidos "Agora" com feedback visual imediato */
 document.querySelectorAll('.btn-now[data-target]').forEach(btn => {
   btn.addEventListener('click', () => {
     hapticTap();
@@ -1431,6 +1709,14 @@ document.querySelectorAll('.btn-now[data-target]').forEach(btn => {
     hasUnsavedChanges = true;
     updateDurationDisplay();
     saveDraft();
+
+    btn.classList.add('confirmed');
+    btn.textContent = '✓ Definido';
+    clearTimeout(btn._feedbackTimer);
+    btn._feedbackTimer = setTimeout(() => {
+      btn.classList.remove('confirmed');
+      btn.textContent = '⏱ Agora';
+    }, 900);
   });
 });
 
@@ -1461,6 +1747,7 @@ function syncNoAssetTagUI() {
   input.readOnly = isNoId;
   input.classList.toggle('no-id-mode', isNoId);
   btn.classList.toggle('active', isNoId);
+  btn.textContent = isNoId ? '✓ Sem ID' : 'Sem ID';
 }
 
 document.getElementById('btnNoAssetTag').addEventListener('click', () => {
@@ -1527,6 +1814,14 @@ sections.forEach((s) => {
     updateUIStates();
     updateProgress();
     saveDraft();
+
+    btnAllOk.classList.add('confirmed');
+    btnAllOk.textContent = '✓ Seção Ok!';
+    clearTimeout(btnAllOk._feedbackTimer);
+    btnAllOk._feedbackTimer = setTimeout(() => {
+      btnAllOk.classList.remove('confirmed');
+      btnAllOk.textContent = '✓ Tudo Ok';
+    }, 900);
   };
 
   const count = document.createElement('span');
@@ -1942,29 +2237,19 @@ function renderHistory() {
     const editBtn = document.createElement('button');
     editBtn.type = 'button';
     editBtn.className = 'btn-small';
-    editBtn.textContent = '✏️ Editar';
+    editBtn.innerHTML = '<span class="btn-ico">✏️</span> Editar';
     editBtn.onclick = () => { hapticTap(); loadRecordForEditing(originalIndex); };
 
     const pdfBtn = document.createElement('button');
     pdfBtn.type = 'button';
-    pdfBtn.className = 'btn-small';
-    pdfBtn.textContent = '🖨️ PDF';
+    pdfBtn.className = 'btn-small btn-pdf-item';
+    pdfBtn.innerHTML = '<span class="btn-ico">📄</span> Gerar PDF';
     pdfBtn.onclick = () => { hapticTap(); printHistoryRecord(originalIndex); };
-
-    const txtBtn = document.createElement('button');
-    txtBtn.type = 'button';
-    txtBtn.className = 'btn-small';
-    txtBtn.textContent = '📋 Texto';
-    txtBtn.onclick = () => {
-      hapticTap();
-      document.getElementById('reportOutput').value = generateTextReportFromData(r);
-      document.getElementById('reportModal').style.display = 'flex';
-    };
 
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'btn-small btn-del';
-    delBtn.textContent = '🗑️ Excluir';
+    delBtn.innerHTML = '<span class="btn-ico">🗑️</span> Excluir';
     delBtn.onclick = () => {
       hapticTap();
       if (!confirm(`Excluir permanentemente o registro da máquina "${r.machine}"?`)) return;
@@ -1981,7 +2266,7 @@ function renderHistory() {
       showNotice(`Registro de ${r.machine} excluído.`);
     };
 
-    actions.append(editBtn, pdfBtn, txtBtn, delBtn);
+    actions.append(editBtn, pdfBtn, delBtn);
     div.append(info, actions);
     histContainer.append(div);
   });
@@ -2026,7 +2311,7 @@ function loadRecordForEditing(index) {
   updateProgress();
   updateDurationDisplay();
 
-  document.getElementById('finish').textContent = '✓ Salvar Alterações da Máquina';
+  document.getElementById('finish').innerHTML = '<span class="btn-ico">✓</span> Salvar Alterações da Máquina';
   showNotice(`Editando o registro da máquina: ${r.machine}`);
 }
 
@@ -2039,7 +2324,7 @@ function resetMachine() {
   firstInteractionDone = false;
   editingIndex = null;
   hasUnsavedChanges = false;
-  document.getElementById('finish').textContent = '✓ Finalizar e Registrar Máquina';
+  document.getElementById('finish').innerHTML = '<span class="btn-ico">✓</span> Finalizar e Registrar Máquina';
   document.getElementById('machine').value = '';
   document.getElementById('assetTag').value = '';
   syncNoAssetTagUI();
@@ -2057,87 +2342,14 @@ function resetMachine() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function generateTextReportFromData(r) {
-  const isNotebook = (r.deviceType === 'Notebook');
-  const mins = calcDurationMinutes(r.started, r.ended);
-  const durationLine = mins !== null ? `• Duração: ${formatDuration(mins)}\n` : '';
-
-  let rep = "========================================\nRELATÓRIO DE MANUTENÇÃO PREVENTIVA - GESET\n========================================\n";
-  rep += `• Computador: ${r.machine || '-'}\n• ID / Patrimônio: ${r.assetTag || 'N/A'}\n• Tipo: ${r.deviceType}\n• Cliente: ${r.client || '-'}\n• Técnico: ${r.tech || '-'}\n• Período: ${formatDateTime(r.started)} até ${formatDateTime(r.ended)}\n${durationLine}----------------------------------------\nSTATUS DOS ITENS:\n`;
-
-  sections.forEach((s, secIdx) => {
-    let visibleCounter = 1;
-    s.items.forEach(item => {
-      if (isNotebook && item.desktopOnly) return;
-      let originalIdx = allItemsFlat.findIndex(x => x.id === item.id);
-      const st = r.itemStates ? r.itemStates[originalIdx] : null;
-      const itemNote = (st === 'Pend.' && r.itemNotes && r.itemNotes[originalIdx]) ? r.itemNotes[originalIdx].trim() : '';
-      let stText = st === 'Ok' ? '[OK]' : st === 'N/A' ? '[N/A]' : st === 'Pend.' ? '[PENDENTE]' : '[NÃO MARCADO]';
-      const displayId = `${secIdx + 1}.${visibleCounter}`;
-      rep += ` ${stText} ${displayId} - ${item.text}\n`;
-      if (itemNote) {
-        rep += `    ↳ Detalhe: ${itemNote}\n`;
-      }
-      visibleCounter++;
-    });
-  });
-
-  if (r.notes) rep += `----------------------------------------\nOBSERVAÇÕES GERAIS:\n${r.notes}\n`;
-  rep += "========================================";
-  return rep;
-}
-
-const reportModal = document.getElementById('reportModal');
-
-document.getElementById('closeModal').onclick = () => { reportModal.style.display = 'none'; };
-
-reportModal.addEventListener('click', (e) => {
-  if (e.target === reportModal) {
-    reportModal.style.display = 'none';
-  }
-});
-
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    if (reportModal.style.display === 'flex') reportModal.style.display = 'none';
     if (document.getElementById('pcReceiveModal').style.display === 'flex') closePcReceiveModal();
     if (document.getElementById('mobileSendToPcModal').style.display === 'flex') closeMobileSendModal();
     if (document.getElementById('qrExportModal').style.display === 'flex') closeQrExportModal();
     if (document.getElementById('qrScanModal').style.display === 'flex') closeQrScanModal();
   }
 });
-
-document.getElementById('copyReport').onclick = () => {
-  hapticTap();
-  navigator.clipboard.writeText(document.getElementById('reportOutput').value).then(() => {
-    const btn = document.getElementById('copyReport');
-    const orig = btn.textContent;
-    btn.textContent = '✓ Copiado!';
-    setTimeout(() => { btn.textContent = orig; }, 1500);
-  });
-};
-
-document.getElementById('shareReport').onclick = async () => {
-  hapticTap();
-  const text = document.getElementById('reportOutput').value;
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: 'Relatório Preventiva TI - Geset',
-        text
-      });
-    } catch (err) {
-      if (err && err.name !== 'AbortError') {
-        navigator.clipboard.writeText(text);
-        alert('Texto copiado para a área de transferência.');
-      }
-    }
-  } else {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('O compartilhamento direto não é suportado neste navegador. O relatório foi copiado para a área de transferência.');
-    });
-  }
-};
 
 function preparePrintReport(dataObj) {
   const mins = calcDurationMinutes(dataObj.started, dataObj.ended);
@@ -2211,13 +2423,8 @@ document.getElementById('printAllPDF').onclick = () => {
   }
 
   const recordsToPrint = filteredEntries.map(entry => entry.r);
-  const container = document.getElementById('printConsolidatedReport');
+  const container = document.getElementById('printConsolidatedBody');
   container.replaceChildren();
-
-  const headerDiv = document.createElement('div');
-  headerDiv.className = 'print-header';
-  headerDiv.innerHTML = `<div class="print-logo"><img src="logo.png" alt="Geset Logo" class="print-logo-img"></div><div class="print-title"><h2>Relatório Geral Consolidado</h2><p>Geset Gestão de Tecnologia</p></div>`;
-  container.append(headerDiv);
 
   const searchVal = (document.getElementById('historySearch').value || '').trim();
   const clientVal = document.getElementById('historyClientFilter').value;
@@ -3066,462 +3273,3 @@ async function openPcReceiveModal() {
     }
   };
 }
-
-document.getElementById('closePcReceiveModal').onclick = closePcReceiveModal;
-document.getElementById('pcReceiveModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('pcReceiveModal')) closePcReceiveModal();
-});
-
-/* Fluxo no Celular: Ao ler o QR Code de recebimento do PC (#rx=...) */
-let activeMobileSendTarget = null;
-
-function parseRxTargetFromText(rawText) {
-  let token = String(rawText || '').trim();
-  const idx = token.indexOf('#rx=');
-  if (idx !== -1) token = token.slice(idx + 4);
-  else if (token.startsWith('rx=')) token = token.slice(3);
-  else return null;
-
-  const dotIdx = token.indexOf('.');
-  if (dotIdx === -1) return null;
-  const topicId = token.slice(0, dotIdx).trim();
-  const keyToken = token.slice(dotIdx + 1).trim();
-  if (!topicId || !keyToken) return null;
-  return { topicId, keyToken };
-}
-
-function getRecordsForMobileSendSelection() {
-  const clientVal = document.getElementById('mobileSendClientSelect').value;
-  if (clientVal === 'all') return history.slice();
-  return history.filter(r => (r.client || '').trim() === clientVal);
-}
-
-function updateMobileSendSummary() {
-  const selected = getRecordsForMobileSendSelection();
-  const box = document.getElementById('mobileSendSummaryBox');
-  const sendBtn = document.getElementById('confirmMobileSendBtn');
-
-  if (!selected.length) {
-    box.textContent = 'Nenhuma máquina salva neste navegador para enviar. Se você usa o ícone instalado na tela inicial, abra o app por ele e toque em "📷 Ler QR" no topo.';
-    sendBtn.disabled = true;
-    return;
-  }
-
-  sendBtn.disabled = false;
-  const names = selected.map(r => `${r.machine}${formatAssetTagBadge(r.assetTag, 'hash')}`).join(', ');
-  box.textContent = `${selected.length} máquina(s) selecionada(s): ${names}`;
-}
-
-function openMobileSendToPcModal(rxTarget) {
-  activeMobileSendTarget = rxTarget;
-  document.getElementById('mobileSendStatusMsg').textContent = '';
-
-  const clients = [...new Set(history.map(r => (r.client || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  const sel = document.getElementById('mobileSendClientSelect');
-  sel.replaceChildren();
-
-  const optAll = document.createElement('option');
-  optAll.value = 'all';
-  optAll.textContent = `Todas as máquinas salvas (${history.length})`;
-  sel.append(optAll);
-
-  clients.forEach(c => {
-    const count = history.filter(r => (r.client || '').trim() === c).length;
-    const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = `${c} (${count})`;
-    sel.append(opt);
-  });
-
-  updateMobileSendSummary();
-  document.getElementById('mobileSendToPcModal').style.display = 'flex';
-}
-
-function closeMobileSendModal() {
-  activeMobileSendTarget = null;
-  document.getElementById('mobileSendToPcModal').style.display = 'none';
-}
-
-document.getElementById('mobileSendClientSelect').addEventListener('change', updateMobileSendSummary);
-document.getElementById('closeMobileSendModal').onclick = closeMobileSendModal;
-document.getElementById('mobileSendToPcModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('mobileSendToPcModal')) closeMobileSendModal();
-});
-
-document.getElementById('confirmMobileSendBtn').onclick = async () => {
-  hapticTap();
-  if (!activeMobileSendTarget) return;
-  if (!navigator.onLine) {
-    document.getElementById('mobileSendStatusMsg').textContent = '❌ Sem internet no celular. Conecte ao Wi-Fi ou 4G para enviar ao PC.';
-    return;
-  }
-
-  const recordsToSend = getRecordsForMobileSendSelection();
-  if (!recordsToSend.length) return;
-
-  const btn = document.getElementById('confirmMobileSendBtn');
-  const statusEl = document.getElementById('mobileSendStatusMsg');
-  btn.disabled = true;
-  statusEl.textContent = 'Compactando e criptografando dados...';
-
-  try {
-    const packedToken = await packRecordsToToken(recordsToSend);
-    const plainBytes = new TextEncoder().encode(packedToken);
-    let payloadB64 = '';
-    let encMode = 'none';
-
-    if (activeMobileSendTarget.keyToken !== 'plain' && window.crypto && window.crypto.subtle) {
-      const rawKeyBytes = base64UrlToBytes(activeMobileSendTarget.keyToken);
-      const aesKey = await crypto.subtle.importKey('raw', rawKeyBytes, { name: 'AES-GCM' }, false, ['encrypt']);
-      const iv = new Uint8Array(12);
-      crypto.getRandomValues(iv);
-      const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, plainBytes);
-      const combined = new Uint8Array(iv.length + cipherBuf.byteLength);
-      combined.set(iv, 0);
-      combined.set(new Uint8Array(cipherBuf), iv.length);
-      payloadB64 = bytesToBase64Url(combined);
-      encMode = 'aes';
-    } else {
-      payloadB64 = bytesToBase64Url(plainBytes);
-    }
-
-    const CHUNK_SIZE = 2400;
-    const chunks = [];
-    for (let i = 0; i < payloadB64.length; i += CHUNK_SIZE) {
-      chunks.push(payloadB64.slice(i, i + CHUNK_SIZE));
-    }
-    if (chunks.length === 0) chunks.push('');
-
-    const transferId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    for (let seq = 0; seq < chunks.length; seq++) {
-      statusEl.textContent = `Enviando pacote ${seq + 1} de ${chunks.length} para o PC...`;
-      const res = await fetch(`https://ntfy.sh/${encodeURIComponent(activeMobileSendTarget.topicId)}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          id: transferId,
-          seq,
-          tot: chunks.length,
-          enc: encMode,
-          data: chunks[seq]
-        })
-      });
-      if (!res.ok) throw new Error('Falha no envio para o PC.');
-    }
-
-    closeMobileSendModal();
-    showNotice(`✓ ${recordsToSend.length} máquina(s) enviada(s) para o PC com sucesso!`);
-  } catch (err) {
-    statusEl.textContent = '❌ Erro ao enviar para o PC. Verifique se a janela do QR Code ainda está aberta no computador.';
-    btn.disabled = false;
-  }
-};
-
-/* ============================================================================
-   CONTROLE DO MODAL DE EXPORTAÇÃO QR CODE OFFLINE (Celular -> Celular)
-   ============================================================================ */
-let qrPagesState = [];
-let qrCurrentPageIdx = 0;
-
-function renderCurrentQrPage() {
-  const page = qrPagesState[qrCurrentPageIdx];
-  if (!page) return;
-
-  const totalPages = qrPagesState.length;
-  document.getElementById('qrPageBadge').textContent =
-    `QR ${qrCurrentPageIdx + 1} de ${totalPages} • ${page.records.length} máquina(s)`;
-
-  const names = page.records.map(r => `${r.machine}${formatAssetTagBadge(r.assetTag, 'hash')}`).join(', ');
-  document.getElementById('qrMachinesPreview').textContent = `Máquinas neste QR: ${names}`;
-
-  const navBox = document.getElementById('qrNavControls');
-  if (totalPages > 1) {
-    navBox.style.display = 'grid';
-    document.getElementById('qrPrevBtn').disabled = (qrCurrentPageIdx === 0);
-    document.getElementById('qrNextBtn').disabled = (qrCurrentPageIdx === totalPages - 1);
-  } else {
-    navBox.style.display = 'none';
-  }
-
-  renderQrToCanvas(document.getElementById('qrCanvas'), page.url);
-}
-
-async function openQrExportForRecords(records) {
-  if (!records || !records.length) {
-    alert('Nenhuma máquina salva para gerar QR Code.');
-    return;
-  }
-  try {
-    qrPagesState = await buildPaginatedQrChunks(records);
-    qrCurrentPageIdx = 0;
-    forceWakeLockForQr = true;
-    syncWakeLock();
-    document.getElementById('qrExportModal').style.display = 'flex';
-    renderCurrentQrPage();
-  } catch (err) {
-    alert('Não foi possível gerar o QR Code para esta seleção.');
-  }
-}
-
-function closeQrExportModal() {
-  document.getElementById('qrExportModal').style.display = 'none';
-  forceWakeLockForQr = false;
-  syncWakeLock();
-}
-
-document.getElementById('openOfflineQrFromScanBtn').onclick = () => {
-  hapticTap();
-  closeQrScanModal();
-  if (!history.length) {
-    alert('Nenhuma máquina salva no histórico para gerar QR Code.');
-    return;
-  }
-  const filteredEntries = getFilteredHistoryEntries();
-  const list = filteredEntries.length ? filteredEntries.map(e => e.r) : history;
-  openQrExportForRecords(list);
-};
-
-document.getElementById('qrPrevBtn').onclick = () => {
-  hapticTap();
-  if (qrCurrentPageIdx > 0) {
-    qrCurrentPageIdx--;
-    renderCurrentQrPage();
-  }
-};
-
-document.getElementById('qrNextBtn').onclick = () => {
-  hapticTap();
-  if (qrCurrentPageIdx < qrPagesState.length - 1) {
-    qrCurrentPageIdx++;
-    renderCurrentQrPage();
-  }
-};
-
-document.getElementById('closeQrExportModal').onclick = closeQrExportModal;
-document.getElementById('qrExportModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('qrExportModal')) closeQrExportModal();
-});
-
-/* ============================================================================
-   IMPORTAÇÃO UNIFICADA (Detecta #rx= para enviar ao PC OU #qr= offline)
-   ============================================================================ */
-function getRecordFingerprint(r) {
-  return [
-    (r.machine || '').trim().toLowerCase(),
-    (r.assetTag || '').trim().toLowerCase(),
-    (r.started || '').trim(),
-    (r.ended || '').trim(),
-    (r.client || '').trim().toLowerCase()
-  ].join('|');
-}
-
-async function importIncomingTokenToHistory(rawQrText, sourceLabel = 'QR Code') {
-  try {
-    const incomingRecords = await decodeQrStringToRecords(rawQrText);
-    if (!incomingRecords || !incomingRecords.length) {
-      showNotice('QR Code inválido ou incompatível com o sistema Geset.', true);
-      return false;
-    }
-
-    const existingFingerprints = new Set(history.map(getRecordFingerprint));
-    const uniqueNew = [];
-    let duplicateCount = 0;
-
-    incomingRecords.forEach(rec => {
-      const fp = getRecordFingerprint(rec);
-      if (existingFingerprints.has(fp)) {
-        duplicateCount++;
-      } else {
-        existingFingerprints.add(fp);
-        uniqueNew.push(rec);
-      }
-    });
-
-    if (uniqueNew.length === 0) {
-      showNotice(`Todas as ${incomingRecords.length} máquina(s) recebidas já estão salvas neste aparelho.`);
-      return true;
-    }
-
-    const previewList = uniqueNew.slice(0, 5).map(r => r.machine).join(', ') +
-      (uniqueNew.length > 5 ? ` e mais ${uniqueNew.length - 5}` : '');
-    const dupNote = duplicateCount > 0 ? `\n(${duplicateCount} máquina(s) já existente(s) serão ignoradas)` : '';
-
-    if (!confirm(`Recebida(s) ${uniqueNew.length} nova(s) máquina(s) via ${sourceLabel}:\n${previewList}${dupNote}\n\nDeseja salvar no histórico deste aparelho?`)) {
-      return true;
-    }
-
-    history.push(...uniqueNew);
-    localStorage.setItem(storageKey, JSON.stringify(history));
-    renderHistory();
-    showNotice(`✓ ${uniqueNew.length} máquina(s) importada(s) com sucesso!`);
-    return true;
-  } catch (err) {
-    showNotice(err.message || 'Erro ao ler os dados do QR Code.', true);
-    return false;
-  }
-}
-
-async function handleScannedOrUrlPayload(rawText) {
-  const rxTarget = parseRxTargetFromText(rawText);
-  if (rxTarget) {
-    openMobileSendToPcModal(rxTarget);
-    return true;
-  }
-  return await importIncomingTokenToHistory(rawText, 'QR Code');
-}
-
-async function checkUrlHashForQrImport() {
-  const hash = window.location.hash || '';
-  if (!hash.startsWith('#qr=') && !hash.startsWith('#rx=')) return;
-  window.history.replaceState(null, '', window.location.pathname + window.location.search);
-  await handleScannedOrUrlPayload(hash);
-}
-
-window.addEventListener('load', checkUrlHashForQrImport);
-window.addEventListener('hashchange', checkUrlHashForQrImport);
-
-/* Leitor Interno de QR Code (Nativo via BarcodeDetector + fallback jsQR para iOS/Safari) */
-let scannerMediaStream = null;
-let scannerAnimationFrame = null;
-let jsQrLoadPromise = null;
-
-function ensureJsQrLoaded() {
-  if (window.jsQR) return Promise.resolve(window.jsQR);
-  if (jsQrLoadPromise) return jsQrLoadPromise;
-  jsQrLoadPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
-    script.onload = () => resolve(window.jsQR);
-    script.onerror = () => reject(new Error('Falha ao carregar decodificador JS.'));
-    document.head.appendChild(script);
-  });
-  return jsQrLoadPromise;
-}
-
-function stopCameraScanner() {
-  if (scannerAnimationFrame) {
-    cancelAnimationFrame(scannerAnimationFrame);
-    scannerAnimationFrame = null;
-  }
-  if (scannerMediaStream) {
-    scannerMediaStream.getTracks().forEach(t => t.stop());
-    scannerMediaStream = null;
-  }
-  const video = document.getElementById('scannerVideo');
-  if (video) video.srcObject = null;
-  document.getElementById('scannerVideoWrap').style.display = 'none';
-}
-
-function closeQrScanModal() {
-  stopCameraScanner();
-  document.getElementById('qrScanModal').style.display = 'none';
-}
-
-async function openQrScannerModal() {
-  const modal = document.getElementById('qrScanModal');
-  const statusEl = document.getElementById('scannerStatusText');
-  const videoWrap = document.getElementById('scannerVideoWrap');
-  const video = document.getElementById('scannerVideo');
-  document.getElementById('qrManualPaste').value = '';
-  modal.style.display = 'flex';
-
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    statusEl.textContent =
-      'Abra o aplicativo Câmera normal do celular, aponte para o QR Code do PC e toque no link que aparecer.';
-    return;
-  }
-
-  try {
-    scannerMediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' } },
-      audio: false
-    });
-    video.srcObject = scannerMediaStream;
-    await video.play();
-    videoWrap.style.display = 'block';
-    statusEl.textContent = 'Aponte a câmera para o QR Code na tela do PC ou de outro celular:';
-
-    let nativeDetector = null;
-    if ('BarcodeDetector' in window) {
-      try {
-        nativeDetector = new BarcodeDetector({ formats: ['qr_code'] });
-      } catch (e) {
-        nativeDetector = null;
-      }
-    }
-
-    let fallbackJsQr = null;
-    let offCanvas = null;
-    let offCtx = null;
-
-    if (!nativeDetector) {
-      try {
-        fallbackJsQr = await ensureJsQrLoaded();
-        offCanvas = document.createElement('canvas');
-        offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
-      } catch (e) {
-        statusEl.textContent =
-          'Neste navegador sem internet, abra o aplicativo Câmera normal do celular, aponte para o QR Code e toque no link.';
-        return;
-      }
-    }
-
-    let handling = false;
-    const scanLoop = async () => {
-      if (!scannerMediaStream || handling) return;
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        try {
-          let detectedVal = null;
-          if (nativeDetector) {
-            const codes = await nativeDetector.detect(video);
-            if (codes && codes.length > 0 && codes[0].rawValue) {
-              detectedVal = codes[0].rawValue;
-            }
-          } else if (fallbackJsQr && offCtx && video.videoWidth > 0) {
-            const scale = Math.min(1, 640 / video.videoWidth);
-            const w = Math.floor(video.videoWidth * scale);
-            const h = Math.floor(video.videoHeight * scale);
-            if (offCanvas.width !== w || offCanvas.height !== h) {
-              offCanvas.width = w;
-              offCanvas.height = h;
-            }
-            offCtx.drawImage(video, 0, 0, w, h);
-            const imgData = offCtx.getImageData(0, 0, w, h);
-            const res = fallbackJsQr(imgData.data, w, h, { inversionAttempts: 'dontInvert' });
-            if (res && res.data) {
-              detectedVal = res.data;
-            }
-          }
-
-          if (detectedVal) {
-            handling = true;
-            hapticTap();
-            closeQrScanModal();
-            await handleScannedOrUrlPayload(detectedVal);
-            return;
-          }
-        } catch (e) {}
-      }
-      scannerAnimationFrame = requestAnimationFrame(scanLoop);
-    };
-    scannerAnimationFrame = requestAnimationFrame(scanLoop);
-  } catch (err) {
-    statusEl.textContent =
-      'Permita o acesso à câmera ou use o app Câmera normal do celular para apontar para o QR Code e tocar no link.';
-  }
-}
-
-document.getElementById('qrManualImportBtn').onclick = async () => {
-  hapticTap();
-  const val = document.getElementById('qrManualPaste').value.trim();
-  if (!val) return;
-  closeQrScanModal();
-  await handleScannedOrUrlPayload(val);
-};
-
-document.getElementById('closeQrScanModal').onclick = closeQrScanModal;
-document.getElementById('qrScanModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('qrScanModal')) closeQrScanModal();
-});
-</script>
-</body>
-</html>
