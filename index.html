@@ -85,118 +85,6 @@ body.dark-mode {
   --pend-border: #7f1d1d;
 }
 
-/* BARRA DE ROLAGEM CINZA MODERNA SEM SETAS */
-:root {
-  --sb-track: #f0f4f9;
-  --sb-thumb: #94a3b8;
-  --sb-thumb-hover: #64748b;
-  --sb-thumb-active: #475569;
-}
-
-html:has(body.dark-mode),
-body.dark-mode {
-  --sb-track: #0f172a;
-  --sb-thumb: #475569;
-  --sb-thumb-hover: #64748b;
-  --sb-thumb-active: #94a3b8;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-/* BARRA DE ROLAGEM CINZA MODERNA SEM SETAS */
-html {
-  scroll-behavior: smooth;
-}
-
-html:has(body.dark-mode) {
-  color-scheme: dark;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  html {
-    scrollbar-width: thin;
-    scrollbar-color: #94a3b8 #e2e8f0;
-  }
-  html:has(body.dark-mode) {
-    scrollbar-color: #475569 #1e293b;
-  }
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-button,
-::-webkit-scrollbar-button:single-button,
-::-webkit-scrollbar-button:double-button,
-::-webkit-scrollbar-button:start:decrement,
-::-webkit-scrollbar-button:end:increment,
-::-webkit-scrollbar-button:vertical:start:decrement,
-::-webkit-scrollbar-button:vertical:end:increment,
-::-webkit-scrollbar-button:horizontal:start:decrement,
-::-webkit-scrollbar-button:horizontal:end:increment {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-  background: transparent !important;
-  -webkit-appearance: none;
-}
-
-/* Tema Claro: trilho cinza suave (#e2e8f0) */
-::-webkit-scrollbar-track {
-  background: #e2e8f0;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #94a3b8;
-  border-radius: 999px;
-  border: 2px solid #e2e8f0;
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #64748b;
-}
-
-::-webkit-scrollbar-thumb:active {
-  background-color: #475569;
-}
-
-::-webkit-scrollbar-corner {
-  background: #e2e8f0;
-}
-
-/* Tema Escuro: trilho escuro (#1e293b) */
-html:has(body.dark-mode)::-webkit-scrollbar-track,
-body.dark-mode::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-
-html:has(body.dark-mode)::-webkit-scrollbar-thumb,
-body.dark-mode::-webkit-scrollbar-thumb {
-  background-color: #475569;
-  border: 2px solid #1e293b;
-}
-
-html:has(body.dark-mode)::-webkit-scrollbar-thumb:hover,
-body.dark-mode::-webkit-scrollbar-thumb:hover {
-  background-color: #64748b;
-}
-
-html:has(body.dark-mode)::-webkit-scrollbar-thumb:active,
-body.dark-mode::-webkit-scrollbar-thumb:active {
-  background-color: #94a3b8;
-}
-
-html:has(body.dark-mode)::-webkit-scrollbar-corner,
-body.dark-mode::-webkit-scrollbar-corner {
-  background: #1e293b;
-}
-
-
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -364,6 +252,95 @@ header p {
 
 .theme-toggle-btn:active {
   transform: scale(0.95);
+}
+
+/* BARRA DE ROLAGEM CINZA MODERNA SEM SETAS */
+html {
+  scroll-behavior: smooth;
+}
+
+html:has(body.dark-mode) {
+  color-scheme: dark;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 #e2e8f0;
+  }
+  html:has(body.dark-mode) {
+    scrollbar-color: #475569 #1e293b;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-button:single-button,
+::-webkit-scrollbar-button:double-button,
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment,
+::-webkit-scrollbar-button:vertical:start:decrement,
+::-webkit-scrollbar-button:vertical:end:increment,
+::-webkit-scrollbar-button:horizontal:start:decrement,
+::-webkit-scrollbar-button:horizontal:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #94a3b8;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: #475569;
+}
+
+::-webkit-scrollbar-corner {
+  background: #e2e8f0;
+}
+
+html:has(body.dark-mode)::-webkit-scrollbar-track,
+body.dark-mode::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+html:has(body.dark-mode)::-webkit-scrollbar-thumb,
+body.dark-mode::-webkit-scrollbar-thumb {
+  background-color: #475569;
+  border: 2px solid #1e293b;
+}
+
+html:has(body.dark-mode)::-webkit-scrollbar-thumb:hover,
+body.dark-mode::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b;
+}
+
+html:has(body.dark-mode)::-webkit-scrollbar-thumb:active,
+body.dark-mode::-webkit-scrollbar-thumb:active {
+  background-color: #94a3b8;
+}
+
+html:has(body.dark-mode)::-webkit-scrollbar-corner,
+body.dark-mode::-webkit-scrollbar-corner {
+  background: #1e293b;
 }
 
 /* CONTAINER PRINCIPAL: Grelha lateral no Desktop/Notebook */
@@ -1428,41 +1405,169 @@ body.dark-mode .qr-mode-btn.active {
 }
 
 @media print {
-  @page { size: A4 portrait; margin: 8mm 10mm; }
+  @page {
+    size: A4 portrait;
+    margin: 14mm 14mm;
+  }
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    box-sizing: border-box;
   }
-  body { background: white !important; color: #000 !important; font-size: 10pt; line-height: 1.2; }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    background: white !important;
+    color: #000 !important;
+    font-size: 9.5pt;
+    line-height: 1.38;
+    overflow: visible !important;
+  }
   header, main, .modal { display: none !important; }
-  #printReport, #printConsolidatedReport { display: none !important; }
+  #printReport, #printConsolidatedReport {
+    display: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 2mm 1.5mm;
+    overflow: visible !important;
+  }
   body.print-single #printReport { display: block !important; }
   body.print-all #printConsolidatedReport { display: block !important; }
 
-  .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #000C7B; padding-bottom: 8px; margin-bottom: 12px; gap: 16px; }
+  .print-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #000C7B;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    gap: 16px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
   .print-logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 18pt; color: #000C7B; flex: none; }
-  .print-logo-img { height: 46px; width: auto; max-width: 180px; object-fit: contain; display: block; }
-  .print-title { text-align: right; }
-  .print-title h2 { margin: 0; font-size: 13pt; color: #000C7B; text-transform: uppercase; font-weight: 800; }
-  .print-title p { margin: 2px 0 0; font-size: 8.5pt; color: #475569; }
+  .print-logo-img { height: 44px; width: auto; max-width: 170px; object-fit: contain; display: block; }
+  .print-title { text-align: right; min-width: 0; }
+  .print-title h2 { margin: 0; font-size: 12.5pt; color: #000C7B; text-transform: uppercase; font-weight: 800; line-height: 1.25; }
+  .print-title p { margin: 3px 0 0; font-size: 8.5pt; color: #475569; line-height: 1.3; }
   
-  .print-filter-note { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; padding: 6px 10px; border-radius: 6px; font-size: 8.5pt; margin-bottom: 10px; }
-  .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 15px; background: #f8fafc; padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 12px; font-size: 9pt; }
-  .print-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt; }
-  .print-table th { background: #000C7B; color: white; padding: 6px 8px; text-align: left; }
-  .print-table td { padding: 5px 8px; border-bottom: 1px solid #e2e8f0; }
+  .print-filter-note {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e3a8a;
+    padding: 7px 11px;
+    border-radius: 6px;
+    font-size: 8.5pt;
+    line-height: 1.35;
+    margin-bottom: 12px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .print-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 18px;
+    background: #f8fafc;
+    padding: 11px 14px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    margin-bottom: 14px;
+    font-size: 9pt;
+    line-height: 1.38;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .print-grid > div {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
+    font-size: 8.5pt;
+    line-height: 1.35;
+  }
+  .print-table thead {
+    display: table-header-group;
+  }
+  .print-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .print-table th {
+    background: #000C7B;
+    color: white;
+    padding: 7px 8px;
+    text-align: left;
+    vertical-align: middle;
+    line-height: 1.3;
+  }
+  .print-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
   .print-table tr:nth-child(even) td { background: #f8fafc; }
-  .print-item-subnote { display: block; font-size: 8pt; color: #b91c1c; margin-top: 2px; font-style: italic; }
+
+  .print-summary-table {
+    table-layout: fixed;
+    font-size: 8pt;
+  }
+  .print-summary-table th,
+  .print-summary-table td {
+    padding: 6px 5px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  .print-item-subnote { display: block; font-size: 8pt; color: #b91c1c; margin-top: 3px; font-style: italic; line-height: 1.3; }
   .status-ok-print { color: #059669; font-weight: bold; }
   .status-na-print { color: #475569; font-style: italic; }
   .status-pend-print { color: #dc2626; font-weight: bold; }
   
-  .print-box { border: 1px solid #cbd5e1; padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; font-size: 8.5pt; page-break-inside: avoid; }
-  .print-box h4 { margin: 0 0 6px; font-size: 9pt; color: #000C7B; }
-  .print-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 25px; page-break-inside: avoid; }
-  .print-sig-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-  .print-sig-img { max-height: 48px; max-width: 190px; object-fit: contain; margin-bottom: 4px; display: block; }
-  .print-sig-line { width: 100%; border-top: 1px solid #334155; text-align: center; padding-top: 5px; font-size: 8.5pt; color: #334155; }
+  .print-box {
+    border: 1px solid #cbd5e1;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .print-box.print-box-flow {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+  .print-box h4 {
+    margin: 0 0 7px;
+    font-size: 9pt;
+    color: #000C7B;
+    line-height: 1.3;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .print-signatures {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px;
+    margin-top: 26px;
+    padding-top: 6px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .print-sig-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; min-width: 0; }
+  .print-sig-img { max-height: 48px; max-width: 190px; object-fit: contain; margin-bottom: 5px; display: block; }
+  .print-sig-line { width: 100%; border-top: 1px solid #334155; text-align: center; padding-top: 6px; font-size: 8.5pt; line-height: 1.35; color: #334155; overflow-wrap: break-word; }
 }
 
 /* ASSINATURA DIGITAL OPCIONAL E INDICADOR DE MEMÓRIA LOCAL */
@@ -3136,7 +3241,21 @@ function getConsolidatedMaintenanceDates(records) {
   };
 }
 
-function preparePrintReport(dataObj) {
+async function waitImageReady(imgEl) {
+  if (!imgEl || !imgEl.getAttribute('src') || imgEl.style.display === 'none') return;
+  try {
+    if (typeof imgEl.decode === 'function') {
+      await imgEl.decode();
+    } else if (!imgEl.complete) {
+      await new Promise((resolve) => {
+        imgEl.onload = resolve;
+        imgEl.onerror = resolve;
+      });
+    }
+  } catch (e) {}
+}
+
+async function preparePrintReport(dataObj) {
   const mins = calcDurationMinutes(dataObj.started, dataObj.ended);
   const durationSuffix = mins !== null ? ` (${formatDuration(mins)})` : '';
 
@@ -3152,15 +3271,15 @@ function preparePrintReport(dataObj) {
   const techSigEl = document.getElementById('pTechSigImg');
   const clientSigEl = document.getElementById('pClientSigImg');
   if (dataObj.techSignature) {
-    techSigEl.src = dataObj.techSignature;
     techSigEl.style.display = 'block';
+    techSigEl.src = dataObj.techSignature;
   } else {
     techSigEl.removeAttribute('src');
     techSigEl.style.display = 'none';
   }
   if (dataObj.clientSignature) {
-    clientSigEl.src = dataObj.clientSignature;
     clientSigEl.style.display = 'block';
+    clientSigEl.src = dataObj.clientSignature;
   } else {
     clientSigEl.removeAttribute('src');
     clientSigEl.style.display = 'none';
@@ -3207,14 +3326,17 @@ function preparePrintReport(dataObj) {
       visibleCounter++;
     });
   });
+
+  await Promise.all([waitImageReady(techSigEl), waitImageReady(clientSigEl)]);
 }
 
-function printHistoryRecord(index) {
+async function printHistoryRecord(index) {
   const rec = history[index];
   if (!rec) return;
-  preparePrintReport(rec);
+  await preparePrintReport(rec);
   document.body.classList.remove('print-all');
   document.body.classList.add('print-single');
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   const machineFileName = (rec.machine || '').trim() || 'Relatorio_Individual';
   printWithCustomTitle(machineFileName);
 }
@@ -3293,19 +3415,30 @@ document.getElementById('printAllPDF').onclick = () => {
 
   const statsDiv = document.createElement('div');
   statsDiv.className = 'print-grid';
-  statsDiv.style.gridTemplateColumns = 'repeat(5, 1fr)';
+  statsDiv.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
   statsDiv.innerHTML = `
     <div><strong>Equipamentos:</strong> ${recordsToPrint.length}</div>
     <div><strong>Data Manutenção:</strong> ${escapeHtml(maintDates.displayLabel)}</div>
+    <div><strong>Tempo Total:</strong> ${escapeHtml(totalTimeStr)}</div>
     <div><strong>Itens OK:</strong> ${totalOk}</div>
     <div><strong>Pendências:</strong> ${totalPend}</div>
-    <div><strong>Tempo Total:</strong> ${escapeHtml(totalTimeStr)}</div>
   `;
   container.append(statsDiv);
 
   const summaryTable = document.createElement('table');
-  summaryTable.className = 'print-table';
+  summaryTable.className = 'print-table print-summary-table';
   summaryTable.innerHTML = `
+    <colgroup>
+      <col style="width: 4%">
+      <col style="width: 17%">
+      <col style="width: 8%">
+      <col style="width: 10%">
+      <col style="width: 17%">
+      <col style="width: 15%">
+      <col style="width: 11%">
+      <col style="width: 8%">
+      <col style="width: 10%">
+    </colgroup>
     <thead>
       <tr>
         <th>#</th>
@@ -3344,7 +3477,7 @@ document.getElementById('printAllPDF').onclick = () => {
 
   if (pendingDetailsList.length > 0) {
     const pendBox = document.createElement('div');
-    pendBox.className = 'print-box';
+    pendBox.className = 'print-box print-box-flow';
     pendBox.innerHTML = `
       <h4>Detalhamento de Pendências Identificadas (${pendingDetailsList.length})</h4>
       <table class="print-table" style="margin-bottom:0">
@@ -3467,6 +3600,7 @@ function setupSignaturePad(canvasId) {
     hasStroke = false;
 
     if (existingDataUrl) {
+      hasStroke = true;
       const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 0, 0, rect.width, rect.height);
@@ -3540,6 +3674,16 @@ document.getElementById('signatureModal').addEventListener('click', (e) => {
   if (e.target === document.getElementById('signatureModal')) closeSignatureModal();
 });
 
+function syncActiveEditSignatures() {
+  if (editingIndex !== null && history[editingIndex]) {
+    history[editingIndex].techSignature = currentTechSignature;
+    history[editingIndex].clientSignature = currentClientSignature;
+    history[editingIndex].signerName = currentSignerName;
+    localStorage.setItem(storageKey, JSON.stringify(history));
+    renderHistory();
+  }
+}
+
 document.getElementById('removeAllSigsBtn').onclick = () => {
   hapticTap();
   techPad.clear();
@@ -3550,6 +3694,7 @@ document.getElementById('removeAllSigsBtn').onclick = () => {
   document.getElementById('signerNameInput').value = '';
   updateSignatureTriggerUI();
   hasUnsavedChanges = true;
+  syncActiveEditSignatures();
   saveDraft();
   closeSignatureModal();
   showNotice('Assinaturas removidas.');
@@ -3562,6 +3707,7 @@ document.getElementById('confirmSigsBtn').onclick = () => {
   currentSignerName = document.getElementById('signerNameInput').value.trim();
   updateSignatureTriggerUI();
   hasUnsavedChanges = true;
+  syncActiveEditSignatures();
   saveDraft();
   closeSignatureModal();
   if (currentTechSignature || currentClientSignature) {
@@ -4106,7 +4252,7 @@ function base64UrlToBytes(b64url) {
   return bytes;
 }
 
-async function packRecordsToToken(records) {
+async function packRecordsToToken(records, includeSignatures = true) {
   const clients = [];
   const techs = [];
   const types = [];
@@ -4143,9 +4289,15 @@ async function packRecordsToToken(records) {
       r.started || '',
       r.ended || '',
       r.notes || '',
-      stStr
+      stStr,
+      sparseNotes,
+      includeSignatures ? (r.techSignature || '') : '',
+      includeSignatures ? (r.clientSignature || '') : '',
+      r.signerName || ''
     ];
-    if (Object.keys(sparseNotes).length > 0) row.push(sparseNotes);
+    while (row.length > 9 && (!row[row.length - 1] || (typeof row[row.length - 1] === 'object' && Object.keys(row[row.length - 1]).length === 0))) {
+      row.pop();
+    }
     return row;
   });
 
@@ -4168,8 +4320,13 @@ async function packRecordsToToken(records) {
 
 async function encodeRecordsChunkToQrUrl(records) {
   const baseUrl = window.location.origin + window.location.pathname;
-  const token = await packRecordsToToken(records);
-  return `${baseUrl}#qr=${token}`;
+  let token = await packRecordsToToken(records, true);
+  let url = `${baseUrl}#qr=${token}`;
+  if (url.length > 2100) {
+    token = await packRecordsToToken(records, false);
+    url = `${baseUrl}#qr=${token}`;
+  }
+  return url;
 }
 
 async function decodeQrStringToRecords(rawQrText) {
@@ -4224,7 +4381,10 @@ async function decodeQrStringToRecords(rawQrText) {
       ended: String(row[6] || ''),
       notes: String(row[7] || ''),
       itemStates: cleanStates,
-      itemNotes: cleanNotes
+      itemNotes: cleanNotes,
+      techSignature: String(row[10] || ''),
+      clientSignature: String(row[11] || ''),
+      signerName: String(row[12] || '')
     };
   });
 }
