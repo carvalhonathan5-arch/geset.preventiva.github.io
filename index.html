@@ -916,37 +916,43 @@ body.dark-mode .btn-small:hover {
 }
 
 .notice {
-  padding: 12px 14px;
-  border-radius: 10px;
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 2500;
+  width: min(560px, calc(100vw - 24px));
+  padding: 13px 16px;
+  border-radius: 12px;
   background: #ecfdf5;
   color: #047857;
-  border: 1px solid #a7f3d0;
+  border: 1.5px solid #6ee7b7;
+  box-shadow: 0 12px 30px rgba(0, 12, 123, 0.24);
+  backdrop-filter: blur(8px);
   font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 14px;
+  font-weight: 700;
   display: none;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.32s ease, transform 0.32s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .notice.hiding {
   opacity: 0;
-  transform: translateY(-6px);
+  transform: translate(-50%, -14px);
   pointer-events: none;
 }
 .notice.error { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
 body.dark-mode .notice {
-  background: rgba(5, 150, 105, 0.2);
+  background: rgba(6, 78, 59, 0.94);
   color: #6ee7b7;
-  border-color: rgba(16, 185, 129, 0.45);
+  border-color: rgba(16, 185, 129, 0.55);
 }
 body.dark-mode .notice.error {
-  background: rgba(220, 38, 38, 0.2);
-  color: #fca5a5;
-  border-color: rgba(248, 113, 113, 0.45);
+  background: rgba(127, 29, 29, 0.94);
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.55);
 }
 .notice-close {
   background: transparent;
@@ -1342,7 +1348,108 @@ body.dark-mode .qr-mode-btn.active {
   .print-box { border: 1px solid #cbd5e1; padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; font-size: 8.5pt; page-break-inside: avoid; }
   .print-box h4 { margin: 0 0 6px; font-size: 9pt; color: #000C7B; }
   .print-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 25px; page-break-inside: avoid; }
-  .print-sig-line { border-top: 1px solid #334155; text-align: center; padding-top: 5px; font-size: 8.5pt; color: #334155; }
+  .print-sig-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+  .print-sig-img { max-height: 48px; max-width: 190px; object-fit: contain; margin-bottom: 4px; display: block; }
+  .print-sig-line { width: 100%; border-top: 1px solid #334155; text-align: center; padding-top: 5px; font-size: 8.5pt; color: #334155; }
+}
+
+/* ASSINATURA DIGITAL OPCIONAL E INDICADOR DE MEMÓRIA LOCAL */
+.sig-pad-box {
+  margin-bottom: 10px;
+}
+.sig-pad-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--label-color);
+}
+.sig-canvas {
+  width: 100%;
+  height: 115px;
+  background: #ffffff;
+  border: 1.5px dashed var(--primary-border);
+  border-radius: 10px;
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+}
+.btn-sig-trigger.has-sig {
+  background: var(--ok-soft);
+  border-color: var(--ok-color);
+  color: var(--ok-color);
+}
+
+.storage-meter-card {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--btn-status-bg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.storage-meter-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.storage-meter-top strong {
+  color: var(--text-color);
+  font-weight: 700;
+}
+.storage-bar-track {
+  width: 100%;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--bar-bg);
+  overflow: hidden;
+}
+.storage-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: var(--ok-color);
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+.storage-bar-fill.warn { background: #d97706; }
+.storage-bar-fill.crit { background: var(--pend-color); }
+.storage-meter-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.storage-hint {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.btn-clean-old {
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
+  color: var(--heading-color);
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+}
+.btn-clean-old:hover:not(:disabled) {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: #ffffff;
+}
+.btn-clean-old:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 </style>
 </head>
@@ -1456,6 +1563,9 @@ body.dark-mode .qr-mode-btn.active {
         <label class="label" for="notes">Observações Gerais / Recomendações</label>
         <textarea id="notes" placeholder="Observações gerais da máquina, recomendações de upgrade ou resumo da visita..."></textarea>
         <p class="hint">Marque o status de cada item. Ao clicar em "Pendente", um campo será aberto para descrever o problema.</p>
+        <button type="button" class="action-btn secondary btn-sig-trigger" id="openSignatureModalBtn" style="margin-top:12px;width:100%" title="Opcional: abrir tela para técnico e cliente assinarem com o dedo ou mouse">
+          Coletar Assinaturas na Tela (Opcional)
+        </button>
       </section>
 
       <section class="panel actions">
@@ -1485,6 +1595,21 @@ body.dark-mode .qr-mode-btn.active {
         </div>
 
         <div id="history"></div>
+        <div id="storageMeterCard" class="storage-meter-card" aria-live="polite">
+          <div class="storage-meter-top">
+            <span>Memória local utilizada</span>
+            <strong id="storageUsageText">0 KB / 5 MB (0%)</strong>
+          </div>
+          <div class="storage-bar-track">
+            <div id="storageBarFill" class="storage-bar-fill"></div>
+          </div>
+          <div class="storage-meter-bottom">
+            <span id="storageOldCountText" class="storage-hint">Nenhum registro com +30 dias</span>
+            <button type="button" id="cleanOldRecordsBtn" class="btn-clean-old" disabled title="Excluir atendimentos concluídos há mais de 30 dias">
+              Remover +30 dias
+            </button>
+          </div>
+        </div>
         <button type="button" class="action-btn danger" id="clear" style="margin-top:12px;width:100%" title="Excluir permanentemente todos os registros salvos">Apagar Todo o Histórico Salvo</button>
       </section>
     </div>
@@ -1651,6 +1776,44 @@ body.dark-mode .qr-mode-btn.active {
   </div>
 </div>
 
+<!-- Modal 5: Coleta Opcional de Assinaturas Digitais -->
+<div id="signatureModal" class="modal">
+  <div class="modal-content" style="max-width:500px">
+    <div class="qr-modal-head">
+      <h3>Assinaturas Digitais (Opcional)</h3>
+      <button type="button" class="qr-close-x" id="closeSigTopBtn" title="Fechar janela">✕</button>
+    </div>
+    <p class="qr-compact-desc" style="text-align:left">
+      Assine abaixo com o dedo ou mouse apenas se desejar incluir as assinaturas no PDF desta máquina:
+    </p>
+
+    <div class="sig-pad-box">
+      <div class="sig-pad-head">
+        <span>Assinatura do Técnico Responsável</span>
+        <button type="button" class="btn-now" id="clearTechSigBtn">Limpar</button>
+      </div>
+      <canvas id="techSigCanvas" class="sig-canvas"></canvas>
+    </div>
+
+    <div class="sig-pad-box">
+      <div class="sig-pad-head">
+        <span>Assinatura do Cliente / Unidade</span>
+        <button type="button" class="btn-now" id="clearClientSigBtn">Limpar</button>
+      </div>
+      <canvas id="clientSigCanvas" class="sig-canvas"></canvas>
+    </div>
+
+    <div style="margin-bottom:8px">
+      <input id="signerNameInput" type="text" placeholder="Nome de quem assinou pelo cliente (opcional)" style="height:38px;font-size:13px">
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button type="button" class="action-btn danger qr-modal-footer-btn" id="removeAllSigsBtn">Remover Tudo</button>
+      <button type="button" class="action-btn primary qr-modal-footer-btn" id="confirmSigsBtn">Confirmar Assinaturas</button>
+    </div>
+  </div>
+</div>
+
 <div id="printReport">
   <div class="print-header">
     <div class="print-logo">
@@ -1687,11 +1850,17 @@ body.dark-mode .qr-mode-btn.active {
   </div>
 
   <div class="print-signatures">
-    <div class="print-sig-line">
-      Técnico Responsável<br><strong id="pSigTech">Geset Tecnologia</strong>
+    <div class="print-sig-col">
+      <img id="pTechSigImg" class="print-sig-img" alt="Assinatura Técnico" style="display:none">
+      <div class="print-sig-line">
+        Técnico Responsável<br><strong id="pSigTech">Geset Tecnologia</strong>
+      </div>
     </div>
-    <div class="print-sig-line">
-      Aceite / Validação Cliente<br><strong>Responsável pela Unidade</strong>
+    <div class="print-sig-col">
+      <img id="pClientSigImg" class="print-sig-img" alt="Assinatura Cliente" style="display:none">
+      <div class="print-sig-line">
+        Aceite / Validação Cliente<br><strong id="pSigClient">Responsável pela Unidade</strong>
+      </div>
     </div>
   </div>
 </div>
@@ -1717,7 +1886,7 @@ let waitingServiceWorker = null;
 let initialHtmlSignature = null;
 
 function syncBodyModalLock() {
-  const anyOpen = ['pcQrHubModal', 'mobileSendToPcModal', 'qrExportModal', 'qrScanModal']
+  const anyOpen = ['pcQrHubModal', 'mobileSendToPcModal', 'qrExportModal', 'qrScanModal', 'signatureModal']
     .some(id => {
       const el = document.getElementById(id);
       return el && el.style.display === 'flex';
@@ -2400,8 +2569,6 @@ function showNotice(msg, isError = false, durationMs = null) {
   void n.offsetWidth;
   n.classList.remove('hiding');
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
   const timeout = typeof durationMs === 'number'
     ? durationMs
     : (isError ? 8000 : 5000);
@@ -2433,6 +2600,20 @@ function validateHeader() {
   return true;
 }
 
+let currentTechSignature = '';
+let currentClientSignature = '';
+let currentSignerName = '';
+
+function updateSignatureTriggerUI() {
+  const btn = document.getElementById('openSignatureModalBtn');
+  if (!btn) return;
+  const hasAny = Boolean(currentTechSignature || currentClientSignature);
+  btn.classList.toggle('has-sig', hasAny);
+  btn.textContent = hasAny
+    ? 'Assinaturas Coletadas ✓ (Editar / Remover)'
+    : 'Coletar Assinaturas na Tela (Opcional)';
+}
+
 function saveDraft() {
   if (editingIndex !== null) return;
   try {
@@ -2447,8 +2628,12 @@ function saveDraft() {
       ended: document.getElementById('ended').value,
       firstInteractionDone,
       itemStates,
-      itemNotes
+      itemNotes,
+      techSignature: currentTechSignature,
+      clientSignature: currentClientSignature,
+      signerName: currentSignerName
     }));
+    if (typeof updateStorageMeter === 'function') updateStorageMeter();
   } catch (e) {}
 }
 
@@ -2474,8 +2659,12 @@ try {
     if (typeof d.firstInteractionDone === 'boolean') firstInteractionDone = d.firstInteractionDone;
     if (Array.isArray(d.itemStates) && d.itemStates.length === allItemsFlat.length) itemStates = d.itemStates;
     if (Array.isArray(d.itemNotes) && d.itemNotes.length === allItemsFlat.length) itemNotes = d.itemNotes;
+    if (typeof d.techSignature === 'string') currentTechSignature = d.techSignature;
+    if (typeof d.clientSignature === 'string') currentClientSignature = d.clientSignature;
+    if (typeof d.signerName === 'string') currentSignerName = d.signerName;
   }
 } catch (e) {}
+updateSignatureTriggerUI();
 
 syncNoAssetTagUI();
 updateUIStates();
@@ -2554,6 +2743,7 @@ function getFilteredHistoryEntries() {
 }
 
 function renderHistory() {
+  if (typeof updateStorageMeter === 'function') updateStorageMeter();
   updateAutocompletesAndClientFilter();
 
   const histContainer = document.getElementById('history');
@@ -2710,6 +2900,11 @@ function loadRecordForEditing(index) {
     itemNotes.fill('');
   }
 
+  currentTechSignature = r.techSignature || '';
+  currentClientSignature = r.clientSignature || '';
+  currentSignerName = r.signerName || '';
+  updateSignatureTriggerUI();
+
   firstInteractionDone = true;
   updateUIStates();
   updateProgress();
@@ -2737,6 +2932,11 @@ function resetMachine() {
   document.getElementById('ended').value = '';
   document.getElementById('tech').value = keepTech;
   document.getElementById('client').value = keepClient;
+
+  currentTechSignature = '';
+  currentClientSignature = '';
+  currentSignerName = '';
+  updateSignatureTriggerUI();
 
   localStorage.removeItem(draftKey);
   saveDraft();
@@ -2833,6 +3033,25 @@ function preparePrintReport(dataObj) {
   document.getElementById('pTech').textContent = dataObj.tech || '-';
   document.getElementById('pPeriod').textContent = `${formatDateTime(dataObj.started)} às ${formatDateTime(dataObj.ended)}${durationSuffix}`;
   document.getElementById('pSigTech').textContent = dataObj.tech || 'Geset Tecnologia';
+  document.getElementById('pSigClient').textContent = dataObj.signerName || 'Responsável pela Unidade';
+
+  const techSigEl = document.getElementById('pTechSigImg');
+  const clientSigEl = document.getElementById('pClientSigImg');
+  if (dataObj.techSignature) {
+    techSigEl.src = dataObj.techSignature;
+    techSigEl.style.display = 'block';
+  } else {
+    techSigEl.removeAttribute('src');
+    techSigEl.style.display = 'none';
+  }
+  if (dataObj.clientSignature) {
+    clientSigEl.src = dataObj.clientSignature;
+    clientSigEl.style.display = 'block';
+  } else {
+    clientSigEl.removeAttribute('src');
+    clientSigEl.style.display = 'none';
+  }
+
   document.getElementById('pNotes').textContent = dataObj.notes || 'Nenhuma observação registrada.';
 
   const tbody = document.getElementById('pTableBody');
@@ -3074,7 +3293,10 @@ document.getElementById('finish').onclick = () => {
     tech: document.getElementById('tech').value.trim(),
     notes: document.getElementById('notes').value.trim(),
     itemStates: cleanStates,
-    itemNotes: cleanNotes
+    itemNotes: cleanNotes,
+    techSignature: currentTechSignature,
+    clientSignature: currentClientSignature,
+    signerName: currentSignerName
   };
 
   if (editingIndex !== null) {
@@ -3109,6 +3331,212 @@ document.getElementById('clear').onclick = () => {
     showNotice('Histórico apagado.');
   }
 };
+
+/* ASSINATURA DIGITAL OPCIONAL (TOUCH / MOUSE) */
+function setupSignaturePad(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let hasStroke = false;
+
+  const resizeCanvas = (existingDataUrl = '') => {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.max(280, Math.floor(rect.width * dpr));
+    canvas.height = Math.max(100, Math.floor(rect.height * dpr));
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 2.4;
+    ctx.strokeStyle = '#0f172a';
+    hasStroke = false;
+
+    if (existingDataUrl) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        hasStroke = true;
+      };
+      img.src = existingDataUrl;
+    }
+  };
+
+  const getPos = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
+  canvas.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    canvas.setPointerCapture(e.pointerId);
+    drawing = true;
+    hasStroke = true;
+    const { x, y } = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (!drawing) return;
+    e.preventDefault();
+    const { x, y } = getPos(e);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  });
+
+  const endStroke = () => { drawing = false; };
+  canvas.addEventListener('pointerup', endStroke);
+  canvas.addEventListener('pointercancel', endStroke);
+
+  return {
+    init: (dataUrl) => resizeCanvas(dataUrl),
+    clear: () => {
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      hasStroke = false;
+    },
+    exportDataUrl: () => (hasStroke ? canvas.toDataURL('image/png') : '')
+  };
+}
+
+const techPad = setupSignaturePad('techSigCanvas');
+const clientPad = setupSignaturePad('clientSigCanvas');
+
+function closeSignatureModal() {
+  document.getElementById('signatureModal').style.display = 'none';
+  syncBodyModalLock();
+}
+
+document.getElementById('openSignatureModalBtn').onclick = () => {
+  hapticTap();
+  document.getElementById('signerNameInput').value = currentSignerName || '';
+  document.getElementById('signatureModal').style.display = 'flex';
+  syncBodyModalLock();
+  requestAnimationFrame(() => {
+    techPad.init(currentTechSignature);
+    clientPad.init(currentClientSignature);
+  });
+};
+
+document.getElementById('clearTechSigBtn').onclick = () => { hapticTap(); techPad.clear(); };
+document.getElementById('clearClientSigBtn').onclick = () => { hapticTap(); clientPad.clear(); };
+document.getElementById('closeSigTopBtn').onclick = closeSignatureModal;
+document.getElementById('signatureModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('signatureModal')) closeSignatureModal();
+});
+
+document.getElementById('removeAllSigsBtn').onclick = () => {
+  hapticTap();
+  techPad.clear();
+  clientPad.clear();
+  currentTechSignature = '';
+  currentClientSignature = '';
+  currentSignerName = '';
+  document.getElementById('signerNameInput').value = '';
+  updateSignatureTriggerUI();
+  hasUnsavedChanges = true;
+  saveDraft();
+  closeSignatureModal();
+  showNotice('Assinaturas removidas.');
+};
+
+document.getElementById('confirmSigsBtn').onclick = () => {
+  hapticTap();
+  currentTechSignature = techPad.exportDataUrl();
+  currentClientSignature = clientPad.exportDataUrl();
+  currentSignerName = document.getElementById('signerNameInput').value.trim();
+  updateSignatureTriggerUI();
+  hasUnsavedChanges = true;
+  saveDraft();
+  closeSignatureModal();
+  if (currentTechSignature || currentClientSignature) {
+    showNotice('Assinaturas vinculadas a esta máquina!');
+  }
+};
+
+/* INDICADOR DE MEMÓRIA LOCAL (localStorage) E LIMPEZA (+30 DIAS) */
+const STORAGE_QUOTA_BYTES = 5 * 1024 * 1024;
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function isRecordOlderThan30Days(record) {
+  const refDateStr = record.ended || record.started;
+  if (!refDateStr) return false;
+  const parsed = new Date(refDateStr).getTime();
+  if (Number.isNaN(parsed)) return false;
+  return (Date.now() - parsed) > THIRTY_DAYS_MS;
+}
+
+function updateStorageMeter() {
+  const textEl = document.getElementById('storageUsageText');
+  const fillEl = document.getElementById('storageBarFill');
+  const oldTextEl = document.getElementById('storageOldCountText');
+  const cleanBtn = document.getElementById('cleanOldRecordsBtn');
+  if (!textEl || !fillEl || !oldTextEl || !cleanBtn) return;
+
+  let usedBytes = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i) || '';
+      const v = localStorage.getItem(k) || '';
+      usedBytes += (k.length + v.length) * 2;
+    }
+  } catch (e) {}
+
+  const pct = Math.min(100, (usedBytes / STORAGE_QUOTA_BYTES) * 100);
+  textEl.textContent = `${formatBytes(usedBytes)} / 5 MB (${pct.toFixed(1)}%)`;
+
+  fillEl.style.width = `${Math.max(pct > 0 ? 2 : 0, pct)}%`;
+  fillEl.classList.remove('warn', 'crit');
+  if (pct >= 85) {
+    fillEl.classList.add('crit');
+  } else if (pct >= 60) {
+    fillEl.classList.add('warn');
+  }
+
+  const oldCount = history.filter(isRecordOlderThan30Days).length;
+  if (oldCount > 0) {
+    oldTextEl.textContent = `${oldCount} registro(s) com mais de 30 dias`;
+    cleanBtn.disabled = false;
+    cleanBtn.textContent = `Remover +30 dias (${oldCount})`;
+  } else {
+    oldTextEl.textContent = 'Nenhum registro com +30 dias';
+    cleanBtn.disabled = true;
+    cleanBtn.textContent = 'Remover +30 dias';
+  }
+}
+
+document.getElementById('cleanOldRecordsBtn').onclick = () => {
+  hapticTap();
+  const oldCount = history.filter(isRecordOlderThan30Days).length;
+  if (!oldCount) return;
+
+  if (!confirm(`Remover ${oldCount} registro(s) com mais de 30 dias para liberar memória local?`)) return;
+
+  const editingRecord = editingIndex !== null ? history[editingIndex] : null;
+  history = history.filter(r => !isRecordOlderThan30Days(r));
+  localStorage.setItem(storageKey, JSON.stringify(history));
+
+  if (editingRecord) {
+    const newIdx = history.indexOf(editingRecord);
+    if (newIdx === -1) {
+      resetMachine();
+    } else {
+      editingIndex = newIdx;
+    }
+  }
+
+  renderHistory();
+  showNotice(`${oldCount} registro(s) antigo(s) removido(s) com sucesso!`);
+};
+
+updateStorageMeter();
 </script>
 
 <!-- SCRIPT 2: Transferência Bidirecional via QR Code (PC <-> Celular e Offline) -->
@@ -4478,6 +4906,7 @@ function ensureJsQrLoaded() {
   if (jsQrLoadPromise) return jsQrLoadPromise;
 
   const cdnUrls = [
+    './jsqr.min.js',
     'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js',
     'https://unpkg.com/jsqr@1.4.0/dist/jsQR.min.js'
   ];
@@ -4501,6 +4930,10 @@ function ensureJsQrLoaded() {
 
   return jsQrLoadPromise;
 }
+
+window.addEventListener('load', () => {
+  setTimeout(() => { ensureJsQrLoaded().catch(() => {}); }, 1200);
+});
 
 function stopCameraScanner() {
   if (scannerAnimationFrame) {
