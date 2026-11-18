@@ -211,6 +211,9 @@ header p {
 
 .label-row .label {
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .btn-now {
@@ -224,9 +227,10 @@ header p {
   cursor: pointer;
   line-height: 1.25;
   flex: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.btn-now:hover {
+.btn-now:hover, .btn-now.active {
   background: var(--primary-blue);
   color: #ffffff;
 }
@@ -251,6 +255,12 @@ input[type=text], input[type=number], input[type=datetime-local], select, textar
   font-size: 14px;
   background: var(--input-bg);
   color: var(--text-color);
+}
+
+input.no-id-mode {
+  background: var(--btn-status-bg);
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 input[type=text], input[type=number], input[type=datetime-local], select {
@@ -830,8 +840,11 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
             <input id="machine" type="text" placeholder="Ex.: PC-ADM-01" autocomplete="off">
           </div>
           <div>
-            <label class="label" for="assetTag">ID / Patrimônio Geset</label>
-            <input id="assetTag" type="number" inputmode="numeric" placeholder="Ex.: 042" autocomplete="off">
+            <div class="label-row">
+              <label class="label" for="assetTag" title="ID / Patrimônio Geset">ID Geset</label>
+              <button type="button" id="btnNoAssetTag" class="btn-now" title="Marcar equipamento sem ID Geset">Sem ID</button>
+            </div>
+            <input id="assetTag" type="text" inputmode="numeric" placeholder="Ex.: 042" autocomplete="off">
           </div>
         </div>
         
@@ -1185,6 +1198,13 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
+function formatAssetTagBadge(tag, style = 'id') {
+  const clean = String(tag || '').trim();
+  if (!clean) return '';
+  if (clean.toLowerCase() === 'sem id') return ' (Sem ID)';
+  return style === 'hash' ? ` (#${clean})` : ` (ID: ${clean})`;
+}
+
 const themeToggleBtn = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
 const themeText = document.getElementById('themeText');
@@ -1413,7 +1433,7 @@ function updateDurationDisplay() {
 }
 
 /* Botões rápidos "Agora" */
-document.querySelectorAll('.btn-now').forEach(btn => {
+document.querySelectorAll('.btn-now[data-target]').forEach(btn => {
   btn.addEventListener('click', () => {
     hapticTap();
     const targetId = btn.dataset.target;
@@ -1447,6 +1467,45 @@ sections.forEach(s => s.items.forEach(item => allItemsFlat.push(item)));
 let itemStates = new Array(allItemsFlat.length).fill(null);
 let itemNotes = new Array(allItemsFlat.length).fill('');
 let firstInteractionDone = false;
+
+/* Alternador rápido "Sem ID" para equipamentos sem etiqueta Geset */
+function syncNoAssetTagUI() {
+  const input = document.getElementById('assetTag');
+  const btn = document.getElementById('btnNoAssetTag');
+  if (!input || !btn) return;
+  const isNoId = input.value.trim().toLowerCase() === 'sem id';
+  input.readOnly = isNoId;
+  input.classList.toggle('no-id-mode', isNoId);
+  btn.classList.toggle('active', isNoId);
+}
+
+document.getElementById('btnNoAssetTag').addEventListener('click', () => {
+  hapticTap();
+  const input = document.getElementById('assetTag');
+  const idxIdGeset = allItemsFlat.findIndex(x => x.id === '3.8');
+  const isCurrentlyNoId = input.value.trim().toLowerCase() === 'sem id';
+
+  if (isCurrentlyNoId) {
+    input.value = '';
+    syncNoAssetTagUI();
+    input.focus();
+    if (idxIdGeset !== -1 && itemStates[idxIdGeset] === 'N/A') {
+      itemStates[idxIdGeset] = null;
+      updateUIStates();
+      updateProgress();
+    }
+  } else {
+    input.value = 'Sem ID';
+    syncNoAssetTagUI();
+    if (idxIdGeset !== -1 && itemStates[idxIdGeset] === null) {
+      itemStates[idxIdGeset] = 'N/A';
+      updateUIStates();
+      updateProgress();
+    }
+  }
+  hasUnsavedChanges = true;
+  saveDraft();
+});
 
 const sectionsContainer = document.getElementById('sections');
 let globalIndex = 0;
@@ -1732,6 +1791,7 @@ function saveDraft() {
     el.addEventListener('input', () => {
       el.style.borderColor = 'var(--border-color)';
       hasUnsavedChanges = true;
+      if (id === 'assetTag') syncNoAssetTagUI();
       if (id === 'started' || id === 'ended') updateDurationDisplay();
       saveDraft();
     });
@@ -1750,6 +1810,7 @@ try {
   }
 } catch (e) {}
 
+syncNoAssetTagUI();
 updateUIStates();
 updateProgress();
 updateDurationDisplay();
@@ -1866,7 +1927,7 @@ function renderHistory() {
     titleRow.className = 'record-title-row';
 
     const strong = document.createElement('strong');
-    strong.textContent = `${r.machine}${r.assetTag ? ' (ID: ' + r.assetTag + ')' : ''} [${r.deviceType}]`;
+    strong.textContent = `${r.machine}${formatAssetTagBadge(r.assetTag, 'id')} [${r.deviceType}]`;
 
     const isPend = hasRecordPending(r);
     const badge = document.createElement('span');
@@ -1956,6 +2017,7 @@ function loadRecordForEditing(index) {
   hasUnsavedChanges = true;
   document.getElementById('machine').value = r.machine || '';
   document.getElementById('assetTag').value = r.assetTag || '';
+  syncNoAssetTagUI();
   document.getElementById('deviceType').value = r.deviceType || 'Desktop';
   document.getElementById('tech').value = r.tech || '';
   document.getElementById('client').value = r.client || '';
@@ -1996,6 +2058,7 @@ function resetMachine() {
   document.getElementById('finish').textContent = '✓ Finalizar e Registrar Máquina';
   document.getElementById('machine').value = '';
   document.getElementById('assetTag').value = '';
+  syncNoAssetTagUI();
   document.getElementById('notes').value = '';
   document.getElementById('started').value = '';
   document.getElementById('ended').value = '';
@@ -2340,7 +2403,7 @@ document.getElementById('printAllPDF').onclick = () => {
         <tbody>
           ${pendingDetailsList.map(p => `
             <tr>
-              <td><strong>${escapeHtml(p.machine)}</strong>${p.assetTag ? ` (ID: ${escapeHtml(p.assetTag)})` : ''}<br><span style="font-size:7.5pt;color:#475569">${escapeHtml(p.client)}</span></td>
+              <td><strong>${escapeHtml(p.machine)}</strong>${escapeHtml(formatAssetTagBadge(p.assetTag, 'id'))}<br><span style="font-size:7.5pt;color:#475569">${escapeHtml(p.client)}</span></td>
               <td>${escapeHtml(p.itemLabel)}</td>
               <td class="status-pend-print" style="font-weight:normal">${escapeHtml(p.note)}</td>
             </tr>
@@ -3205,7 +3268,7 @@ function updateMobileSendSummary() {
   }
 
   sendBtn.disabled = false;
-  const names = selected.map(r => `${r.machine}${r.assetTag ? ' (#' + r.assetTag + ')' : ''}`).join(', ');
+  const names = selected.map(r => `${r.machine}${formatAssetTagBadge(r.assetTag, 'hash')}`).join(', ');
   box.textContent = `${selected.length} máquina(s) selecionada(s): ${names}`;
 }
 
@@ -3327,7 +3390,7 @@ function renderCurrentQrPage() {
   document.getElementById('qrPageBadge').textContent =
     `QR ${qrCurrentPageIdx + 1} de ${totalPages} • ${page.records.length} máquina(s)`;
 
-  const names = page.records.map(r => `${r.machine}${r.assetTag ? ' (#' + r.assetTag + ')' : ''}`).join(', ');
+  const names = page.records.map(r => `${r.machine}${formatAssetTagBadge(r.assetTag, 'hash')}`).join(', ');
   document.getElementById('qrMachinesPreview').textContent = `Máquinas neste QR: ${names}`;
 
   const navBox = document.getElementById('qrNavControls');
