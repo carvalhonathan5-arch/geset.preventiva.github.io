@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000C7B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Preventiva TI">
+<title>Preventiva TI | Geset Gestão de Tecnologia</title>
+
+<!-- Ligação para o Manifesto e Ícones -->
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="logo.png">
+<link rel="icon" type="image/png" sizes="512x512" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+
+<style>
+:root {
+  color-scheme: light;
+  --primary-dark: #000C7B;
+  --primary-blue: #0092FD;
+  --bg-color: #f0f4f9;
+  --panel-bg: #ffffff;
+  --text-color: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --ok-color: #059669;
+  --na-color: #475569;
+  --pend-color: #dc2626;
+  --input-bg: #ffffff;
+  --label-color: #1e293b;
+  --item-border: #f1f5f9;
+  --heading-color: #000C7B;
+  --btn-sec-bg: #e2e8f0;
+  --btn-sec-hover: #cbd5e1;
+  --btn-status-bg: #f8fafc;
+  --btn-danger-bg: #ffe4e6;
+  --btn-danger-color: #be123c;
+  --bar-bg: #e2e8f0;
+  --modal-overlay: rgba(15, 23, 42, 0.6);
+  --pend-bg: #fef2f2;
+  --pend-border: #fca5a5;
+}
+
+body.dark-mode {
+  color-scheme: dark;
+  --bg-color: #0f172a;
+  --panel-bg: #1e293b;
+  --text-color: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --input-bg: #0f172a;
+  --label-color: #cbd5e1;
+  --item-border: #334155;
+  --heading-color: #38bdf8;
+  --btn-sec-bg: #334155;
+  --btn-sec-hover: #475569;
+  --btn-status-bg: #0f172a;
+  --btn-danger-bg: #451a22;
+  --btn-danger-color: #fecdd3;
+  --bar-bg: #334155;
+  --modal-overlay: rgba(0, 0, 0, 0.75);
+  --pend-bg: #2b1419;
+  --pend-border: #7f1d1d;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-color);
+  background: var(--bg-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header {
+  background: linear-gradient(135deg, #000C7B 0%, #004fb0 100%);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0, 12, 123, 0.15);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-header-img {
+  height: 48px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  flex: none;
+  display: block;
+}
+
+header h1 {
+  font-size: 20px;
+  margin: 0 0 2px;
+  font-weight: 800;
+}
+
+header p {
+  margin: 0;
+  color: #b3dbff;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  flex: none;
+}
+
+/* CONTAINER PRINCIPAL: Grelha lateral no Desktop/Notebook */
+.wrap {
+  max-width: 1360px;
+  margin: auto;
+  padding: 20px 20px 76px;
+}
+
+.layout-container {
+  display: grid;
+  grid-template-columns: 390px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.sidebar-panel {
+  position: sticky;
+  top: 20px;
+}
+
+.panel {
+  background: var(--panel-bg);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(0, 12, 123, 0.06);
+  border: 1px solid var(--border-color);
+}
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--label-color);
+  margin: 0 0 6px;
+}
+
+.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.two > div {
+  min-width: 0;
+}
+
+input[type=text], input[type=number], input[type=datetime-local], select, textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  background: var(--input-bg);
+  color: var(--text-color);
+}
+
+input[type=text], input[type=number], input[type=datetime-local], select {
+  height: 42px;
+}
+
+select {
+  padding: 8px 10px;
+  font-size: 13.5px;
+}
+
+input[type=datetime-local] {
+  padding: 8px 8px;
+  font-size: 12.5px;
+  letter-spacing: -0.2px;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.meta { margin-top: 12px; }
+
+.duration-badge {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--btn-status-bg);
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--heading-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-card {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--item-border);
+}
+
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--heading-color);
+}
+
+.bar {
+  height: 12px;
+  background: var(--bar-bg);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0092FD 0%, #000C7B 100%);
+  width: 0%;
+  transition: width .3s ease;
+}
+
+.section h2 {
+  font-size: 16px;
+  margin: 0;
+  color: var(--heading-color);
+  line-height: 1.25;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 2px solid var(--item-border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.section-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.count {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.btn-check-all {
+  background: transparent;
+  border: 1px solid var(--ok-color);
+  color: var(--ok-color);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ITENS DO CHECKLIST NO DESKTOP/NOTEBOOK: Sempre em linha, botões compactos */
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--item-border);
+}
+
+.item:first-of-type { border-top: none; }
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.item-text-span {
+  font-size: 14px;
+  flex: 1;
+}
+
+.status-buttons {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+.status-btn {
+  border: 1px solid var(--border-color);
+  background: var(--btn-status-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.status-btn.active-ok { background: var(--ok-color); color: #fff; border-color: var(--ok-color); }
+.status-btn.active-na { background: var(--na-color); color: #fff; border-color: var(--na-color); }
+.status-btn.active-pend { background: var(--pend-color); color: #fff; border-color: var(--pend-color); }
+
+/* Campo de observação inline para item Pendente */
+.item-pend-note-wrap {
+  display: none;
+  width: 100%;
+}
+
+.item-pend-input {
+  width: 100%;
+  border: 1px solid var(--pend-border) !important;
+  background: var(--pend-bg) !important;
+  color: var(--text-color);
+  border-radius: 8px;
+  padding: 8px 11px;
+  font-size: 13px;
+}
+
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.actions .full-span { grid-column: 1 / -1; }
+
+button.action-btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.primary { background: var(--primary-dark); color: #fff; }
+body.dark-mode button.primary { background: var(--primary-blue); }
+button.accent { background: var(--primary-blue); color: #fff; }
+button.secondary { background: var(--btn-sec-bg); color: var(--text-color); }
+button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color); }
+
+.hint { font-size: 12px; color: var(--text-muted); margin: 8px 0 0; }
+
+/* Filtros e Backup do Histórico */
+.history-filters {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.history-tools {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.record {
+  border-top: 1px solid var(--border-color);
+  padding: 12px 0;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.record-info { flex: 1; }
+.record-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.record strong { color: var(--heading-color); }
+.record small { display: block; color: var(--text-muted); margin-top: 2px; }
+.record-actions { display: flex; gap: 6px; flex: none; flex-wrap: wrap; justify-content: flex-end; }
+
+.badge-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+}
+.badge-ok { background: #d1fae5; color: #065f46; }
+.badge-pend { background: #fee2e2; color: #991b1b; }
+
+.btn-small {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--btn-sec-bg);
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.btn-small.btn-del {
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-color);
+  border-color: transparent;
+}
+
+.notice {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  display: none;
+}
+.notice.error { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--modal-overlay);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
+
+.modal-content {
+  background: var(--panel-bg);
+  color: var(--text-color);
+  width: 100%;
+  max-width: 650px;
+  border-radius: 16px;
+  padding: 22px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+}
+
+.modal-textarea {
+  width: 100%;
+  height: 240px;
+  font-family: monospace;
+  font-size: 13px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  background: var(--input-bg);
+  color: var(--text-color);
+}
+
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+#printReport, #printConsolidatedReport { display: none; }
+
+/* AJUSTE DE COLUNAS PARA JANELAS REDUZIDAS DE NOTEBOOK (Mantém botões no tamanho original) */
+@media (max-width: 920px) {
+  .layout-container { grid-template-columns: 1fr; }
+  .sidebar-panel { position: static; }
+  .history-filters { grid-template-columns: 1fr; }
+  .modal-actions { grid-template-columns: 1fr; }
+}
+
+/* ADAPTAÇÃO EXCLUSIVA PARA DISPOSITIVOS MÓVEIS (Botões maiores para toque) */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-width: 1024px) {
+  .wrap { padding: 14px 14px 84px; }
+  .layout-container { grid-template-columns: 1fr; }
+  .sidebar-panel { position: static; }
+  .section h2 { font-size: 15px; }
+  .item { padding: 14px 0; }
+  .item-row { flex-direction: column; align-items: stretch; gap: 10px; }
+  .status-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .status-btn { width: 100%; min-height: 52px; padding: 14px 10px; font-size: 16px; }
+  .btn-check-all { min-height: 36px; padding: 6px 10px; font-size: 12.5px; }
+  .actions { grid-template-columns: 1fr; }
+  button.action-btn { min-height: 52px; padding: 16px; font-size: 16px; }
+  .history-filters { grid-template-columns: 1fr; }
+  .modal-actions { grid-template-columns: 1fr; }
+  .record { flex-direction: column; }
+  .record-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btn-small { min-height: 42px; padding: 10px 14px; font-size: 14px; text-align: center; }
+  .theme-toggle-btn { min-height: 42px; padding: 10px 14px; font-size: 14px; }
+}
+
+@media print {
+  @page { size: A4 portrait; margin: 8mm 10mm; }
+  body { background: white !important; color: #000 !important; font-size: 10pt; line-height: 1.2; }
+  header, main, .modal { display: none !important; }
+  #printReport, #printConsolidatedReport { display: none !important; }
+  body.print-single #printReport { display: block !important; }
+  body.print-all #printConsolidatedReport { display: block !important; }
+
+  .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #000C7B; padding-bottom: 8px; margin-bottom: 12px; }
+  .print-logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 18pt; color: #000C7B; }
+  .print-logo-img { height: 42px; width: auto; object-fit: contain; }
+  .print-title { text-align: right; }
+  .print-title h2 { margin: 0; font-size: 13pt; color: #000C7B; text-transform: uppercase; font-weight: 800; }
+  .print-title p { margin: 2px 0 0; font-size: 8.5pt; color: #475569; }
+  
+  .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 15px; background: #f8fafc; padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 12px; font-size: 9pt; }
+  .print-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt; }
+  .print-table th { background: #000C7B; color: white; padding: 6px 8px; text-align: left; }
+  .print-table td { padding: 5px 8px; border-bottom: 1px solid #e2e8f0; }
+  .print-table tr:nth-child(even) td { background: #f8fafc; }
+  .print-item-subnote { display: block; font-size: 8pt; color: #b91c1c; margin-top: 2px; font-style: italic; }
+  .status-ok-print { color: #059669; font-weight: bold; }
+  .status-na-print { color: #475569; font-style: italic; }
+  .status-pend-print { color: #dc2626; font-weight: bold; }
+  
+  .print-box { border: 1px solid #cbd5e1; padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; font-size: 8.5pt; page-break-inside: avoid; }
+  .print-box h4 { margin: 0 0 4px; font-size: 9pt; color: #000C7B; }
+  .print-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 25px; page-break-inside: avoid; }
+  .print-sig-line { border-top: 1px solid #334155; text-align: center; padding-top: 5px; font-size: 8.5pt; color: #334155; }
+}
+</style>
+</head>
+<body class="print-single">
+
+<header>
+  <div class="header-brand">
+    <img src="logo.png" alt="Geset Logo" class="logo-header-img">
+    <div>
+      <h1>Preventiva TI | Geset</h1>
+      <p>Procedimento Operacional Padrão de Manutenção</p>
+    </div>
+  </div>
+  <button id="themeToggle" class="theme-toggle-btn" type="button" title="Alternar Modo Escuro/Claro">
+    <span id="themeIcon">🌙</span>
+    <span id="themeText" class="theme-text">Modo Escuro</span>
+  </button>
+</header>
+
+<main class="wrap">
+  <div id="notice" class="notice" role="status"></div>
+
+  <div class="layout-container">
+    <aside class="sidebar-panel">
+      <section class="panel">
+        <div class="two">
+          <div>
+            <label class="label" for="machine">Nome do computador *</label>
+            <input id="machine" type="text" placeholder="Ex.: PC-ADM-01" autocomplete="off">
+          </div>
+          <div>
+            <label class="label" for="assetTag">ID / Patrimônio Geset</label>
+            <input id="assetTag" type="number" inputmode="numeric" placeholder="Ex.: 042" autocomplete="off">
+          </div>
+        </div>
+        
+        <div class="two meta">
+          <div>
+            <label class="label" for="deviceType">Tipo de Equipamento</label>
+            <select id="deviceType">
+              <option value="Desktop">Desktop (Completo)</option>
+              <option value="Notebook">Notebook (Sem limpeza interna)</option>
+              <option value="Servidor">Servidor</option>
+            </select>
+          </div>
+          <div>
+            <label class="label" for="tech">Técnico responsável *</label>
+            <input id="tech" type="text" list="techList" placeholder="Nome do técnico" autocomplete="name">
+            <datalist id="techList"></datalist>
+          </div>
+        </div>
+        
+        <div class="meta">
+          <label class="label" for="client">Cliente / Unidade *</label>
+          <input id="client" type="text" list="clientList" placeholder="Cliente ou unidade" autocomplete="organization">
+          <datalist id="clientList"></datalist>
+        </div>
+        
+        <div class="two meta">
+          <div>
+            <label class="label" for="started">Data/Hora de Início *</label>
+            <input id="started" type="datetime-local">
+          </div>
+          <div>
+            <label class="label" for="ended">Data/Hora de Conclusão</label>
+            <input id="ended" type="datetime-local">
+          </div>
+        </div>
+
+        <div class="duration-badge">
+          <span>⏱️ Tempo de atendimento:</span>
+          <span id="durationDisplay">--</span>
+        </div>
+        
+        <div class="progress-card">
+          <div class="progress-row">
+            <span>Progresso desta máquina</span>
+            <span id="progressText">0 / 22</span>
+          </div>
+          <div class="bar"><div id="progressFill" class="fill"></div></div>
+        </div>
+      </section>
+    </aside>
+
+    <div class="main-content">
+      <div id="sections"></div>
+
+      <section class="panel">
+        <label class="label" for="notes">Observações Gerais / Recomendações</label>
+        <textarea id="notes" placeholder="Observações gerais da máquina, recomendações de upgrade ou resumo da visita..."></textarea>
+        <p class="hint">Alterne os estados (Ok, N/A, Pend.) de cada item. Ao marcar "Pend.", um campo será aberto para detalhar o problema no próprio item.</p>
+      </section>
+
+      <section class="panel actions">
+        <button class="action-btn primary full-span" id="finish">✓ Finalizar e Registrar Máquina</button>
+        <button class="action-btn accent" id="printPDF">🖨️ Exportar PDF</button>
+        <button class="action-btn secondary" id="openReportModal">📋 Texto para Chamado</button>
+        <button class="action-btn secondary" id="new">Nova Máquina</button>
+        <button class="action-btn secondary" id="export">Exportar CSV</button>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2 style="margin:0">Histórico de Atendimentos Salvos</h2>
+          <span class="count" id="recordCount"></span>
+        </div>
+        <p class="hint">Os registros ficam salvos localmente no navegador.</p>
+        
+        <button class="action-btn accent" id="printAllPDF" style="margin-top:10px;width:100%">🖨️ Gerar Relatório Geral Consolidado em PDF</button>
+
+        <div class="history-tools">
+          <button class="action-btn secondary" id="exportJSON" style="padding:10px;font-size:13px">💾 Backup JSON</button>
+          <button class="action-btn secondary" id="importJSON" style="padding:10px;font-size:13px">📂 Restaurar JSON</button>
+          <input type="file" id="importJSONFile" accept=".json,application/json" style="display:none">
+        </div>
+
+        <div class="history-filters">
+          <input id="historySearch" type="text" placeholder="🔍 Buscar máquina, ID, cliente ou técnico...">
+          <select id="historyClientFilter">
+            <option value="all">Todos os clientes</option>
+          </select>
+          <select id="historyStatusFilter">
+            <option value="all">Todos os status</option>
+            <option value="ok">Somente OK</option>
+            <option value="pend">Com Pendência</option>
+          </select>
+        </div>
+
+        <div id="history"></div>
+        <button class="action-btn danger" id="clear" style="margin-top:12px;width:100%">Apagar Histórico Local</button>
+      </section>
+    </div>
+  </div>
+</main>
+
+<div id="reportModal" class="modal">
+  <div class="modal-content">
+    <h3>Relatório em Texto para Chamados</h3>
+    <p class="hint" style="margin-top:0;margin-bottom:10px">Copie ou compartilhe o resumo diretamente no WhatsApp, e-mail ou sistema de tickets:</p>
+    <textarea id="reportOutput" class="modal-textarea" readonly></textarea>
+    <div class="modal-actions">
+      <button class="action-btn accent" id="shareReport">📤 Compartilhar</button>
+      <button class="action-btn primary" id="copyReport">📋 Copiar Texto</button>
+      <button class="action-btn secondary" id="closeModal">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div id="printReport">
+  <div class="print-header">
+    <div class="print-logo">
+      <img src="logo.png" alt="Geset Logo" class="print-logo-img">
+    </div>
+    <div class="print-title">
+      <h2>Relatório de Manutenção Preventiva</h2>
+      <p>Geset Gestão de Tecnologia • Suporte Operacional</p>
+    </div>
+  </div>
+
+  <div class="print-grid">
+    <div><strong>Computador:</strong> <span id="pMachine"></span></div>
+    <div><strong>ID / Patrimônio:</strong> <span id="pAssetTag"></span></div>
+    <div><strong>Tipo:</strong> <span id="pDeviceType"></span></div>
+    <div><strong>Cliente:</strong> <span id="pClient"></span></div>
+    <div><strong>Técnico:</strong> <span id="pTech"></span></div>
+    <div><strong>Período / Duração:</strong> <span id="pPeriod"></span></div>
+  </div>
+
+  <table class="print-table">
+    <thead>
+      <tr>
+        <th>Item / Verificação</th>
+        <th style="width: 130px; text-align: center;">Status</th>
+      </tr>
+    </thead>
+    <tbody id="pTableBody"></tbody>
+  </table>
+
+  <div class="print-box">
+    <h4>Observações Gerais e Recomendações:</h4>
+    <div id="pNotes" style="white-space: pre-wrap;">Nenhuma observação registrada.</div>
+  </div>
+
+  <div class="print-signatures">
+    <div class="print-sig-line">
+      Técnico Responsável<br><strong id="pSigTech">Geset Tecnologia</strong>
+    </div>
+    <div class="print-sig-line">
+      Aceite / Validação Cliente<br><strong>Responsável pela Unidade</strong>
+    </div>
+  </div>
+</div>
+
+<div id="printConsolidatedReport"></div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('PWA Service Worker registado com sucesso.'))
+      .catch(err => console.log('Erro ao registar Service Worker:', err));
+  });
+}
+
+function hapticTap() {
+  if (navigator.vibrate) navigator.vibrate(15);
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+const themeToggleBtn = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const themeText = document.getElementById('themeText');
+const themeStorageKey = 'geset_theme_preference';
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.body.classList.add('dark-mode');
+    themeIcon.textContent = '☀️';
+    themeText.textContent = 'Modo Claro';
+  } else {
+    document.body.classList.remove('dark-mode');
+    themeIcon.textContent = '🌙';
+    themeText.textContent = 'Modo Escuro';
+  }
+}
+
+const savedTheme = localStorage.getItem(themeStorageKey);
+applyTheme(savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+themeToggleBtn.addEventListener('click', () => {
+  hapticTap();
+  const isDark = document.body.classList.contains('dark-mode');
+  const newTheme = isDark ? 'light' : 'dark';
+  applyTheme(newTheme);
+  localStorage.setItem(themeStorageKey, newTheme);
+});
+
+const sections = [
+  {
+    title: '1. Limpeza do Sistema',
+    items: [
+      { id: '1.1', text: 'Limpar arquivos temporários do sistema operacional.' },
+      { id: '1.2', text: 'Realizar backup dos dados necessários do navegador antes da limpeza.' },
+      { id: '1.3', text: 'Esvaziar a Lixeira do Windows.' },
+      { id: '1.4', text: 'Verificar o funcionamento e a atualização do antivírus.' }
+    ]
+  },
+  {
+    title: '2. Otimização do Sistema Operacional',
+    items: [
+      { id: '2.1', text: 'Verificar e otimizar os programas de inicialização.' },
+      { id: '2.2', text: 'Analisar os programas instalados.' },
+      { id: '2.3', text: 'Verificar as opções de desempenho do Windows.' },
+      { id: '2.4', text: 'Verificar o painel Segurança e Manutenção.' }
+    ]
+  },
+  {
+    title: '3. Limpeza de Hardware',
+    items: [
+      { id: '3.1', text: 'Limpar Processador.', desktopOnly: true },
+      { id: '3.2', text: 'Verificar coolers processador.', desktopOnly: true },
+      { id: '3.3', text: 'Verificar a bateria CMOS da placa-mãe.', desktopOnly: true },
+      { id: '3.4', text: 'Verificar e limpar os módulos de memória RAM.', desktopOnly: true },
+      { id: '3.5', text: 'Realizar a limpeza interna e externa do gabinete.', desktopOnly: true },
+      { id: '3.6', text: 'Potência da fonte / Carregador.' },
+      { id: '3.7', text: 'Realizar levantamento das memórias.' },
+      { id: '3.8', text: 'ID Geset.' }
+    ]
+  },
+  {
+    title: '4. Inventário e Validação Final',
+    items: [
+      { id: '4.1', text: 'Verificar se o nome do computador está de acordo com o padrão estabelecido.' },
+      { id: '4.2', text: 'Verificar as contas e permissões de administrador local.' },
+      { id: '4.3', text: 'Atualizar a planilha de inventário existente.' },
+      { id: '4.4', text: 'Abrir o Outlook e verificar seu funcionamento.' },
+      { id: '4.5', text: 'Abrir o navegador e acessar sites para validar a navegação.' },
+      { id: '4.6', text: 'Verificar se o computador está funcionando corretamente após a preventiva.' }
+    ]
+  }
+];
+
+const localDateTime = (d = new Date()) => {
+  const z = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`;
+};
+
+const formatDateTime = v => v ? new Date(v).toLocaleString('pt-BR') : 'Não informado';
+
+function calcDurationMinutes(started, ended) {
+  if (!started || !ended) return null;
+  const s = new Date(started);
+  const e = new Date(ended);
+  if (isNaN(s.getTime()) || isNaN(e.getTime()) || e < s) return null;
+  return Math.round((e - s) / 60000);
+}
+
+function formatDuration(minutes) {
+  if (minutes === null || minutes === undefined) return 'Não calculado';
+  if (minutes < 1) return '< 1 min';
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  return `${h}h ${String(m).padStart(2, '0')}min`;
+}
+
+function updateDurationDisplay() {
+  const started = document.getElementById('started').value;
+  const ended = document.getElementById('ended').value;
+  const el = document.getElementById('durationDisplay');
+  if (!started) {
+    el.textContent = '--';
+    return;
+  }
+  if (!ended) {
+    const startObj = new Date(started);
+    const timeStr = !isNaN(startObj.getTime())
+      ? startObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      : '';
+    el.textContent = timeStr ? `Em andamento (${timeStr})` : 'Em andamento';
+    return;
+  }
+  const mins = calcDurationMinutes(started, ended);
+  el.textContent = mins !== null ? formatDuration(mins) : 'Hora final anterior à inicial';
+}
+
+const storageKey = 'geset_preventiva_v3';
+const draftKey = 'geset_preventiva_draft_v3';
+
+let history = [];
+let editingIndex = null;
+
+try {
+  history = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  if (!Array.isArray(history)) history = [];
+} catch (e) { history = []; }
+
+const allItemsFlat = [];
+sections.forEach(s => s.items.forEach(item => allItemsFlat.push(item)));
+
+let itemStates = new Array(allItemsFlat.length).fill(null);
+let itemNotes = new Array(allItemsFlat.length).fill('');
+let firstInteractionDone = false;
+
+const sectionsContainer = document.getElementById('sections');
+let globalIndex = 0;
+
+sections.forEach((s) => {
+  const sectionEl = document.createElement('section');
+  sectionEl.className = 'panel section';
+  
+  const head = document.createElement('div');
+  head.className = 'section-head';
+  const h = document.createElement('h2');
+  h.textContent = s.title;
+
+  const controls = document.createElement('div');
+  controls.className = 'section-controls';
+
+  const btnAllOk = document.createElement('button');
+  btnAllOk.type = 'button';
+  btnAllOk.className = 'btn-check-all';
+  btnAllOk.textContent = '✓ Tudo Ok';
+  btnAllOk.onclick = () => {
+    hapticTap();
+    if (!firstInteractionDone && !document.getElementById('started').value) {
+      document.getElementById('started').value = localDateTime();
+      firstInteractionDone = true;
+      updateDurationDisplay();
+    }
+    const isNotebook = (document.getElementById('deviceType').value === 'Notebook');
+    s.items.forEach(item => {
+      if (isNotebook && item.desktopOnly) return;
+      const idx = allItemsFlat.findIndex(x => x.id === item.id);
+      if (idx !== -1) itemStates[idx] = 'Ok';
+    });
+    updateUIStates();
+    updateProgress();
+    saveDraft();
+  };
+
+  const count = document.createElement('span');
+  count.className = 'count';
+  count.dataset.section = s.title;
+  
+  controls.append(btnAllOk, count);
+  head.append(h, controls);
+  sectionEl.append(head);
+  
+  s.items.forEach(item => {
+    const currentIdx = globalIndex;
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'item';
+    itemDiv.dataset.globalIndex = currentIdx;
+    if (item.desktopOnly) itemDiv.dataset.desktopOnly = 'true';
+    
+    const itemRow = document.createElement('div');
+    itemRow.className = 'item-row';
+
+    const span = document.createElement('span');
+    span.className = 'item-text-span';
+    span.dataset.baseText = item.text;
+    span.textContent = `${item.id} - ${item.text}`;
+    
+    const btnsDiv = document.createElement('div');
+    btnsDiv.className = 'status-buttons';
+    
+    ['Ok', 'N/A', 'Pend.'].forEach(st => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'status-btn';
+      btn.textContent = st;
+      btn.dataset.status = st;
+      btn.dataset.globalIndex = currentIdx;
+      
+      btn.onclick = () => {
+        hapticTap();
+        if (!firstInteractionDone && !document.getElementById('started').value) {
+          document.getElementById('started').value = localDateTime();
+          firstInteractionDone = true;
+          updateDurationDisplay();
+        }
+        setEstadoItem(currentIdx, st);
+      };
+      btnsDiv.append(btn);
+    });
+
+    const pendWrap = document.createElement('div');
+    pendWrap.className = 'item-pend-note-wrap';
+
+    const pendInput = document.createElement('input');
+    pendInput.type = 'text';
+    pendInput.className = 'item-pend-input';
+    pendInput.placeholder = 'Descreva a pendência deste item (ex.: cooler com ruído, fonte sem selo)...';
+    pendInput.dataset.globalIndex = currentIdx;
+    pendInput.addEventListener('input', () => {
+      itemNotes[currentIdx] = pendInput.value;
+      saveDraft();
+    });
+
+    pendWrap.append(pendInput);
+    itemRow.append(span, btnsDiv);
+    itemDiv.append(itemRow, pendWrap);
+    sectionEl.append(itemDiv);
+    globalIndex++;
+  });
+  sectionsContainer.append(sectionEl);
+});
+
+function setEstadoItem(idx, status) {
+  const wasPend = itemStates[idx] === 'Pend.';
+  itemStates[idx] = (itemStates[idx] === status) ? null : status;
+  const isNowPend = itemStates[idx] === 'Pend.';
+
+  updateUIStates();
+  updateProgress();
+  saveDraft();
+
+  if (!wasPend && isNowPend) {
+    const input = sectionsContainer.querySelector(`.item-pend-input[data-global-index="${idx}"]`);
+    if (input) input.focus();
+  }
+}
+
+function updateUIStates() {
+  const isNotebook = (document.getElementById('deviceType').value === 'Notebook');
+
+  sectionsContainer.querySelectorAll('.section').forEach((sectionEl, secIdx) => {
+    const secNum = secIdx + 1;
+    let visibleCounter = 1;
+
+    sectionEl.querySelectorAll('.item').forEach((itemDiv) => {
+      const idx = parseInt(itemDiv.dataset.globalIndex, 10);
+      const isDesktopOnly = itemDiv.dataset.desktopOnly === 'true';
+      const isVisible = !(isNotebook && isDesktopOnly);
+      itemDiv.style.display = isVisible ? 'flex' : 'none';
+
+      if (isVisible) {
+        const span = itemDiv.querySelector('.item-text-span');
+        if (span) {
+          span.textContent = `${secNum}.${visibleCounter} - ${span.dataset.baseText}`;
+        }
+        visibleCounter++;
+      }
+
+      const btns = itemDiv.querySelectorAll('.status-btn');
+      btns.forEach(b => {
+        b.className = 'status-btn';
+        const st = b.dataset.status;
+        if (itemStates[idx] === st) {
+          if (st === 'Ok') b.classList.add('active-ok');
+          else if (st === 'N/A') b.classList.add('active-na');
+          else if (st === 'Pend.') b.classList.add('active-pend');
+        }
+      });
+
+      const pendWrap = itemDiv.querySelector('.item-pend-note-wrap');
+      const pendInput = itemDiv.querySelector('.item-pend-input');
+      if (pendWrap && pendInput) {
+        pendInput.value = itemNotes[idx] || '';
+        pendWrap.style.display = (isVisible && itemStates[idx] === 'Pend.') ? 'block' : 'none';
+      }
+    });
+  });
+}
+
+function getSanitizedStatesAndNotes(deviceType, statesArr, notesArr) {
+  const isNotebook = (deviceType === 'Notebook');
+  const cleanStates = new Array(allItemsFlat.length).fill(null);
+  const cleanNotes = new Array(allItemsFlat.length).fill('');
+
+  allItemsFlat.forEach((item, idx) => {
+    if (isNotebook && item.desktopOnly) {
+      cleanStates[idx] = null;
+      cleanNotes[idx] = '';
+    } else {
+      const st = Array.isArray(statesArr) ? (statesArr[idx] || null) : null;
+      cleanStates[idx] = st;
+      cleanNotes[idx] = (st === 'Pend.' && Array.isArray(notesArr) && notesArr[idx])
+        ? String(notesArr[idx]).trim()
+        : '';
+    }
+  });
+
+  return { cleanStates, cleanNotes };
+}
+
+function hasRecordPending(r) {
+  const isNotebook = (r.deviceType === 'Notebook');
+  if (!Array.isArray(r.itemStates)) return false;
+  return allItemsFlat.some((item, idx) => {
+    if (isNotebook && item.desktopOnly) return false;
+    return r.itemStates[idx] === 'Pend.';
+  });
+}
+
+function getActiveItems() {
+  const isNotebook = (document.getElementById('deviceType').value === 'Notebook');
+  let active = [];
+  allItemsFlat.forEach((item, idx) => {
+    if (!(isNotebook && item.desktopOnly)) {
+      active.push({ index: idx, item, state: itemStates[idx], note: itemNotes[idx] || '' });
+    }
+  });
+  return active;
+}
+
+function updateProgress() {
+  const active = getActiveItems();
+  const doneCount = active.filter(x => x.state === 'Ok' || x.state === 'N/A').length;
+  document.getElementById('progressText').textContent = `${doneCount} / ${active.length}`;
+  document.getElementById('progressFill').style.width = (active.length > 0 ? (100 * doneCount / active.length) : 0) + '%';
+  
+  sections.forEach(s => {
+    const isNotebook = (document.getElementById('deviceType').value === 'Notebook');
+    let activeInSec = s.items.filter(item => !(isNotebook && item.desktopOnly));
+    let doneInSec = activeInSec.filter(item => {
+      let originalIdx = allItemsFlat.findIndex(x => x.id === item.id);
+      return itemStates[originalIdx] === 'Ok' || itemStates[originalIdx] === 'N/A';
+    });
+    const countEl = document.querySelector(`[data-section="${s.title}"]`);
+    if (countEl) countEl.textContent = `${doneInSec.length} / ${activeInSec.length}`;
+  });
+}
+
+document.getElementById('deviceType').addEventListener('change', () => {
+  updateUIStates();
+  updateProgress();
+  saveDraft();
+});
+
+function showNotice(msg, isError = false) {
+  const n = document.getElementById('notice');
+  n.textContent = msg;
+  n.className = isError ? 'notice error' : 'notice';
+  n.style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateHeader() {
+  const required = [
+    { id: 'machine', label: 'Nome do computador' },
+    { id: 'tech', label: 'Técnico responsável' },
+    { id: 'client', label: 'Cliente / Unidade' },
+    { id: 'started', label: 'Data/Hora de Início' }
+  ];
+  let missing = [];
+  required.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (!el.value.trim()) { missing.push(f.label); el.style.borderColor = '#dc2626'; }
+    else el.style.borderColor = 'var(--border-color)';
+  });
+  if (missing.length > 0) {
+    showNotice(`Preencha o cabeçalho: ${missing.join(', ')}`, true);
+    return false;
+  }
+  return true;
+}
+
+function saveDraft() {
+  if (editingIndex !== null) return;
+  try {
+    localStorage.setItem(draftKey, JSON.stringify({
+      machine: document.getElementById('machine').value,
+      assetTag: document.getElementById('assetTag').value,
+      deviceType: document.getElementById('deviceType').value,
+      tech: document.getElementById('tech').value,
+      client: document.getElementById('client').value,
+      notes: document.getElementById('notes').value,
+      started: document.getElementById('started').value,
+      ended: document.getElementById('ended').value,
+      firstInteractionDone,
+      itemStates,
+      itemNotes
+    }));
+  } catch (e) {}
+}
+
+['machine', 'assetTag', 'tech', 'client', 'notes', 'started', 'ended'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input', () => {
+      el.style.borderColor = 'var(--border-color)';
+      if (id === 'started' || id === 'ended') updateDurationDisplay();
+      saveDraft();
+    });
+  }
+});
+
+try {
+  const d = JSON.parse(localStorage.getItem(draftKey) || 'null');
+  if (d) {
+    ['machine', 'assetTag', 'deviceType', 'tech', 'client', 'notes', 'started', 'ended'].forEach(id => {
+      if (d[id]) document.getElementById(id).value = d[id];
+    });
+    if (typeof d.firstInteractionDone === 'boolean') firstInteractionDone = d.firstInteractionDone;
+    if (Array.isArray(d.itemStates) && d.itemStates.length === allItemsFlat.length) itemStates = d.itemStates;
+    if (Array.isArray(d.itemNotes) && d.itemNotes.length === allItemsFlat.length) itemNotes = d.itemNotes;
+  }
+} catch (e) {}
+
+updateUIStates();
+updateProgress();
+updateDurationDisplay();
+
+function updateAutocompletesAndClientFilter() {
+  const clients = [...new Set(history.map(r => (r.client || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const techs = [...new Set(history.map(r => (r.tech || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+  const clientList = document.getElementById('clientList');
+  clientList.replaceChildren();
+  clients.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    clientList.append(opt);
+  });
+
+  const techList = document.getElementById('techList');
+  techList.replaceChildren();
+  techs.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t;
+    techList.append(opt);
+  });
+
+  const clientFilter = document.getElementById('historyClientFilter');
+  const currentFilterVal = clientFilter.value;
+  clientFilter.replaceChildren();
+
+  const allOpt = document.createElement('option');
+  allOpt.value = 'all';
+  allOpt.textContent = 'Todos os clientes';
+  clientFilter.append(allOpt);
+
+  clients.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    clientFilter.append(opt);
+  });
+
+  if (clients.includes(currentFilterVal)) {
+    clientFilter.value = currentFilterVal;
+  } else {
+    clientFilter.value = 'all';
+  }
+}
+
+function renderHistory() {
+  updateAutocompletesAndClientFilter();
+
+  const histContainer = document.getElementById('history');
+  const searchTerm = (document.getElementById('historySearch').value || '').trim().toLowerCase();
+  const statusFilter = document.getElementById('historyStatusFilter').value;
+  const clientFilter = document.getElementById('historyClientFilter').value;
+
+  histContainer.replaceChildren();
+
+  const indexedHistory = history.map((r, originalIndex) => ({ r, originalIndex }));
+  const filtered = indexedHistory.filter(({ r }) => {
+    const isPend = hasRecordPending(r);
+    if (statusFilter === 'pend' && !isPend) return false;
+    if (statusFilter === 'ok' && isPend) return false;
+    if (clientFilter !== 'all' && (r.client || '').trim() !== clientFilter) return false;
+
+    if (searchTerm) {
+      const haystack = [
+        r.machine,
+        r.assetTag,
+        r.deviceType,
+        r.client,
+        r.tech,
+        r.notes,
+        ...(Array.isArray(r.itemNotes) ? r.itemNotes : [])
+      ].join(' ').toLowerCase();
+      if (!haystack.includes(searchTerm)) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length !== history.length) {
+    document.getElementById('recordCount').textContent = `${filtered.length} de ${history.length} máquina(s)`;
+  } else {
+    document.getElementById('recordCount').textContent = `${history.length} máquina(s)`;
+  }
+
+  if (!history.length) {
+    const p = document.createElement('p');
+    p.className = 'hint';
+    p.textContent = 'Nenhuma máquina registrada ainda.';
+    histContainer.append(p);
+    return;
+  }
+
+  if (!filtered.length) {
+    const p = document.createElement('p');
+    p.className = 'hint';
+    p.textContent = 'Nenhum registro encontrado para os filtros selecionados.';
+    histContainer.append(p);
+    return;
+  }
+
+  filtered.slice().reverse().forEach(({ r, originalIndex }) => {
+    const div = document.createElement('div');
+    div.className = 'record';
+
+    const info = document.createElement('div');
+    info.className = 'record-info';
+
+    const titleRow = document.createElement('div');
+    titleRow.className = 'record-title-row';
+
+    const strong = document.createElement('strong');
+    strong.textContent = `${r.machine}${r.assetTag ? ' (ID: ' + r.assetTag + ')' : ''} [${r.deviceType}]`;
+
+    const isPend = hasRecordPending(r);
+    const badge = document.createElement('span');
+    badge.className = isPend ? 'badge-status badge-pend' : 'badge-status badge-ok';
+    badge.textContent = isPend ? 'Com Pendência' : 'OK';
+
+    titleRow.append(strong, badge);
+
+    const mins = calcDurationMinutes(r.started, r.ended);
+    const durationStr = mins !== null ? ` • Duração: ${formatDuration(mins)}` : '';
+
+    const small = document.createElement('small');
+    small.textContent = `Início: ${formatDateTime(r.started)} • Fim: ${formatDateTime(r.ended)}${durationStr} • Cliente: ${r.client || 'N/D'} • Técnico: ${r.tech || 'N/D'}`;
+
+    info.append(titleRow, small);
+
+    if (r.notes) {
+      const p = document.createElement('div');
+      p.style.fontSize = '12px';
+      p.style.marginTop = '4px';
+      p.textContent = 'Obs.: ' + r.notes;
+      info.append(p);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'record-actions';
+
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'btn-small';
+    editBtn.textContent = '✏️ Editar';
+    editBtn.onclick = () => { hapticTap(); loadRecordForEditing(originalIndex); };
+
+    const pdfBtn = document.createElement('button');
+    pdfBtn.type = 'button';
+    pdfBtn.className = 'btn-small';
+    pdfBtn.textContent = '🖨️ PDF';
+    pdfBtn.onclick = () => { hapticTap(); printHistoryRecord(originalIndex); };
+
+    const txtBtn = document.createElement('button');
+    txtBtn.type = 'button';
+    txtBtn.className = 'btn-small';
+    txtBtn.textContent = '📋 Texto';
+    txtBtn.onclick = () => {
+      hapticTap();
+      document.getElementById('reportOutput').value = generateTextReportFromData(r);
+      document.getElementById('reportModal').style.display = 'flex';
+    };
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'btn-small btn-del';
+    delBtn.textContent = '🗑️ Excluir';
+    delBtn.onclick = () => {
+      hapticTap();
+      if (!confirm(`Excluir permanentemente o registro da máquina "${r.machine}"?`)) return;
+      history.splice(originalIndex, 1);
+      localStorage.setItem(storageKey, JSON.stringify(history));
+
+      if (editingIndex === originalIndex) {
+        resetMachine();
+      } else if (editingIndex !== null && editingIndex > originalIndex) {
+        editingIndex--;
+      }
+
+      renderHistory();
+      showNotice(`Registro de ${r.machine} excluído.`);
+    };
+
+    actions.append(editBtn, pdfBtn, txtBtn, delBtn);
+    div.append(info, actions);
+    histContainer.append(div);
+  });
+}
+
+document.getElementById('historySearch').addEventListener('input', renderHistory);
+document.getElementById('historyStatusFilter').addEventListener('change', renderHistory);
+document.getElementById('historyClientFilter').addEventListener('change', renderHistory);
+
+renderHistory();
+
+function loadRecordForEditing(index) {
+  const r = history[index];
+  if (!r) return;
+
+  editingIndex = index;
+  document.getElementById('machine').value = r.machine || '';
+  document.getElementById('assetTag').value = r.assetTag || '';
+  document.getElementById('deviceType').value = r.deviceType || 'Desktop';
+  document.getElementById('tech').value = r.tech || '';
+  document.getElementById('client').value = r.client || '';
+  document.getElementById('started').value = r.started || '';
+  document.getElementById('ended').value = r.ended || '';
+  document.getElementById('notes').value = r.notes || '';
+  
+  if (Array.isArray(r.itemStates) && r.itemStates.length === allItemsFlat.length) {
+    itemStates = [...r.itemStates];
+  } else {
+    itemStates.fill(null);
+  }
+
+  if (Array.isArray(r.itemNotes) && r.itemNotes.length === allItemsFlat.length) {
+    itemNotes = [...r.itemNotes];
+  } else {
+    itemNotes.fill('');
+  }
+
+  firstInteractionDone = true;
+  updateUIStates();
+  updateProgress();
+  updateDurationDisplay();
+
+  document.getElementById('finish').textContent = '✓ Salvar Alterações da Máquina';
+  showNotice(`Editando o registro da máquina: ${r.machine}`);
+}
+
+function resetMachine() {
+  const keepTech = document.getElementById('tech').value;
+  const keepClient = document.getElementById('client').value;
+
+  itemStates.fill(null);
+  itemNotes.fill('');
+  firstInteractionDone = false;
+  editingIndex = null;
+  document.getElementById('finish').textContent = '✓ Finalizar e Registrar Máquina';
+  document.getElementById('machine').value = '';
+  document.getElementById('assetTag').value = '';
+  document.getElementById('notes').value = '';
+  document.getElementById('started').value = '';
+  document.getElementById('ended').value = '';
+  document.getElementById('tech').value = keepTech;
+  document.getElementById('client').value = keepClient;
+
+  localStorage.removeItem(draftKey);
+  saveDraft();
+  updateUIStates();
+  updateProgress();
+  updateDurationDisplay();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function generateTextReportFromData(r) {
+  const isNotebook = (r.deviceType === 'Notebook');
+  const mins = calcDurationMinutes(r.started, r.ended);
+  const durationLine = mins !== null ? `• Duração: ${formatDuration(mins)}\n` : '';
+
+  let rep = "========================================\nRELATÓRIO DE MANUTENÇÃO PREVENTIVA - GESET\n========================================\n";
+  rep += `• Computador: ${r.machine || '-'}\n• ID / Patrimônio: ${r.assetTag || 'N/A'}\n• Tipo: ${r.deviceType}\n• Cliente: ${r.client || '-'}\n• Técnico: ${r.tech || '-'}\n• Período: ${formatDateTime(r.started)} até ${formatDateTime(r.ended)}\n${durationLine}----------------------------------------\nSTATUS DOS ITENS:\n`;
+
+  sections.forEach((s, secIdx) => {
+    let visibleCounter = 1;
+    s.items.forEach(item => {
+      if (isNotebook && item.desktopOnly) return;
+      let originalIdx = allItemsFlat.findIndex(x => x.id === item.id);
+      const st = r.itemStates ? r.itemStates[originalIdx] : null;
+      const itemNote = (st === 'Pend.' && r.itemNotes && r.itemNotes[originalIdx]) ? r.itemNotes[originalIdx].trim() : '';
+      let stText = st === 'Ok' ? '[OK]' : st === 'N/A' ? '[N/A]' : st === 'Pend.' ? '[PENDENTE]' : '[NÃO MARCADO]';
+      const displayId = `${secIdx + 1}.${visibleCounter}`;
+      rep += ` ${stText} ${displayId} - ${item.text}\n`;
+      if (itemNote) {
+        rep += `    ↳ Detalhe: ${itemNote}\n`;
+      }
+      visibleCounter++;
+    });
+  });
+
+  if (r.notes) rep += `----------------------------------------\nOBSERVAÇÕES GERAIS:\n${r.notes}\n`;
+  rep += "========================================";
+  return rep;
+}
+
+document.getElementById('openReportModal').onclick = () => {
+  hapticTap();
+  if (!validateHeader()) return;
+  const deviceType = document.getElementById('deviceType').value;
+  const { cleanStates, cleanNotes } = getSanitizedStatesAndNotes(deviceType, itemStates, itemNotes);
+
+  document.getElementById('reportOutput').value = generateTextReportFromData({
+    machine: document.getElementById('machine').value.trim(),
+    assetTag: document.getElementById('assetTag').value.trim(),
+    deviceType,
+    client: document.getElementById('client').value.trim(),
+    tech: document.getElementById('tech').value.trim(),
+    started: document.getElementById('started').value,
+    ended: document.getElementById('ended').value || localDateTime(),
+    notes: document.getElementById('notes').value.trim(),
+    itemStates: cleanStates,
+    itemNotes: cleanNotes
+  });
+  document.getElementById('reportModal').style.display = 'flex';
+};
+
+document.getElementById('closeModal').onclick = () => { document.getElementById('reportModal').style.display = 'none'; };
+
+document.getElementById('copyReport').onclick = () => {
+  hapticTap();
+  navigator.clipboard.writeText(document.getElementById('reportOutput').value).then(() => {
+    const btn = document.getElementById('copyReport');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  });
+};
+
+document.getElementById('shareReport').onclick = async () => {
+  hapticTap();
+  const text = document.getElementById('reportOutput').value;
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Relatório Preventiva TI - Geset',
+        text
+      });
+    } catch (err) {
+      if (err && err.name !== 'AbortError') {
+        navigator.clipboard.writeText(text);
+        alert('Texto copiado para a área de transferência.');
+      }
+    }
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('O compartilhamento direto não é suportado neste navegador. O relatório foi copiado para a área de transferência.');
+    });
+  }
+};
+
+function preparePrintReport(dataObj) {
+  const mins = calcDurationMinutes(dataObj.started, dataObj.ended);
+  const durationSuffix = mins !== null ? ` (${formatDuration(mins)})` : '';
+
+  document.getElementById('pMachine').textContent = dataObj.machine || '-';
+  document.getElementById('pAssetTag').textContent = dataObj.assetTag || 'N/A';
+  document.getElementById('pDeviceType').textContent = dataObj.deviceType;
+  document.getElementById('pClient').textContent = dataObj.client || '-';
+  document.getElementById('pTech').textContent = dataObj.tech || '-';
+  document.getElementById('pPeriod').textContent = `${formatDateTime(dataObj.started)} às ${formatDateTime(dataObj.ended)}${durationSuffix}`;
+  document.getElementById('pSigTech').textContent = dataObj.tech || 'Geset Tecnologia';
+  document.getElementById('pNotes').textContent = dataObj.notes || 'Nenhuma observação registrada.';
+
+  const tbody = document.getElementById('pTableBody');
+  tbody.replaceChildren();
+
+  const isNotebook = (dataObj.deviceType === 'Notebook');
+  sections.forEach((s, secIdx) => {
+    let visibleCounter = 1;
+    s.items.forEach(item => {
+      if (isNotebook && item.desktopOnly) return;
+      let originalIdx = allItemsFlat.findIndex(x => x.id === item.id);
+      const tr = document.createElement('tr');
+      const tdItem = document.createElement('td');
+      const displayId = `${secIdx + 1}.${visibleCounter}`;
+      tdItem.textContent = `${displayId} - ${item.text}`;
+
+      const st = dataObj.itemStates ? dataObj.itemStates[originalIdx] : null;
+      const itemNote = (st === 'Pend.' && dataObj.itemNotes && dataObj.itemNotes[originalIdx])
+        ? dataObj.itemNotes[originalIdx].trim()
+        : '';
+
+      if (itemNote) {
+        const noteSpan = document.createElement('span');
+        noteSpan.className = 'print-item-subnote';
+        noteSpan.textContent = `Pendência: ${itemNote}`;
+        tdItem.append(noteSpan);
+      }
+      
+      const tdStatus = document.createElement('td');
+      tdStatus.style.textAlign = 'center';
+      
+      if (st === 'Ok') { tdStatus.className = 'status-ok-print'; tdStatus.textContent = 'CONCLUÍDO'; }
+      else if (st === 'N/A') { tdStatus.className = 'status-na-print'; tdStatus.textContent = 'N/A'; }
+      else if (st === 'Pend.') { tdStatus.className = 'status-pend-print'; tdStatus.textContent = 'PENDENTE'; }
+      else { tdStatus.style.color = '#888'; tdStatus.textContent = 'Não verificado'; }
+      
+      tr.append(tdItem, tdStatus);
+      tbody.append(tr);
+      visibleCounter++;
+    });
+  });
+}
+
+function printHistoryRecord(index) {
+  preparePrintReport(history[index]);
+  document.body.classList.remove('print-all');
+  document.body.classList.add('print-single');
+  window.print();
+}
+
+document.getElementById('printPDF').onclick = () => {
+  hapticTap();
+  if (!validateHeader()) return;
+  const deviceType = document.getElementById('deviceType').value;
+  const { cleanStates, cleanNotes } = getSanitizedStatesAndNotes(deviceType, itemStates, itemNotes);
+
+  preparePrintReport({
+    machine: document.getElementById('machine').value.trim(),
+    assetTag: document.getElementById('assetTag').value.trim(),
+    deviceType,
+    client: document.getElementById('client').value.trim(),
+    tech: document.getElementById('tech').value.trim(),
+    started: document.getElementById('started').value,
+    ended: document.getElementById('ended').value || localDateTime(),
+    notes: document.getElementById('notes').value.trim(),
+    itemStates: cleanStates,
+    itemNotes: cleanNotes
+  });
+
+  document.body.classList.remove('print-all');
+  document.body.classList.add('print-single');
+  window.print();
+};
+
+document.getElementById('printAllPDF').onclick = () => {
+  hapticTap();
+  if (!history.length) { alert('Nenhuma máquina salva no histórico.'); return; }
+  const container = document.getElementById('printConsolidatedReport');
+  container.replaceChildren();
+
+  const headerDiv = document.createElement('div');
+  headerDiv.className = 'print-header';
+  headerDiv.innerHTML = `<div class="print-logo"><img src="logo.png" alt="Geset Logo" class="print-logo-img"></div><div class="print-title"><h2>Relatório Geral Consolidado</h2><p>Geset Gestão de Tecnologia</p></div>`;
+  container.append(headerDiv);
+
+  let totalOk = 0;
+  let totalPend = 0;
+  let totalMinutes = 0;
+  let timedCount = 0;
+
+  history.forEach(r => {
+    const isNotebook = (r.deviceType === 'Notebook');
+    if (Array.isArray(r.itemStates)) {
+      allItemsFlat.forEach((item, idx) => {
+        if (isNotebook && item.desktopOnly) return;
+        const st = r.itemStates[idx];
+        if (st === 'Ok') totalOk++;
+        if (st === 'Pend.') totalPend++;
+      });
+    }
+    const mins = calcDurationMinutes(r.started, r.ended);
+    if (mins !== null) {
+      totalMinutes += mins;
+      timedCount++;
+    }
+  });
+
+  const totalTimeStr = timedCount > 0 ? formatDuration(totalMinutes) : 'N/D';
+
+  const statsDiv = document.createElement('div');
+  statsDiv.className = 'print-grid';
+  statsDiv.style.gridTemplateColumns = 'repeat(5, 1fr)';
+  statsDiv.innerHTML = `
+    <div><strong>Equipamentos:</strong> ${history.length}</div>
+    <div><strong>Data Emissão:</strong> ${new Date().toLocaleDateString('pt-BR')}</div>
+    <div><strong>Itens OK:</strong> ${totalOk}</div>
+    <div><strong>Pendências:</strong> ${totalPend}</div>
+    <div><strong>Tempo Total:</strong> ${escapeHtml(totalTimeStr)}</div>
+  `;
+  container.append(statsDiv);
+
+  const summaryTable = document.createElement('table');
+  summaryTable.className = 'print-table';
+  summaryTable.innerHTML = `
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Computador</th>
+        <th>ID</th>
+        <th>Tipo</th>
+        <th>Cliente</th>
+        <th>Técnico</th>
+        <th>Data</th>
+        <th>Duração</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${history.map((r, i) => {
+        const mins = calcDurationMinutes(r.started, r.ended);
+        const durCell = mins !== null ? formatDuration(mins) : '-';
+        const isPend = hasRecordPending(r);
+        const dateStr = r.ended ? new Date(r.ended).toLocaleDateString('pt-BR') : '-';
+        return `<tr>
+          <td>${i + 1}</td>
+          <td><strong>${escapeHtml(r.machine)}</strong></td>
+          <td>${escapeHtml(r.assetTag || 'N/A')}</td>
+          <td>${escapeHtml(r.deviceType)}</td>
+          <td>${escapeHtml(r.client)}</td>
+          <td>${escapeHtml(r.tech)}</td>
+          <td>${escapeHtml(dateStr)}</td>
+          <td>${escapeHtml(durCell)}</td>
+          <td>${isPend ? '<span class="status-pend-print">Com Pendência</span>' : '<span class="status-ok-print">OK</span>'}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  `;
+  container.append(summaryTable);
+
+  document.body.classList.remove('print-single');
+  document.body.classList.add('print-all');
+  window.print();
+};
+
+document.getElementById('finish').onclick = () => {
+  hapticTap();
+  if (!validateHeader()) return;
+  const endedInput = document.getElementById('ended');
+  const ended = endedInput.value || localDateTime();
+  endedInput.value = ended;
+  const machine = document.getElementById('machine').value.trim();
+  const deviceType = document.getElementById('deviceType').value;
+  const { cleanStates, cleanNotes } = getSanitizedStatesAndNotes(deviceType, itemStates, itemNotes);
+
+  const r = {
+    machine,
+    assetTag: document.getElementById('assetTag').value.trim(),
+    deviceType,
+    started: document.getElementById('started').value,
+    ended,
+    client: document.getElementById('client').value.trim(),
+    tech: document.getElementById('tech').value.trim(),
+    notes: document.getElementById('notes').value.trim(),
+    itemStates: cleanStates,
+    itemNotes: cleanNotes
+  };
+
+  if (editingIndex !== null) {
+    history[editingIndex] = r;
+    showNotice(`Registro da máquina ${machine} alterado com sucesso!`);
+  } else {
+    history.push(r);
+    showNotice(`Máquina ${machine} registrada com sucesso!`);
+  }
+
+  localStorage.setItem(storageKey, JSON.stringify(history));
+  renderHistory();
+  resetMachine();
+};
+
+document.getElementById('new').onclick = () => {
+  hapticTap();
+  if (editingIndex !== null || itemStates.some(x => x !== null)) {
+    if (confirm('Limpar os dados da máquina atual e iniciar outra?')) resetMachine();
+  } else {
+    resetMachine();
+  }
+};
+
+document.getElementById('export').onclick = () => {
+  hapticTap();
+  if (!history.length) { alert('Sem dados para exportar.'); return; }
+  const cols = ['Início', 'Conclusão', 'Duração (min)', 'Computador', 'ID', 'Tipo', 'Cliente', 'Técnico', 'Pendências nos Itens', 'Observações Gerais'];
+  const rows = [cols, ...history.map(r => {
+    const mins = calcDurationMinutes(r.started, r.ended);
+    const isNotebook = (r.deviceType === 'Notebook');
+    const pendDetails = [];
+    if (Array.isArray(r.itemStates)) {
+      allItemsFlat.forEach((item, idx) => {
+        if (isNotebook && item.desktopOnly) return;
+        if (r.itemStates[idx] === 'Pend.') {
+          const detail = (r.itemNotes && r.itemNotes[idx]) ? `: ${r.itemNotes[idx]}` : '';
+          pendDetails.push(`${item.id} (${item.text}${detail})`);
+        }
+      });
+    }
+    return [
+      r.started,
+      r.ended,
+      mins !== null ? mins : '',
+      r.machine,
+      r.assetTag,
+      r.deviceType,
+      r.client,
+      r.tech,
+      pendDetails.join(' | '),
+      r.notes
+    ];
+  })];
+  const csv = '\uFEFF' + rows.map(row => row.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(';')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'historico_preventivas_geset.csv';
+  a.click();
+};
+
+/* Backup e Restauração JSON */
+document.getElementById('exportJSON').onclick = () => {
+  hapticTap();
+  if (!history.length) { alert('Não há registros salvos para gerar backup.'); return; }
+  const payload = {
+    app: 'Preventiva TI Geset',
+    version: 3,
+    exportedAt: new Date().toISOString(),
+    records: history
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  const dateTag = new Date().toISOString().slice(0, 10);
+  a.href = URL.createObjectURL(blob);
+  a.download = `backup_preventivas_geset_${dateTag}.json`;
+  a.click();
+  showNotice(`Backup JSON exportado com ${history.length} registro(s).`);
+};
+
+document.getElementById('importJSON').onclick = () => {
+  hapticTap();
+  document.getElementById('importJSONFile').click();
+};
+
+document.getElementById('importJSONFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      const importedRecords = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.records) ? parsed.records : null);
+
+      if (!importedRecords || !importedRecords.length) {
+        showNotice('O arquivo JSON não contém registros válidos.', true);
+        return;
+      }
+
+      const validRecords = importedRecords.filter(r => r && typeof r === 'object' && (r.machine || r.started));
+      if (!validRecords.length) {
+        showNotice('Nenhum registro compatível encontrado no arquivo.', true);
+        return;
+      }
+
+      if (!confirm(`Foram encontrados ${validRecords.length} registro(s) no backup.\nDeseja adicioná-los ao histórico atual?`)) {
+        return;
+      }
+
+      history.push(...validRecords);
+      localStorage.setItem(storageKey, JSON.stringify(history));
+      renderHistory();
+      showNotice(`${validRecords.length} registro(s) restaurado(s) com sucesso!`);
+    } catch (err) {
+      showNotice('Erro ao ler o arquivo JSON. Verifique se o arquivo é um backup válido.', true);
+    } finally {
+      e.target.value = '';
+    }
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById('clear').onclick = () => {
+  hapticTap();
+  if (confirm('Apagar permanentemente o histórico local?')) {
+    history = [];
+    localStorage.removeItem(storageKey);
+    renderHistory();
+    resetMachine();
+    showNotice('Histórico apagado.');
+  }
+};
+</script>
+</body>
+</html>
