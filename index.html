@@ -1075,7 +1075,7 @@ body.dark-mode .qr-mode-btn.active {
 .qr-card-box {
   background: #ffffff;
   border-radius: 12px;
-  padding: 10px;
+  padding: 12px;
   margin: 4px auto 8px;
   display: flex;
   flex-direction: column;
@@ -1086,8 +1086,8 @@ body.dark-mode .qr-mode-btn.active {
 }
 
 .qr-card-box canvas {
-  width: min(215px, 46vw, 29vh);
-  height: min(215px, 46vw, 29vh);
+  width: min(244px, 52vw, 33vh);
+  height: min(244px, 52vw, 33vh);
   display: block;
   image-rendering: pixelated;
 }
@@ -1480,6 +1480,10 @@ body.dark-mode .qr-mode-btn.active {
         <span id="pcRxDot" class="rx-dot"></span>
         <span id="pcRxStatusText">Conectando canal de recebimento...</span>
       </div>
+      <div style="margin-top:8px;display:flex;gap:6px">
+        <input id="pcManualPaste" type="text" placeholder="Sem internet? Cole aqui o link do QR Offline do celular..." style="height:36px;font-size:12.5px">
+        <button type="button" class="action-btn primary" id="pcManualImportBtn" style="padding:0 12px;height:36px;font-size:12.5px;flex:none">Importar</button>
+      </div>
     </div>
 
     <!-- Painel PC: Enviar para o Celular -->
@@ -1533,10 +1537,11 @@ body.dark-mode .qr-mode-btn.active {
       <button type="button" class="action-btn secondary qr-modal-footer-btn" id="closeMobileSendModal">Cancelar Envio</button>
       <button type="button" class="action-btn primary qr-modal-footer-btn" id="confirmMobileSendBtn">Enviar ao PC</button>
     </div>
+    <button type="button" class="action-btn secondary qr-modal-footer-btn" id="fallbackOfflineFromSendBtn" style="display:none;width:100%;margin-top:6px">Gerar QR Offline (Sem Internet)</button>
   </div>
 </div>
 
-<!-- Modal 3: Exportar QR Code Offline do Celular (Celular -> Celular) -->
+<!-- Modal 3: Exportar QR Code Offline do Celular (Celular -> Celular / PC) -->
 <div id="qrExportModal" class="modal">
   <div class="modal-content" style="text-align:center">
     <div class="qr-modal-head">
@@ -3016,6 +3021,16 @@ document.getElementById('clear').onclick = () => {
 <script>
 let isMobileWithCameraMode = false;
 
+async function fetchWithTimeout(url, options = {}, timeoutMs = 4500) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function detectMobileWithCameraSync() {
   const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || '');
   const coarseTouch = Boolean(
@@ -3611,6 +3626,7 @@ async function buildPaginatedQrChunks(records) {
 let pcRxEventSource = null;
 let pcRxCryptoKey = null;
 let pcRxChunkBuffer = {};
+let pcRxConnectTimer = null;
 let pcSendOfflinePages = [];
 let pcSendOfflinePageIdx = 0;
 
@@ -3629,6 +3645,10 @@ function setPcTxStatus(state, text) {
 }
 
 function stopPcReceiveListener() {
+  if (pcRxConnectTimer) {
+    clearTimeout(pcRxConnectTimer);
+    pcRxConnectTimer = null;
+  }
   if (pcRxEventSource) {
     pcRxEventSource.close();
     pcRxEventSource = null;
@@ -3652,11 +3672,6 @@ async function startPcReceiveMode() {
   document.getElementById('pcReceivePane').style.display = 'block';
   document.getElementById('pcSendPane').style.display = 'none';
 
-  if (!navigator.onLine) {
-    setPcRxStatus('error', 'PC sem internet. Conecte o PC para receber do celular.');
-    return;
-  }
-
   const rndBytes = new Uint8Array(16);
   crypto.getRandomValues(rndBytes);
   const topicId = 'geset-rx-' + bytesToBase64Url(rndBytes);
@@ -3673,18 +3688,36 @@ async function startPcReceiveMode() {
   const rxUrl = `${baseUrl}#rx=${topicId}.${keyToken}`;
 
   renderQrToCanvas(document.getElementById('pcReceiveQrCanvas'), rxUrl);
+
+  if (!navigator.onLine) {
+    setPcRxStatus('error', 'PC offline. Use o campo abaixo ou conecte o PC à internet.');
+    return;
+  }
+
   setPcRxStatus('connecting', 'Abrindo canal temporário no PC...');
+
+  let opened = false;
+  pcRxConnectTimer = setTimeout(() => {
+    if (!opened) {
+      setPcRxStatus('error', 'Canal online bloqueado ou lento. Use QR Offline no celular e cole o link abaixo.');
+    }
+  }, 5500);
 
   const es = new EventSource(`https://ntfy.sh/${encodeURIComponent(topicId)}/sse`);
   pcRxEventSource = es;
 
   es.onopen = () => {
+    opened = true;
+    if (pcRxConnectTimer) {
+      clearTimeout(pcRxConnectTimer);
+      pcRxConnectTimer = null;
+    }
     setPcRxStatus('online', 'Pronto! Aguardando leitura pelo celular...');
   };
 
   es.onerror = () => {
-    if (pcRxEventSource === es) {
-      setPcRxStatus('error', 'Reconectando canal de internet...');
+    if (pcRxEventSource === es && !opened) {
+      setPcRxStatus('error', 'Sem acesso ao canal online. Use QR Offline no celular e cole abaixo.');
     }
   };
 
@@ -3728,6 +3761,15 @@ async function startPcReceiveMode() {
   };
 }
 
+document.getElementById('pcManualImportBtn').onclick = async () => {
+  hapticTap();
+  const val = document.getElementById('pcManualPaste').value.trim();
+  if (!val) return;
+  document.getElementById('pcManualPaste').value = '';
+  closePcQrHubModal();
+  await importIncomingTokenToHistory(val, 'Link / QR Offline');
+};
+
 function populatePcSendClientSelect() {
   const sel = document.getElementById('pcSendClientSelect');
   const prevVal = sel.value;
@@ -3762,7 +3804,7 @@ function renderPcSendOfflinePage() {
   } else {
     nav.style.display = 'none';
   }
-  setPcTxStatus('online', `Modo offline: QR ${pcSendOfflinePageIdx + 1} de ${pcSendOfflinePages.length} (${page.records.length} máquina(s)).`);
+  setPcTxStatus('online', `QR Direto Offline: ${pcSendOfflinePageIdx + 1} de ${pcSendOfflinePages.length} (${page.records.length} máquina(s)).`);
 }
 
 async function generatePcSendQr() {
@@ -3790,14 +3832,16 @@ async function generatePcSendQr() {
   qrWrap.style.display = 'block';
   setPcTxStatus('connecting', `Preparando ${recordsToSend.length} máquina(s) para o celular...`);
 
+  try {
+    pcSendOfflinePages = await buildPaginatedQrChunks(recordsToSend);
+    pcSendOfflinePageIdx = 0;
+  } catch (e) {
+    pcSendOfflinePages = [];
+  }
+
   if (!navigator.onLine) {
-    try {
-      pcSendOfflinePages = await buildPaginatedQrChunks(recordsToSend);
-      pcSendOfflinePageIdx = 0;
-      renderPcSendOfflinePage();
-    } catch (e) {
-      setPcTxStatus('error', 'Não foi possível gerar QR offline.');
-    }
+    if (pcSendOfflinePages.length) renderPcSendOfflinePage();
+    else setPcTxStatus('error', 'Não foi possível gerar QR offline.');
     return;
   }
 
@@ -3836,4 +3880,687 @@ async function generatePcSendQr() {
     }
     if (chunks.length === 0) chunks.push('');
 
-    const transferId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6
+    const transferId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    for (let seq = 0; seq < chunks.length; seq++) {
+      const res = await fetchWithTimeout(`https://ntfy.sh/${encodeURIComponent(topicId)}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          id: transferId,
+          seq,
+          tot: chunks.length,
+          enc: encMode,
+          data: chunks[seq]
+        })
+      }, 4500);
+      if (!res.ok) throw new Error('Falha ao publicar pacote de envio.');
+    }
+
+    const baseUrl = window.location.origin + window.location.pathname;
+    const txUrl = `${baseUrl}#tx=${topicId}.${keyToken}`;
+    renderQrToCanvas(document.getElementById('pcSendQrCanvas'), txUrl);
+    setPcTxStatus('online', `Pronto! Leia este QR no celular para receber ${recordsToSend.length} máquina(s).`);
+  } catch (err) {
+    if (pcSendOfflinePages.length) {
+      renderPcSendOfflinePage();
+    } else {
+      setPcTxStatus('error', 'Erro ao gerar QR Code de envio.');
+    }
+  }
+}
+
+async function startPcSendMode() {
+  stopPcReceiveListener();
+  document.getElementById('btnPcModeReceive').classList.remove('active');
+  document.getElementById('btnPcModeSend').classList.add('active');
+  document.getElementById('pcReceivePane').style.display = 'none';
+  document.getElementById('pcSendPane').style.display = 'block';
+  populatePcSendClientSelect();
+  await generatePcSendQr();
+}
+
+async function openPcQrHubModal(initialMode = 'receive') {
+  document.getElementById('pcQrHubModal').style.display = 'flex';
+  syncBodyModalLock();
+  forceWakeLockForQr = true;
+  syncWakeLock();
+
+  if (initialMode === 'send') {
+    await startPcSendMode();
+  } else {
+    await startPcReceiveMode();
+  }
+}
+
+document.getElementById('btnPcModeReceive').onclick = () => { hapticTap(); startPcReceiveMode(); };
+document.getElementById('btnPcModeSend').onclick = () => { hapticTap(); startPcSendMode(); };
+document.getElementById('pcSendClientSelect').addEventListener('change', generatePcSendQr);
+document.getElementById('pcSendPrevBtn').onclick = () => {
+  hapticTap();
+  if (pcSendOfflinePageIdx > 0) {
+    pcSendOfflinePageIdx--;
+    renderPcSendOfflinePage();
+  }
+};
+document.getElementById('pcSendNextBtn').onclick = () => {
+  hapticTap();
+  if (pcSendOfflinePageIdx < pcSendOfflinePages.length - 1) {
+    pcSendOfflinePageIdx++;
+    renderPcSendOfflinePage();
+  }
+};
+document.getElementById('closePcReceiveModal').onclick = closePcQrHubModal;
+document.getElementById('closePcQrTopBtn').onclick = closePcQrHubModal;
+document.getElementById('pcQrHubModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('pcQrHubModal')) closePcQrHubModal();
+});
+
+/* Fluxo no Celular: Ao ler o QR Code de recebimento do PC (#rx=...) ou envio do PC (#tx=...) */
+let activeMobileSendTarget = null;
+
+function parseSessionTokenFromText(rawText, prefix) {
+  let token = String(rawText || '').trim();
+  const hashPrefix = '#' + prefix;
+  const idx = token.indexOf(hashPrefix);
+  if (idx !== -1) token = token.slice(idx + hashPrefix.length);
+  else if (token.startsWith(prefix)) token = token.slice(prefix.length);
+  else return null;
+
+  const dotIdx = token.indexOf('.');
+  if (dotIdx === -1) return null;
+  const topicId = token.slice(0, dotIdx).trim();
+  const keyToken = token.slice(dotIdx + 1).trim();
+  if (!topicId || !keyToken) return null;
+  return { topicId, keyToken };
+}
+
+function parseRxTargetFromText(rawText) {
+  return parseSessionTokenFromText(rawText, 'rx=');
+}
+
+function parseTxTargetFromText(rawText) {
+  return parseSessionTokenFromText(rawText, 'tx=');
+}
+
+async function receiveRecordsFromPcTxTarget(txTarget) {
+  if (!navigator.onLine) {
+    showNotice('Conecte o celular à internet (Wi-Fi ou 4G) para receber os dados enviados pelo PC.', true);
+    return false;
+  }
+
+  showNotice('Recebendo máquinas enviadas pelo PC...');
+  try {
+    let parsedMessages = [];
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const res = await fetchWithTimeout(`https://ntfy.sh/${encodeURIComponent(txTarget.topicId)}/json?poll=1`, {
+        cache: 'no-store'
+      }, 6000);
+      if (!res.ok) throw new Error('Falha ao buscar dados enviados pelo PC.');
+      const text = await res.text();
+      const lines = text.trim().split('\n').filter(Boolean);
+      const msgs = [];
+      for (const line of lines) {
+        try {
+          const env = JSON.parse(line);
+          if (env && env.event === 'message' && env.message) {
+            const payload = JSON.parse(env.message);
+            if (payload && payload.id && typeof payload.seq === 'number' && typeof payload.tot === 'number') {
+              msgs.push(payload);
+            }
+          }
+        } catch (e) {}
+      }
+      if (msgs.length > 0 && msgs.length >= msgs[0].tot) {
+        parsedMessages = msgs;
+        break;
+      }
+      parsedMessages = msgs;
+      if (attempt === 0) await new Promise(r => setTimeout(r, 600));
+    }
+
+    if (!parsedMessages.length) {
+      showNotice('Nenhum dado encontrado neste QR Code (sessão expirada). Gere um novo QR no PC.', true);
+      return false;
+    }
+
+    const first = parsedMessages[0];
+    const ordered = new Array(first.tot).fill(null);
+    parsedMessages.forEach(m => {
+      if (m.id === first.id && m.seq >= 0 && m.seq < first.tot) {
+        ordered[m.seq] = m.data;
+      }
+    });
+
+    if (ordered.some(part => part === null)) {
+      showNotice('Transferência incompleta. Leia o QR Code do PC novamente.', true);
+      return false;
+    }
+
+    const fullB64 = ordered.join('');
+    let tokenStr = '';
+    if (first.enc === 'aes') {
+      if (txTarget.keyToken === 'plain' || !window.crypto || !window.crypto.subtle) {
+        throw new Error('Navegador sem suporte à descriptografia.');
+      }
+      const rawKeyBytes = base64UrlToBytes(txTarget.keyToken);
+      const aesKey = await crypto.subtle.importKey('raw', rawKeyBytes, { name: 'AES-GCM' }, false, ['decrypt']);
+      const combined = base64UrlToBytes(fullB64);
+      const iv = combined.slice(0, 12);
+      const cipher = combined.slice(12);
+      const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, cipher);
+      tokenStr = new TextDecoder().decode(plainBuf);
+    } else {
+      tokenStr = new TextDecoder().decode(base64UrlToBytes(fullB64));
+    }
+
+    return await importIncomingTokenToHistory(tokenStr, 'PC (via QR Code)');
+  } catch (err) {
+    showNotice(err.message || 'Erro ao receber os dados do PC.', true);
+    return false;
+  }
+}
+
+function getRecordsForMobileSendSelection() {
+  const clientVal = document.getElementById('mobileSendClientSelect').value;
+  if (clientVal === 'all') return history.slice();
+  return history.filter(r => (r.client || '').trim() === clientVal);
+}
+
+function updateMobileSendSummary() {
+  const selected = getRecordsForMobileSendSelection();
+  const box = document.getElementById('mobileSendSummaryBox');
+  const sendBtn = document.getElementById('confirmMobileSendBtn');
+
+  if (!selected.length) {
+    box.textContent = 'Nenhuma máquina salva neste navegador para enviar. Abra o app pelo ícone instalado na tela inicial e toque em "QR Code PC / Celular".';
+    sendBtn.disabled = true;
+    return;
+  }
+
+  sendBtn.disabled = false;
+  const names = selected.map(r => `${r.machine}${formatAssetTagBadge(r.assetTag, 'hash')}`).join(', ');
+  box.textContent = `${selected.length} máquina(s) selecionada(s): ${names}`;
+}
+
+function openMobileSendToPcModal(rxTarget) {
+  activeMobileSendTarget = rxTarget;
+  document.getElementById('mobileSendStatusMsg').textContent = '';
+  document.getElementById('fallbackOfflineFromSendBtn').style.display = 'none';
+
+  const clients = [...new Set(history.map(r => (r.client || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const sel = document.getElementById('mobileSendClientSelect');
+  sel.replaceChildren();
+
+  const optAll = document.createElement('option');
+  optAll.value = 'all';
+  optAll.textContent = `Todas as máquinas salvas (${history.length})`;
+  sel.append(optAll);
+
+  clients.forEach(c => {
+    const count = history.filter(r => (r.client || '').trim() === c).length;
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = `${c} (${count})`;
+    sel.append(opt);
+  });
+
+  updateMobileSendSummary();
+  document.getElementById('mobileSendToPcModal').style.display = 'flex';
+  syncBodyModalLock();
+}
+
+function closeMobileSendModal() {
+  activeMobileSendTarget = null;
+  document.getElementById('mobileSendToPcModal').style.display = 'none';
+  syncBodyModalLock();
+}
+
+document.getElementById('mobileSendClientSelect').addEventListener('change', updateMobileSendSummary);
+document.getElementById('closeMobileSendModal').onclick = closeMobileSendModal;
+document.getElementById('closeMobileSendTopBtn').onclick = closeMobileSendModal;
+document.getElementById('mobileSendToPcModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('mobileSendToPcModal')) closeMobileSendModal();
+});
+
+document.getElementById('fallbackOfflineFromSendBtn').onclick = () => {
+  hapticTap();
+  const recordsToSend = getRecordsForMobileSendSelection();
+  closeMobileSendModal();
+  if (recordsToSend.length) openQrExportForRecords(recordsToSend);
+};
+
+document.getElementById('confirmMobileSendBtn').onclick = async () => {
+  hapticTap();
+  if (!activeMobileSendTarget) return;
+  if (!navigator.onLine) {
+    document.getElementById('mobileSendStatusMsg').textContent = 'Sem internet no celular. Use o QR Offline abaixo ou conecte ao Wi-Fi/4G.';
+    document.getElementById('fallbackOfflineFromSendBtn').style.display = 'block';
+    return;
+  }
+
+  const recordsToSend = getRecordsForMobileSendSelection();
+  if (!recordsToSend.length) return;
+
+  const btn = document.getElementById('confirmMobileSendBtn');
+  const statusEl = document.getElementById('mobileSendStatusMsg');
+  btn.disabled = true;
+  statusEl.textContent = 'Compactando e criptografando dados...';
+
+  try {
+    const packedToken = await packRecordsToToken(recordsToSend);
+    const plainBytes = new TextEncoder().encode(packedToken);
+    let payloadB64 = '';
+    let encMode = 'none';
+
+    if (activeMobileSendTarget.keyToken !== 'plain' && window.crypto && window.crypto.subtle) {
+      const rawKeyBytes = base64UrlToBytes(activeMobileSendTarget.keyToken);
+      const aesKey = await crypto.subtle.importKey('raw', rawKeyBytes, { name: 'AES-GCM' }, false, ['encrypt']);
+      const iv = new Uint8Array(12);
+      crypto.getRandomValues(iv);
+      const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, plainBytes);
+      const combined = new Uint8Array(iv.length + cipherBuf.byteLength);
+      combined.set(iv, 0);
+      combined.set(new Uint8Array(cipherBuf), iv.length);
+      payloadB64 = bytesToBase64Url(combined);
+      encMode = 'aes';
+    } else {
+      payloadB64 = bytesToBase64Url(plainBytes);
+    }
+
+    const CHUNK_SIZE = 2400;
+    const chunks = [];
+    for (let i = 0; i < payloadB64.length; i += CHUNK_SIZE) {
+      chunks.push(payloadB64.slice(i, i + CHUNK_SIZE));
+    }
+    if (chunks.length === 0) chunks.push('');
+
+    const transferId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    for (let seq = 0; seq < chunks.length; seq++) {
+      statusEl.textContent = `Enviando pacote ${seq + 1} de ${chunks.length} para o PC...`;
+      const res = await fetchWithTimeout(`https://ntfy.sh/${encodeURIComponent(activeMobileSendTarget.topicId)}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          id: transferId,
+          seq,
+          tot: chunks.length,
+          enc: encMode,
+          data: chunks[seq]
+        })
+      }, 6000);
+      if (!res.ok) throw new Error('Falha no envio para o PC.');
+    }
+
+    closeMobileSendModal();
+    showNotice(`${recordsToSend.length} máquina(s) enviada(s) para o PC com sucesso!`);
+  } catch (err) {
+    statusEl.textContent = 'Falha no envio online (rede lenta ou bloqueada). Você pode gerar o QR Offline abaixo:';
+    document.getElementById('fallbackOfflineFromSendBtn').style.display = 'block';
+    btn.disabled = false;
+  }
+};
+
+/* CONTROLE DO MODAL DE EXPORTAÇÃO QR CODE OFFLINE (Celular -> Celular / PC) */
+let qrPagesState = [];
+let qrCurrentPageIdx = 0;
+
+function renderCurrentQrPage() {
+  const page = qrPagesState[qrCurrentPageIdx];
+  if (!page) return;
+
+  const totalPages = qrPagesState.length;
+  document.getElementById('qrPageBadge').textContent =
+    `QR ${qrCurrentPageIdx + 1} de ${totalPages} • ${page.records.length} máquina(s)`;
+
+  const names = page.records.map(r => `${r.machine}${formatAssetTagBadge(r.assetTag, 'hash')}`).join(', ');
+  document.getElementById('qrMachinesPreview').textContent = `Máquinas neste QR: ${names}`;
+
+  const navBox = document.getElementById('qrNavControls');
+  if (totalPages > 1) {
+    navBox.style.display = 'grid';
+    document.getElementById('qrPrevBtn').disabled = (qrCurrentPageIdx === 0);
+    document.getElementById('qrNextBtn').disabled = (qrCurrentPageIdx === qrPagesState.length - 1);
+  } else {
+    navBox.style.display = 'none';
+  }
+
+  renderQrToCanvas(document.getElementById('qrCanvas'), page.url);
+}
+
+async function openQrExportForRecords(records) {
+  if (!records || !records.length) {
+    alert('Nenhuma máquina salva para gerar QR Code.');
+    return;
+  }
+  try {
+    qrPagesState = await buildPaginatedQrChunks(records);
+    qrCurrentPageIdx = 0;
+    forceWakeLockForQr = true;
+    syncWakeLock();
+    document.getElementById('qrExportModal').style.display = 'flex';
+    syncBodyModalLock();
+    renderCurrentQrPage();
+  } catch (err) {
+    alert('Não foi possível gerar o QR Code para esta seleção.');
+  }
+}
+
+function closeQrExportModal() {
+  document.getElementById('qrExportModal').style.display = 'none';
+  syncBodyModalLock();
+  forceWakeLockForQr = false;
+  syncWakeLock();
+}
+
+document.getElementById('openOfflineQrFromScanBtn').onclick = () => {
+  hapticTap();
+  closeQrScanModal();
+  if (!history.length) {
+    alert('Nenhuma máquina salva no histórico para gerar QR Code.');
+    return;
+  }
+  const filteredEntries = getFilteredHistoryEntries();
+  const list = filteredEntries.length ? filteredEntries.map(e => e.r) : history;
+  openQrExportForRecords(list);
+};
+
+document.getElementById('btnMobExportToScan').onclick = () => {
+  hapticTap();
+  closeQrExportModal();
+  openQrScannerModal();
+};
+
+document.getElementById('qrPrevBtn').onclick = () => {
+  hapticTap();
+  if (qrCurrentPageIdx > 0) {
+    qrCurrentPageIdx--;
+    renderCurrentQrPage();
+  }
+};
+
+document.getElementById('qrNextBtn').onclick = () => {
+  hapticTap();
+  if (qrCurrentPageIdx < qrPagesState.length - 1) {
+    qrCurrentPageIdx++;
+    renderCurrentQrPage();
+  }
+};
+
+document.getElementById('closeQrExportModal').onclick = closeQrExportModal;
+document.getElementById('closeQrExportTopBtn').onclick = closeQrExportModal;
+document.getElementById('qrExportModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('qrExportModal')) closeQrExportModal();
+});
+
+/* IMPORTAÇÃO UNIFICADA (Detecta #rx= para enviar ao PC, #tx= para receber do PC OU #qr= offline) */
+function getRecordFingerprint(r) {
+  return [
+    (r.machine || '').trim().toLowerCase(),
+    (r.assetTag || '').trim().toLowerCase(),
+    (r.started || '').trim(),
+    (r.ended || '').trim(),
+    (r.client || '').trim().toLowerCase()
+  ].join('|');
+}
+
+async function importIncomingTokenToHistory(rawQrText, sourceLabel = 'QR Code') {
+  try {
+    const incomingRecords = await decodeQrStringToRecords(rawQrText);
+    if (!incomingRecords || !incomingRecords.length) {
+      showNotice('QR Code inválido ou incompatível com o sistema Geset.', true);
+      return false;
+    }
+
+    const existingFingerprints = new Set(history.map(getRecordFingerprint));
+    const uniqueNew = [];
+    let duplicateCount = 0;
+
+    incomingRecords.forEach(rec => {
+      const fp = getRecordFingerprint(rec);
+      if (existingFingerprints.has(fp)) {
+        duplicateCount++;
+      } else {
+        existingFingerprints.add(fp);
+        uniqueNew.push(rec);
+      }
+    });
+
+    if (uniqueNew.length === 0) {
+      showNotice(`Todas as ${incomingRecords.length} máquina(s) recebidas já estão salvas neste aparelho.`);
+      return true;
+    }
+
+    const previewList = uniqueNew.slice(0, 5).map(r => r.machine).join(', ') +
+      (uniqueNew.length > 5 ? ` e mais ${uniqueNew.length - 5}` : '');
+    const dupNote = duplicateCount > 0 ? `\n(${duplicateCount} máquina(s) já existente(s) serão ignoradas)` : '';
+
+    if (!confirm(`Recebida(s) ${uniqueNew.length} nova(s) máquina(s) via ${sourceLabel}:\n${previewList}${dupNote}\n\nDeseja salvar no histórico deste aparelho?`)) {
+      return true;
+    }
+
+    history.push(...uniqueNew);
+    localStorage.setItem(storageKey, JSON.stringify(history));
+    renderHistory();
+    showNotice(`${uniqueNew.length} máquina(s) importada(s) com sucesso!`);
+    return true;
+  } catch (err) {
+    showNotice(err.message || 'Erro ao ler os dados do QR Code.', true);
+    return false;
+  }
+}
+
+async function handleScannedOrUrlPayload(rawText) {
+  const rxTarget = parseRxTargetFromText(rawText);
+  if (rxTarget) {
+    openMobileSendToPcModal(rxTarget);
+    return true;
+  }
+  const txTarget = parseTxTargetFromText(rawText);
+  if (txTarget) {
+    return await receiveRecordsFromPcTxTarget(txTarget);
+  }
+  return await importIncomingTokenToHistory(rawText, 'QR Code');
+}
+
+async function checkUrlHashForQrImport() {
+  const hash = window.location.hash || '';
+  if (!hash.startsWith('#qr=') && !hash.startsWith('#rx=') && !hash.startsWith('#tx=')) return;
+  window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  await handleScannedOrUrlPayload(hash);
+}
+
+if (document.readyState === 'complete') {
+  checkUrlHashForQrImport();
+} else {
+  window.addEventListener('load', checkUrlHashForQrImport);
+}
+window.addEventListener('hashchange', checkUrlHashForQrImport);
+
+/* Leitor Interno de QR Code (BarcodeDetector com Fallback Automático para jsQR) */
+let scannerMediaStream = null;
+let scannerAnimationFrame = null;
+let jsQrLoadPromise = null;
+
+function ensureJsQrLoaded() {
+  if (window.jsQR) return Promise.resolve(window.jsQR);
+  if (jsQrLoadPromise) return jsQrLoadPromise;
+
+  const cdnUrls = [
+    'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js',
+    'https://unpkg.com/jsqr@1.4.0/dist/jsQR.min.js'
+  ];
+
+  jsQrLoadPromise = new Promise((resolve, reject) => {
+    let idx = 0;
+    const tryNext = () => {
+      if (idx >= cdnUrls.length) {
+        jsQrLoadPromise = null;
+        reject(new Error('Falha ao carregar decodificador JS.'));
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = cdnUrls[idx++];
+      script.onload = () => window.jsQR ? resolve(window.jsQR) : tryNext();
+      script.onerror = tryNext;
+      document.head.appendChild(script);
+    };
+    tryNext();
+  });
+
+  return jsQrLoadPromise;
+}
+
+function stopCameraScanner() {
+  if (scannerAnimationFrame) {
+    cancelAnimationFrame(scannerAnimationFrame);
+    scannerAnimationFrame = null;
+  }
+  if (scannerMediaStream) {
+    scannerMediaStream.getTracks().forEach(t => t.stop());
+    scannerMediaStream = null;
+  }
+  const video = document.getElementById('scannerVideo');
+  if (video) video.srcObject = null;
+  document.getElementById('scannerVideoWrap').style.display = 'none';
+}
+
+function closeQrScanModal() {
+  stopCameraScanner();
+  document.getElementById('qrScanModal').style.display = 'none';
+  syncBodyModalLock();
+}
+
+async function openQrScannerModal() {
+  const modal = document.getElementById('qrScanModal');
+  const statusEl = document.getElementById('scannerStatusText');
+  const videoWrap = document.getElementById('scannerVideoWrap');
+  const video = document.getElementById('scannerVideo');
+  document.getElementById('qrManualPaste').value = '';
+  modal.style.display = 'flex';
+  syncBodyModalLock();
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    statusEl.textContent =
+      'Abra o app Câmera normal do celular, aponte para o QR Code do PC e toque no link.';
+    return;
+  }
+
+  try {
+    scannerMediaStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' } },
+      audio: false
+    });
+    video.srcObject = scannerMediaStream;
+    await video.play();
+    videoWrap.style.display = 'block';
+    statusEl.textContent = 'Aponte a câmera traseira para o QR Code na tela do PC:';
+
+    let nativeDetector = null;
+    if ('BarcodeDetector' in window) {
+      try {
+        nativeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+      } catch (e) {
+        nativeDetector = null;
+      }
+    }
+
+    let fallbackJsQr = null;
+    let offCanvas = null;
+    let offCtx = null;
+    let loadingFallback = false;
+
+    const activateJsQrFallback = async () => {
+      if (fallbackJsQr || loadingFallback) return;
+      loadingFallback = true;
+      try {
+        fallbackJsQr = await ensureJsQrLoaded();
+        offCanvas = document.createElement('canvas');
+        offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+      } catch (e) {
+        if (!nativeDetector) {
+          statusEl.textContent =
+            'Sem internet para carregar leitor: use o app Câmera normal do celular no QR Code.';
+        }
+      } finally {
+        loadingFallback = false;
+      }
+    };
+
+    if (!nativeDetector) {
+      await activateJsQrFallback();
+    } else {
+      activateJsQrFallback();
+    }
+
+    let handling = false;
+    let nativeFailCount = 0;
+
+    const scanLoop = async () => {
+      if (!scannerMediaStream || handling) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        let detectedVal = null;
+
+        if (nativeDetector) {
+          try {
+            const codes = await nativeDetector.detect(video);
+            if (codes && codes.length > 0 && codes[0].rawValue) {
+              detectedVal = codes[0].rawValue;
+            }
+          } catch (e) {
+            nativeFailCount++;
+            if (nativeFailCount >= 3) {
+              nativeDetector = null;
+              activateJsQrFallback();
+            }
+          }
+        }
+
+        if (!detectedVal && fallbackJsQr && offCtx && video.videoWidth > 0) {
+          try {
+            const scale = Math.min(1, 640 / video.videoWidth);
+            const w = Math.floor(video.videoWidth * scale);
+            const h = Math.floor(video.videoHeight * scale);
+            if (offCanvas.width !== w || offCanvas.height !== h) {
+              offCanvas.width = w;
+              offCanvas.height = h;
+            }
+            offCtx.drawImage(video, 0, 0, w, h);
+            const imgData = offCtx.getImageData(0, 0, w, h);
+            const res = fallbackJsQr(imgData.data, w, h, { inversionAttempts: 'attemptBoth' });
+            if (res && res.data) {
+              detectedVal = res.data;
+            }
+          } catch (e) {}
+        }
+
+        if (detectedVal) {
+          handling = true;
+          hapticTap();
+          closeQrScanModal();
+          await handleScannedOrUrlPayload(detectedVal);
+          return;
+        }
+      }
+      scannerAnimationFrame = requestAnimationFrame(scanLoop);
+    };
+    scannerAnimationFrame = requestAnimationFrame(scanLoop);
+  } catch (err) {
+    statusEl.textContent =
+      'Permita o acesso à câmera ou use o app Câmera normal do celular para ler o QR Code.';
+  }
+}
+
+document.getElementById('qrManualImportBtn').onclick = async () => {
+  hapticTap();
+  const val = document.getElementById('qrManualPaste').value.trim();
+  if (!val) return;
+  closeQrScanModal();
+  await handleScannedOrUrlPayload(val);
+};
+
+document.getElementById('closeQrScanModal').onclick = closeQrScanModal;
+document.getElementById('closeQrScanTopBtn').onclick = closeQrScanModal;
+document.getElementById('qrScanModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('qrScanModal')) closeQrScanModal();
+});
+</script>
+</body>
+</html>
