@@ -77,24 +77,25 @@ body {
 header {
   background: linear-gradient(135deg, #000C7B 0%, #004fb0 100%);
   color: white;
-  padding: 16px 20px;
+  padding: 14px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   box-shadow: 0 4px 12px rgba(0, 12, 123, 0.15);
 }
 
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+  min-width: 0;
 }
 
 .logo-header-img {
-  height: 48px;
+  height: 46px;
   width: auto;
-  max-width: 180px;
+  max-width: 170px;
   object-fit: contain;
   background: #ffffff;
   padding: 4px 8px;
@@ -107,6 +108,7 @@ header h1 {
   font-size: 20px;
   margin: 0 0 2px;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 header p {
@@ -114,6 +116,35 @@ header p {
   color: #b3dbff;
   font-size: 13px;
   font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.smart-qr-btn {
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  color: #000C7B;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease, opacity 0.2s ease;
+  white-space: nowrap;
+  flex: none;
+}
+
+.smart-qr-btn:active {
+  transform: scale(0.97);
 }
 
 .theme-toggle-btn {
@@ -130,6 +161,7 @@ header p {
   gap: 8px;
   transition: all 0.2s ease;
   backdrop-filter: blur(4px);
+  white-space: nowrap;
   flex: none;
 }
 
@@ -446,10 +478,6 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   margin-top: 10px;
 }
 
-.history-tools .tool-full {
-  grid-column: 1 / -1;
-}
-
 .record {
   border-top: 1px solid var(--border-color);
   padding: 12px 0;
@@ -704,6 +732,13 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
 
 /* ADAPTAÇÃO EXCLUSIVA PARA DISPOSITIVOS MÓVEIS (Botões maiores para toque) */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-width: 1024px) {
+  header { padding: 12px 14px; }
+  .logo-header-img { height: 38px; padding: 3px 6px; }
+  header h1 { font-size: 16px; }
+  header p { display: none; }
+  .theme-text { display: none; }
+  .smart-qr-btn { min-height: 40px; padding: 8px 12px; font-size: 13.5px; }
+  .theme-toggle-btn { min-height: 40px; padding: 8px 11px; font-size: 15px; }
   .wrap { padding: 14px 14px 84px; }
   .layout-container { grid-template-columns: 1fr; }
   .sidebar-panel { position: static; }
@@ -721,7 +756,6 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   .record { flex-direction: column; }
   .record-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .btn-small { min-height: 42px; padding: 10px 14px; font-size: 14px; text-align: center; }
-  .theme-toggle-btn { min-height: 42px; padding: 10px 14px; font-size: 14px; }
 }
 
 @media print {
@@ -767,10 +801,16 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
       <p>Procedimento Operacional Padrão de Manutenção</p>
     </div>
   </div>
-  <button id="themeToggle" class="theme-toggle-btn" type="button" title="Alternar Modo Escuro/Claro">
-    <span id="themeIcon">🌙</span>
-    <span id="themeText" class="theme-text">Modo Escuro</span>
-  </button>
+  <div class="header-actions">
+    <button id="smartQrBtn" class="smart-qr-btn" type="button" title="Transferência por QR Code">
+      <span id="smartQrIcon">💻</span>
+      <span id="smartQrText">Receber QR</span>
+    </button>
+    <button id="themeToggle" class="theme-toggle-btn" type="button" title="Alternar Modo Escuro/Claro">
+      <span id="themeIcon">🌙</span>
+      <span id="themeText" class="theme-text">Modo Escuro</span>
+    </button>
+  </div>
 </header>
 
 <main class="wrap">
@@ -879,9 +919,6 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
         <button class="action-btn accent" id="printAllPDF" style="margin-top:10px;width:100%">🖨️ Gerar Relatório Geral Consolidado em PDF</button>
 
         <div class="history-tools">
-          <button class="action-btn primary tool-full" id="receiveOnPcQRBtn" style="padding:11px;font-size:13.5px">💻 Receber no PC via QR Code</button>
-          <button class="action-btn secondary" id="scanQRBtn" style="padding:10px;font-size:13px">📷 Ler QR Code</button>
-          <button class="action-btn secondary" id="exportQRFiltered" style="padding:10px;font-size:13px">📱 Enviar por QR (Offline)</button>
           <button class="action-btn secondary" id="exportJSON" style="padding:10px;font-size:13px">💾 Backup JSON</button>
           <button class="action-btn secondary" id="importJSON" style="padding:10px;font-size:13px">📂 Restaurar JSON</button>
           <input type="file" id="importJSONFile" accept=".json,application/json" style="display:none">
@@ -926,7 +963,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
     <h3 style="margin-top:0;margin-bottom:6px">Receber Atendimentos do Celular</h3>
     <div class="qr-meta-pill">Sessão Criptografada • Sem Banco de Dados</div>
     <p class="hint" style="margin-top:4px;margin-bottom:8px">
-      Aponte a câmera do celular (ou toque em <strong>📷 Ler QR Code</strong> no app do celular) para este código na tela do PC:
+      Aponte a câmera do celular (ou toque em <strong>📷 Ler QR</strong> no topo do app do celular) para este código na tela do PC:
     </p>
     <div class="qr-card-box">
       <canvas id="pcReceiveQrCanvas"></canvas>
@@ -984,7 +1021,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   </div>
 </div>
 
-<!-- Modal 4: Leitor Interno de QR Code -->
+<!-- Modal 4: Leitor Interno de QR Code (Dispositivo Móvel) -->
 <div id="qrScanModal" class="modal">
   <div class="modal-content" style="max-width:460px">
     <h3 style="margin-top:0;margin-bottom:6px">Ler QR Code</h3>
@@ -1002,7 +1039,8 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
         <button type="button" class="action-btn primary" id="qrManualImportBtn" style="padding:0 16px;height:42px;flex:none">Continuar</button>
       </div>
     </div>
-    <button type="button" class="action-btn secondary" id="closeQrScanModal" style="width:100%;margin-top:14px">Fechar</button>
+    <button type="button" class="action-btn secondary" id="openOfflineQrFromScanBtn" style="width:100%;margin-top:12px">📱 Mostrar meu QR Offline (Celular → Celular)</button>
+    <button type="button" class="action-btn secondary" id="closeQrScanModal" style="width:100%;margin-top:8px">Fechar</button>
   </div>
 </div>
 
@@ -1175,6 +1213,66 @@ themeToggleBtn.addEventListener('click', () => {
   localStorage.setItem(themeStorageKey, newTheme);
 });
 
+/* ============================================================================
+   DETECÇÃO AUTOMÁTICA: DISPOSITIVO MÓVEL COM CÂMERA vs PC (BOTÃO ÚNICO NO TOPO)
+   ============================================================================ */
+let isMobileWithCameraMode = false;
+
+function detectMobileWithCameraSync() {
+  const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || '');
+  const coarseTouch = Boolean(
+    window.matchMedia &&
+    window.matchMedia('(pointer: coarse)').matches &&
+    (navigator.maxTouchPoints > 0)
+  );
+  const isMobile = uaMobile || coarseTouch;
+  const hasCameraApi = Boolean(
+    uaMobile ||
+    (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function')
+  );
+  return isMobile && hasCameraApi;
+}
+
+function applySmartQrButtonMode(mobileWithCam) {
+  isMobileWithCameraMode = mobileWithCam;
+  const btn = document.getElementById('smartQrBtn');
+  const icon = document.getElementById('smartQrIcon');
+  const text = document.getElementById('smartQrText');
+  if (!btn || !icon || !text) return;
+
+  if (mobileWithCam) {
+    icon.textContent = '📷';
+    text.textContent = 'Ler QR';
+    btn.title = 'Ler QR Code do PC ou de outro celular';
+  } else {
+    icon.textContent = '💻';
+    text.textContent = 'Receber QR';
+    btn.title = 'Exibir QR Code no PC para receber atendimentos do celular';
+  }
+}
+
+applySmartQrButtonMode(detectMobileWithCameraSync());
+
+if (navigator.mediaDevices && typeof navigator.mediaDevices.enumerateDevices === 'function') {
+  navigator.mediaDevices.enumerateDevices()
+    .then(devices => {
+      const hasVideoInput = devices.some(d => d.kind === 'videoinput');
+      const uaOrTouchMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || '') ||
+        Boolean(window.matchMedia && window.matchMedia('(pointer: coarse)').matches && navigator.maxTouchPoints > 0);
+      applySmartQrButtonMode(uaOrTouchMobile && hasVideoInput);
+    })
+    .catch(() => {});
+}
+
+document.getElementById('smartQrBtn').addEventListener('click', () => {
+  hapticTap();
+  if (isMobileWithCameraMode) {
+    openQrScannerModal();
+  } else {
+    openPcReceiveModal();
+  }
+});
+
 const sections = [
   {
     title: '1. Limpeza do Sistema',
@@ -1244,7 +1342,7 @@ function formatDuration(minutes) {
   return `${h}h ${String(m).padStart(2, '0')}min`;
 }
 
-/* Gerenciador de Screen Wake Lock (mantém a tela acesa durante o atendimento ou exibição de QR) */
+/* Gerenciador de Screen Wake Lock */
 let wakeLockSentinel = null;
 let forceWakeLockForQr = false;
 
@@ -1818,15 +1916,6 @@ function renderHistory() {
       document.getElementById('reportModal').style.display = 'flex';
     };
 
-    const qrBtn = document.createElement('button');
-    qrBtn.type = 'button';
-    qrBtn.className = 'btn-small';
-    qrBtn.textContent = '📱 QR';
-    qrBtn.onclick = () => {
-      hapticTap();
-      openQrExportForRecords([r]);
-    };
-
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'btn-small btn-del';
@@ -1847,7 +1936,7 @@ function renderHistory() {
       showNotice(`Registro de ${r.machine} excluído.`);
     };
 
-    actions.append(editBtn, pdfBtn, txtBtn, qrBtn, delBtn);
+    actions.append(editBtn, pdfBtn, txtBtn, delBtn);
     div.append(info, actions);
     histContainer.append(div);
   });
@@ -2965,8 +3054,7 @@ async function buildPaginatedQrChunks(records) {
 }
 
 /* ============================================================================
-   RECEBIMENTO NO PC VIA QR CODE (PC exibe QR -> Celular lê -> Envia P2P/Relay)
-   Sem banco de dados • Criptografia E2E AES-GCM com chave exclusiva na URL
+   RECEBIMENTO NO PC VIA QR CODE (PC exibe QR -> Celular lê -> Envia)
    ============================================================================ */
 let pcRxEventSource = null;
 let pcRxCryptoKey = null;
@@ -3074,10 +3162,6 @@ async function openPcReceiveModal() {
   };
 }
 
-document.getElementById('receiveOnPcQRBtn').onclick = () => {
-  hapticTap();
-  openPcReceiveModal();
-};
 document.getElementById('closePcReceiveModal').onclick = closePcReceiveModal;
 document.getElementById('pcReceiveModal').addEventListener('click', (e) => {
   if (e.target === document.getElementById('pcReceiveModal')) closePcReceiveModal();
@@ -3113,7 +3197,7 @@ function updateMobileSendSummary() {
   const sendBtn = document.getElementById('confirmMobileSendBtn');
 
   if (!selected.length) {
-    box.textContent = 'Nenhuma máquina salva neste navegador para enviar. Se você usa o ícone instalado na tela inicial, abra o app por ele e toque em "📷 Ler QR Code".';
+    box.textContent = 'Nenhuma máquina salva neste navegador para enviar. Se você usa o ícone instalado na tela inicial, abra o app por ele e toque em "📷 Ler QR" no topo.';
     sendBtn.disabled = true;
     return;
   }
@@ -3258,7 +3342,7 @@ function renderCurrentQrPage() {
 
 async function openQrExportForRecords(records) {
   if (!records || !records.length) {
-    alert('Nenhuma máquina selecionada para gerar QR Code.');
+    alert('Nenhuma máquina salva para gerar QR Code.');
     return;
   }
   try {
@@ -3279,15 +3363,16 @@ function closeQrExportModal() {
   syncWakeLock();
 }
 
-document.getElementById('exportQRFiltered').onclick = () => {
+document.getElementById('openOfflineQrFromScanBtn').onclick = () => {
   hapticTap();
-  if (!history.length) { alert('Nenhuma máquina salva no histórico.'); return; }
-  const filteredEntries = getFilteredHistoryEntries();
-  if (!filteredEntries.length) {
-    alert('Nenhuma máquina corresponde aos filtros ativos para gerar QR Code.');
+  closeQrScanModal();
+  if (!history.length) {
+    alert('Nenhuma máquina salva no histórico para gerar QR Code.');
     return;
   }
-  openQrExportForRecords(filteredEntries.map(e => e.r));
+  const filteredEntries = getFilteredHistoryEntries();
+  const list = filteredEntries.length ? filteredEntries.map(e => e.r) : history;
+  openQrExportForRecords(list);
 };
 
 document.getElementById('qrPrevBtn').onclick = () => {
@@ -3389,7 +3474,7 @@ async function checkUrlHashForQrImport() {
 window.addEventListener('load', checkUrlHashForQrImport);
 window.addEventListener('hashchange', checkUrlHashForQrImport);
 
-/* Leitor Interno de QR Code (100% Offline via BarcodeDetector nativo + fallback) */
+/* Leitor Interno de QR Code (Dispositivo Móvel) */
 let scannerMediaStream = null;
 let scannerAnimationFrame = null;
 
@@ -3412,8 +3497,7 @@ function closeQrScanModal() {
   document.getElementById('qrScanModal').style.display = 'none';
 }
 
-document.getElementById('scanQRBtn').onclick = async () => {
-  hapticTap();
+async function openQrScannerModal() {
   const modal = document.getElementById('qrScanModal');
   const statusEl = document.getElementById('scannerStatusText');
   const videoWrap = document.getElementById('scannerVideoWrap');
@@ -3461,7 +3545,7 @@ document.getElementById('scanQRBtn').onclick = async () => {
     statusEl.textContent =
       'Não foi possível acessar a câmera aqui. Use o app Câmera normal do celular para apontar para o QR Code e tocar no link.';
   }
-};
+}
 
 document.getElementById('qrManualImportBtn').onclick = async () => {
   hapticTap();
