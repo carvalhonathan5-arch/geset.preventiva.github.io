@@ -48,7 +48,7 @@
   --btn-danger-color: #be123c;
   --btn-danger-border: #fecdd3;
   --bar-bg: #e2e8f0;
-  --modal-overlay: rgba(15, 23, 42, 0.65);
+  --modal-overlay: rgba(15, 23, 42, 0.68);
   --pend-bg: #fef2f2;
   --pend-border: #fca5a5;
 }
@@ -80,7 +80,7 @@ body.dark-mode {
   --btn-danger-color: #fecdd3;
   --btn-danger-border: #881337;
   --bar-bg: #334155;
-  --modal-overlay: rgba(0, 0, 0, 0.78);
+  --modal-overlay: rgba(0, 0, 0, 0.80);
   --pend-bg: #2b1419;
   --pend-border: #7f1d1d;
 }
@@ -92,6 +92,10 @@ body {
   color: var(--text-color);
   background: var(--bg-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 button {
@@ -120,7 +124,7 @@ button:disabled {
 }
 
 button:hover:not(:disabled) .btn-ico {
-  transform: scale(1.18);
+  transform: scale(1.16);
 }
 
 header {
@@ -188,8 +192,8 @@ header p {
 }
 
 .smart-qr-btn {
-  background: linear-gradient(135deg, #ffffff 0%, #eaf5ff 100%);
-  border: 1.5px solid #7dd3fc;
+  background: linear-gradient(135deg, #ffffff 0%, #e6f3ff 100%);
+  border: 2px solid #0092FD;
   color: #000C7B;
   padding: 9px 16px;
   border-radius: 22px;
@@ -201,14 +205,14 @@ header p {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.22);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
   flex: none;
 }
 
 .smart-qr-btn:hover {
-  background: linear-gradient(135deg, #0092FD 0%, #0066dc 100%);
+  background: linear-gradient(135deg, #0092FD 0%, #004fb0 100%);
   border-color: #ffffff;
   color: #ffffff;
   transform: translateY(-2px);
@@ -220,8 +224,8 @@ header p {
 }
 
 .theme-toggle-btn {
-  background: rgba(0, 146, 253, 0.22);
-  border: 1.5px solid rgba(179, 219, 255, 0.55);
+  background: rgba(0, 146, 253, 0.26);
+  border: 1.5px solid #93c5fd;
   color: #ffffff;
   padding: 9px 15px;
   border-radius: 22px;
@@ -232,7 +236,7 @@ header p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   backdrop-filter: blur(4px);
   white-space: nowrap;
@@ -562,11 +566,12 @@ textarea {
   background: var(--btn-status-bg);
   color: var(--heading-color);
   border-radius: 8px;
-  padding: 6px 13px;
+  padding: 6px 12px;
   font-size: 12.5px;
   font-weight: 800;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.15px;
   cursor: pointer;
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -650,7 +655,7 @@ button.action-btn {
   padding: 14px 18px;
   font-size: 14.5px;
   font-weight: 800;
-  letter-spacing: 0.25px;
+  letter-spacing: 0.2px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -878,60 +883,178 @@ body.dark-mode .btn-small:hover {
 }
 .notice.error { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
 
+/* MODAIS DE QR CODE SEM BARRA DE ROLAGEM */
 .modal {
   display: none;
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
+  inset: 0;
   background: var(--modal-overlay);
   backdrop-filter: blur(4px);
   z-index: 1000;
   justify-content: center;
   align-items: center;
-  padding: 15px;
+  padding: 10px;
+  overflow: hidden;
 }
 
 .modal-content {
   background: var(--panel-bg);
   color: var(--text-color);
   width: 100%;
-  max-width: 650px;
+  max-width: 470px;
+  max-height: calc(100dvh - 20px);
   border-radius: 16px;
-  padding: 22px;
-  max-height: 92vh;
-  overflow-y: auto;
-  border: 1px solid var(--border-color);
+  padding: 16px 18px;
+  overflow: hidden;
+  border: 1.5px solid var(--primary-border);
+  box-shadow: 0 18px 44px rgba(0, 12, 123, 0.32);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* Estilos dos Modais de QR Code */
-.qr-card-box {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 16px;
-  margin: 12px auto;
+.qr-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.qr-modal-head h3 {
+  margin: 0;
+  font-size: 16.5px;
+  font-weight: 800;
+  color: var(--heading-color);
+}
+
+.qr-close-x {
+  background: var(--primary-soft);
+  border: 1.5px solid var(--primary-border);
+  color: var(--heading-color);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.qr-close-x:hover {
+  background: #0092FD;
+  border-color: #0092FD;
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+/* DOIS BOTÕES DO QR CODE NA PALETA DE CORES GESET */
+.qr-mode-switcher {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.qr-mode-btn {
+  border: 2px solid #0092FD;
+  background: #e6f3ff;
+  color: #000C7B;
+  border-radius: 11px;
+  padding: 9px 10px;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px solid #cbd5e1;
-  max-width: 350px;
+  gap: 2px;
+  text-align: center;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.dark-mode .qr-mode-btn {
+  background: rgba(0, 146, 253, 0.16);
+  border-color: #38bdf8;
+  color: #e0f2fe;
+}
+
+.qr-mode-btn:hover:not(.active) {
+  background: #cfe8ff;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px rgba(0, 146, 253, 0.24);
+}
+
+body.dark-mode .qr-mode-btn:hover:not(.active) {
+  background: rgba(0, 146, 253, 0.28);
+}
+
+.qr-mode-btn.active {
+  background: linear-gradient(135deg, #000C7B 0%, #004fb0 55%, #0092FD 100%);
+  border-color: #0092FD;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 146, 253, 0.36);
+}
+
+body.dark-mode .qr-mode-btn.active {
+  border-color: #7dd3fc;
+}
+
+.qr-mode-btn-title {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.qr-mode-btn-sub {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.86;
+  line-height: 1.15;
+}
+
+.qr-compact-desc {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.qr-card-box {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px;
+  margin: 4px auto 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #93c5fd;
+  width: fit-content;
 }
 
 .qr-card-box canvas {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
+  width: min(215px, 46vw, 29vh);
+  height: min(215px, 46vw, 29vh);
   display: block;
   image-rendering: pixelated;
 }
 
 .qr-meta-pill {
   display: inline-block;
-  background: rgba(0, 146, 253, 0.14);
+  background: var(--primary-soft);
   color: var(--heading-color);
-  border: 1px solid rgba(0, 146, 253, 0.35);
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 10px;
+  border: 1px solid var(--primary-border);
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 3px 10px;
   border-radius: 20px;
   margin-bottom: 6px;
 }
@@ -941,13 +1064,13 @@ body.dark-mode .btn-small:hover {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 8px 10px;
+  border-radius: 9px;
   background: var(--btn-status-bg);
   border: 1px solid var(--border-color);
-  font-size: 13px;
-  font-weight: 600;
-  margin-top: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-top: 4px;
 }
 
 .rx-dot {
@@ -973,26 +1096,29 @@ body.dark-mode .btn-small:hover {
   background: var(--btn-status-bg);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 8px 10px;
-  margin-bottom: 12px;
-  max-height: 86px;
-  overflow-y: auto;
-  word-break: break-word;
+  padding: 7px 10px;
+  margin-bottom: 8px;
+  max-height: 54px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   text-align: left;
 }
 
 .qr-nav-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .scanner-video-wrap {
   position: relative;
   width: 100%;
-  max-width: 360px;
-  margin: 10px auto;
+  max-width: 280px;
+  margin: 4px auto 8px;
   border-radius: 12px;
   overflow: hidden;
   background: #000;
@@ -1003,7 +1129,7 @@ body.dark-mode .btn-small:hover {
 .scanner-video-wrap video {
   width: 100%;
   display: block;
-  max-height: 300px;
+  max-height: min(210px, 30vh);
   object-fit: cover;
 }
 
@@ -1013,6 +1139,13 @@ body.dark-mode .btn-small:hover {
   border: 2px dashed rgba(255, 255, 255, 0.85);
   border-radius: 12px;
   pointer-events: none;
+}
+
+.qr-modal-footer-btn {
+  padding: 10px 14px !important;
+  font-size: 13.5px !important;
+  min-height: 40px !important;
+  margin-top: 6px;
 }
 
 #printReport, #printConsolidatedReport { display: none; }
@@ -1031,10 +1164,9 @@ body.dark-mode .btn-small:hover {
   .logo-header-img { height: 36px; max-width: 125px; padding: 3px 6px; }
   header h1 { font-size: 16px; margin-bottom: 0; }
   header p { display: none; }
-  .theme-text { display: none; }
   .header-actions { gap: 8px; }
   .smart-qr-btn { min-height: 38px; padding: 7px 12px; font-size: 13px; }
-  .theme-toggle-btn { min-height: 38px; padding: 7px 11px; font-size: 15px; }
+  .theme-toggle-btn { min-height: 38px; padding: 7px 11px; font-size: 13px; }
   .wrap { padding: 14px 14px 84px; }
   .layout-container { grid-template-columns: 1fr; }
   .sidebar-panel { position: static; }
@@ -1043,14 +1175,14 @@ body.dark-mode .btn-small:hover {
   .item { padding: 14px 0; }
   .item-row { flex-direction: column; align-items: stretch; gap: 10px; }
   .status-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .status-btn { width: 100%; min-height: 52px; padding: 14px 10px; font-size: 16px; }
-  .btn-check-all { min-height: 36px; padding: 6px 11px; font-size: 12.5px; }
+  .status-btn { width: 100%; min-height: 52px; padding: 14px 6px; font-size: 14.5px; }
+  .btn-check-all { min-height: 36px; padding: 6px 11px; font-size: 12px; }
   .actions { grid-template-columns: 1fr; }
-  button.action-btn { min-height: 52px; padding: 16px; font-size: 16px; }
+  button.action-btn { min-height: 52px; padding: 16px; font-size: 15.5px; }
   .history-filters { grid-template-columns: 1fr; }
   .record { flex-direction: column; }
   .record-actions { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .btn-small { min-height: 44px; padding: 10px 8px; font-size: 13.5px; text-align: center; }
+  .btn-small { min-height: 44px; padding: 10px 6px; font-size: 12.5px; text-align: center; }
 }
 
 /* EVITA SOBREPOSIÇÃO NO CABEÇALHO EM TELAS ESTREITAS DE CELULAR */
@@ -1073,20 +1205,20 @@ body.dark-mode .btn-small:hover {
   }
   .header-actions {
     width: 100%;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 8px;
     padding-top: 6px;
     border-top: 1px solid rgba(255, 255, 255, 0.16);
   }
   .smart-qr-btn {
     flex: 1;
-    max-width: 210px;
     min-height: 38px;
-    font-size: 13px;
+    font-size: 12.5px;
   }
   .theme-toggle-btn {
     min-height: 38px;
-    padding: 7px 13px;
+    padding: 7px 12px;
+    font-size: 12.5px;
   }
 }
 
@@ -1138,13 +1270,13 @@ body.dark-mode .btn-small:hover {
     </div>
   </div>
   <div class="header-actions">
-    <button id="smartQrBtn" class="smart-qr-btn" type="button" title="Transferência por QR Code">
-      <span id="smartQrIcon" class="btn-ico">💻</span>
-      <span id="smartQrText">Receber via QR</span>
+    <button id="smartQrBtn" class="smart-qr-btn" type="button" title="Enviar ou receber registros via QR Code entre PC e celular">
+      <span id="smartQrIcon" class="btn-ico">🔄</span>
+      <span id="smartQrText">Enviar / Receber QR</span>
     </button>
-    <button id="themeToggle" class="theme-toggle-btn" type="button" title="Alternar Modo Escuro/Claro">
+    <button id="themeToggle" class="theme-toggle-btn" type="button" title="Alternar entre tema claro e escuro">
       <span id="themeIcon" class="btn-ico">🌙</span>
-      <span id="themeText" class="theme-text">Modo Escuro</span>
+      <span id="themeText" class="theme-text">Tema Escuro</span>
     </button>
   </div>
 </header>
@@ -1152,7 +1284,7 @@ body.dark-mode .btn-small:hover {
 <main class="wrap">
   <div id="updateBanner" class="update-banner" role="button" tabindex="0">
     <span>🔄 Nova versão do aplicativo disponível!</span>
-    <span class="update-banner-cta">Atualizar agora</span>
+    <span class="update-banner-cta">Atualizar Aplicativo Agora</span>
   </div>
 
   <div id="notice" class="notice" role="status"></div>
@@ -1168,7 +1300,7 @@ body.dark-mode .btn-small:hover {
           <div>
             <div class="label-row">
               <label class="label" for="assetTag" title="ID / Patrimônio Geset">ID Geset</label>
-              <button type="button" id="btnNoAssetTag" class="btn-now" title="Marcar equipamento sem ID Geset">Sem ID</button>
+              <button type="button" id="btnNoAssetTag" class="btn-now" title="Marcar que este computador não possui etiqueta de ID Geset">Sem ID</button>
             </div>
             <input id="assetTag" type="text" inputmode="numeric" placeholder="Ex.: 042" autocomplete="off">
           </div>
@@ -1200,14 +1332,14 @@ body.dark-mode .btn-small:hover {
           <div>
             <div class="label-row">
               <label class="label" for="started">Início *</label>
-              <button type="button" class="btn-now" data-target="started" title="Preencher com data/hora atual">⏱ Agora</button>
+              <button type="button" class="btn-now" data-target="started" title="Preencher início com a data e hora de agora">⏱ Hora Atual</button>
             </div>
             <input id="started" type="datetime-local">
           </div>
           <div>
             <div class="label-row">
               <label class="label" for="ended">Conclusão</label>
-              <button type="button" class="btn-now" data-target="ended" title="Preencher com data/hora atual">⏱ Agora</button>
+              <button type="button" class="btn-now" data-target="ended" title="Preencher conclusão com a data e hora de agora">⏱ Hora Atual</button>
             </div>
             <input id="ended" type="datetime-local">
           </div>
@@ -1237,12 +1369,12 @@ body.dark-mode .btn-small:hover {
       <section class="panel">
         <label class="label" for="notes">Observações Gerais / Recomendações</label>
         <textarea id="notes" placeholder="Observações gerais da máquina, recomendações de upgrade ou resumo da visita..."></textarea>
-        <p class="hint">Alterne os estados (Ok, N/A, Pend.) de cada item. Ao marcar "Pend.", um campo será aberto para detalhar o problema no próprio item.</p>
+        <p class="hint">Marque o status de cada item. Ao clicar em "⚠ Pendente", um campo será aberto para descrever o problema.</p>
       </section>
 
       <section class="panel actions">
-        <button type="button" class="action-btn primary full-span" id="finish"><span class="btn-ico">✓</span> Finalizar e Registrar Máquina</button>
-        <button type="button" class="action-btn secondary full-span" id="new"><span class="btn-ico">＋</span> Limpar e Iniciar Nova Máquina</button>
+        <button type="button" class="action-btn primary full-span" id="finish" title="Salvar esta máquina no histórico local"><span class="btn-ico">💾</span> Salvar e Concluir Máquina</button>
+        <button type="button" class="action-btn secondary full-span" id="new" title="Limpar os campos acima para iniciar uma nova máquina"><span class="btn-ico">🧹</span> Limpar Formulário (Nova Máquina)</button>
       </section>
 
       <section class="panel">
@@ -1250,9 +1382,9 @@ body.dark-mode .btn-small:hover {
           <h2 style="margin:0">Histórico de Atendimentos Salvos</h2>
           <span class="count" id="recordCount"></span>
         </div>
-        <p class="hint">Os registros ficam salvos localmente no navegador.</p>
+        <p class="hint">Os registros ficam salvos localmente neste aparelho.</p>
         
-        <button type="button" class="action-btn accent" id="printAllPDF" style="margin-top:10px;width:100%"><span class="btn-ico">📄</span> Emitir Relatório Consolidado (PDF)</button>
+        <button type="button" class="action-btn accent" id="printAllPDF" style="margin-top:10px;width:100%" title="Gerar PDF consolidado com todos os atendimentos listados abaixo"><span class="btn-ico">📑</span> Gerar Relatório Geral em PDF</button>
 
         <div class="history-filters">
           <input id="historySearch" type="text" placeholder="🔍 Buscar máquina, ID, cliente ou técnico...">
@@ -1267,96 +1399,164 @@ body.dark-mode .btn-small:hover {
         </div>
 
         <div id="history"></div>
-        <button type="button" class="action-btn danger" id="clear" style="margin-top:12px;width:100%"><span class="btn-ico">🗑️</span> Apagar Histórico Local</button>
+        <button type="button" class="action-btn danger" id="clear" style="margin-top:12px;width:100%" title="Excluir permanentemente todos os registros salvos"><span class="btn-ico">🗑️</span> Apagar Todo o Histórico Salvo</button>
       </section>
     </div>
   </div>
 </main>
 
-<!-- Modal 1: Receber no PC via QR Code (PC exibe QR, Celular lê e envia) -->
-<div id="pcReceiveModal" class="modal">
-  <div class="modal-content" style="max-width:460px;text-align:center">
-    <h3 style="margin-top:0;margin-bottom:6px">Receber Atendimentos do Celular</h3>
-    <div class="qr-meta-pill">Sessão Criptografada • Sem Banco de Dados</div>
-    <p class="hint" style="margin-top:4px;margin-bottom:8px">
-      Aponte a câmera do celular (ou toque em <strong>📷 Ler QR Code</strong> no topo do app do celular) para este código na tela do PC:
-    </p>
-    <div class="qr-card-box">
-      <canvas id="pcReceiveQrCanvas"></canvas>
+<!-- Modal 1: Central QR Code do PC (Enviar para Celular OU Receber do Celular) -->
+<div id="pcQrHubModal" class="modal">
+  <div class="modal-content">
+    <div class="qr-modal-head">
+      <h3>Sincronizar PC ↔ Celular via QR</h3>
+      <button type="button" class="qr-close-x" id="closePcQrTopBtn" title="Fechar janela">✕</button>
     </div>
-    <div class="rx-status-box">
-      <span id="pcRxDot" class="rx-dot"></span>
-      <span id="pcRxStatusText">Conectando canal de recebimento...</span>
+
+    <div class="qr-mode-switcher">
+      <button type="button" id="btnPcModeReceive" class="qr-mode-btn active" title="Exibir QR no PC para receber registros enviados pelo celular">
+        <span class="qr-mode-btn-title">📥 Receber do Celular</span>
+        <span class="qr-mode-btn-sub">Celular → Este PC</span>
+      </button>
+      <button type="button" id="btnPcModeSend" class="qr-mode-btn" title="Gerar QR no PC para o celular baixar os registros salvos aqui">
+        <span class="qr-mode-btn-title">📤 Enviar para o Celular</span>
+        <span class="qr-mode-btn-sub">Este PC → Celular</span>
+      </button>
     </div>
-    <button type="button" class="action-btn secondary" id="closePcReceiveModal" style="width:100%;margin-top:14px"><span class="btn-ico">✕</span> Fechar Janela</button>
+
+    <!-- Painel PC: Receber do Celular -->
+    <div id="pcReceivePane" style="text-align:center">
+      <p class="qr-compact-desc">
+        No celular, toque em <strong>📷 QR Code PC / Celular</strong> e aponte a câmera para este código:
+      </p>
+      <div class="qr-card-box">
+        <canvas id="pcReceiveQrCanvas"></canvas>
+      </div>
+      <div class="rx-status-box">
+        <span id="pcRxDot" class="rx-dot"></span>
+        <span id="pcRxStatusText">Conectando canal de recebimento...</span>
+      </div>
+    </div>
+
+    <!-- Painel PC: Enviar para o Celular -->
+    <div id="pcSendPane" style="display:none;text-align:center">
+      <div style="margin-bottom:6px;text-align:left">
+        <select id="pcSendClientSelect" title="Escolher quais máquinas enviar ao celular">
+          <option value="all">Todas as máquinas salvas</option>
+        </select>
+      </div>
+      <div id="pcSendQrWrap">
+        <div class="qr-card-box">
+          <canvas id="pcSendQrCanvas"></canvas>
+        </div>
+        <div id="pcSendPageNav" class="qr-nav-grid" style="display:none">
+          <button type="button" class="action-btn secondary" id="pcSendPrevBtn" style="padding:7px;font-size:12.5px">◀ QR Anterior</button>
+          <button type="button" class="action-btn primary" id="pcSendNextBtn" style="padding:7px;font-size:12.5px">Próximo QR ▶</button>
+        </div>
+      </div>
+      <div class="rx-status-box">
+        <span id="pcTxDot" class="rx-dot"></span>
+        <span id="pcTxStatusText">Preparando QR Code de envio...</span>
+      </div>
+    </div>
+
+    <button type="button" class="action-btn secondary qr-modal-footer-btn" id="closePcReceiveModal" style="width:100%"><span class="btn-ico">✕</span> Fechar Janela</button>
   </div>
 </div>
 
-<!-- Modal 2: Enviar do Celular para o PC (aberto no celular ao ler o QR do PC) -->
+<!-- Modal 2: Enviar do Celular para o PC (aberto no celular ao ler o QR de recebimento do PC) -->
 <div id="mobileSendToPcModal" class="modal">
-  <div class="modal-content" style="max-width:460px">
-    <h3 style="margin-top:0;margin-bottom:6px">Enviar Máquinas para o PC</h3>
-    <p id="mobileSendSubtitle" class="hint" style="margin-top:0;margin-bottom:12px">
-      Selecione quais registros deseja transferir agora para o computador:
+  <div class="modal-content">
+    <div class="qr-modal-head">
+      <h3>Enviar Máquinas para o PC</h3>
+      <button type="button" class="qr-close-x" id="closeMobileSendTopBtn" title="Cancelar">✕</button>
+    </div>
+    <p class="qr-compact-desc" style="text-align:left">
+      Escolha quais registros deseja transferir agora para o computador:
     </p>
 
-    <div style="margin-bottom:10px">
-      <label class="label" for="mobileSendClientSelect">Filtrar por Cliente / Unidade:</label>
+    <div style="margin-bottom:8px">
+      <label class="label" for="mobileSendClientSelect">Cliente / Unidade:</label>
       <select id="mobileSendClientSelect">
         <option value="all">Todas as máquinas salvas</option>
       </select>
     </div>
 
     <div id="mobileSendSummaryBox" class="qr-machines-list"></div>
-    <div id="mobileSendStatusMsg" class="hint" style="margin-bottom:12px;font-weight:700"></div>
+    <div id="mobileSendStatusMsg" class="hint" style="margin-bottom:8px;font-weight:700"></div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <button type="button" class="action-btn secondary" id="closeMobileSendModal"><span class="btn-ico">✕</span> Cancelar</button>
-      <button type="button" class="action-btn primary" id="confirmMobileSendBtn"><span class="btn-ico">📤</span> Enviar ao PC</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button type="button" class="action-btn secondary qr-modal-footer-btn" id="closeMobileSendModal"><span class="btn-ico">✕</span> Cancelar Envio</button>
+      <button type="button" class="action-btn primary qr-modal-footer-btn" id="confirmMobileSendBtn"><span class="btn-ico">📤</span> Enviar ao PC</button>
     </div>
   </div>
 </div>
 
-<!-- Modal 3: Exportar QR Code Offline (Celular -> Celular sem internet) -->
+<!-- Modal 3: Exportar QR Code Offline do Celular (Celular -> Celular) -->
 <div id="qrExportModal" class="modal">
-  <div class="modal-content" style="max-width:460px;text-align:center">
-    <h3 style="margin-top:0;margin-bottom:6px">Transferir via QR Code (Offline)</h3>
+  <div class="modal-content" style="text-align:center">
+    <div class="qr-modal-head">
+      <h3>QR Code no Celular</h3>
+      <button type="button" class="qr-close-x" id="closeQrExportTopBtn" title="Fechar janela">✕</button>
+    </div>
+
+    <div class="qr-mode-switcher">
+      <button type="button" id="btnMobExportToScan" class="qr-mode-btn" title="Abrir câmera para ler QR Code do PC ou de outro celular">
+        <span class="qr-mode-btn-title">📷 Ler QR Code</span>
+        <span class="qr-mode-btn-sub">Enviar / Receber do PC</span>
+      </button>
+      <button type="button" id="btnMobExportActive" class="qr-mode-btn active" title="Exibir QR Code deste celular para transferência offline">
+        <span class="qr-mode-btn-title">📱 Gerar QR Offline</span>
+        <span class="qr-mode-btn-sub">Deste Celular → Outro</span>
+      </button>
+    </div>
+
     <div id="qrPageBadge" class="qr-meta-pill">QR 1 de 1 • 0 máquina(s)</div>
-    <p class="hint" style="margin-top:4px;margin-bottom:8px">
-      Aponte a câmera do outro celular para o código abaixo e toque no link que aparecer (funciona mesmo sem internet):
-    </p>
     <div class="qr-card-box">
       <canvas id="qrCanvas"></canvas>
     </div>
     <div id="qrMachinesPreview" class="qr-machines-list"></div>
     <div id="qrNavControls" class="qr-nav-grid" style="display:none">
-      <button type="button" class="action-btn secondary" id="qrPrevBtn" style="padding:10px;font-size:13px">◀ QR Anterior</button>
-      <button type="button" class="action-btn primary" id="qrNextBtn" style="padding:10px;font-size:13px">Próximo QR ▶</button>
+      <button type="button" class="action-btn secondary" id="qrPrevBtn" style="padding:7px;font-size:12.5px">◀ QR Anterior</button>
+      <button type="button" class="action-btn primary" id="qrNextBtn" style="padding:7px;font-size:12.5px">Próximo QR ▶</button>
     </div>
-    <button type="button" class="action-btn secondary" id="closeQrExportModal" style="width:100%"><span class="btn-ico">✕</span> Fechar Janela</button>
+    <button type="button" class="action-btn secondary qr-modal-footer-btn" id="closeQrExportModal" style="width:100%"><span class="btn-ico">✕</span> Fechar QR Code</button>
   </div>
 </div>
 
 <!-- Modal 4: Leitor Interno de QR Code (Dispositivo Móvel) -->
 <div id="qrScanModal" class="modal">
-  <div class="modal-content" style="max-width:460px">
-    <h3 style="margin-top:0;margin-bottom:6px">Ler QR Code</h3>
-    <p id="scannerStatusText" class="hint" style="margin-top:0;margin-bottom:10px">
-      Aponte a câmera traseira para o QR Code na tela do PC ou de outro celular:
+  <div class="modal-content">
+    <div class="qr-modal-head">
+      <h3>QR Code no Celular</h3>
+      <button type="button" class="qr-close-x" id="closeQrScanTopBtn" title="Fechar janela">✕</button>
+    </div>
+
+    <div class="qr-mode-switcher">
+      <button type="button" id="btnMobScanActive" class="qr-mode-btn active" title="Usar câmera para ler QR Code do PC ou de outro celular">
+        <span class="qr-mode-btn-title">📷 Ler QR Code</span>
+        <span class="qr-mode-btn-sub">Enviar / Receber do PC</span>
+      </button>
+      <button type="button" id="openOfflineQrFromScanBtn" class="qr-mode-btn" title="Gerar QR Code deste celular para outro aparelho sem internet">
+        <span class="qr-mode-btn-title">📱 Gerar QR Offline</span>
+        <span class="qr-mode-btn-sub">Deste Celular → Outro</span>
+      </button>
+    </div>
+
+    <p id="scannerStatusText" class="qr-compact-desc">
+      Aponte a câmera traseira para o QR Code na tela do PC:
     </p>
     <div id="scannerVideoWrap" class="scanner-video-wrap">
       <video id="scannerVideo" playsinline muted></video>
       <div class="scanner-guide"></div>
     </div>
-    <div style="margin-top:12px">
-      <label class="label" for="qrManualPaste" style="font-size:12px">Ou cole aqui o link lido pela câmera:</label>
-      <div style="display:flex;gap:8px">
-        <input id="qrManualPaste" type="text" placeholder="https://.../#rx=... ou #qr=...">
-        <button type="button" class="action-btn primary" id="qrManualImportBtn" style="padding:0 16px;height:42px;flex:none">Importar →</button>
+    <div style="margin-top:6px">
+      <div style="display:flex;gap:6px">
+        <input id="qrManualPaste" type="text" placeholder="Ou cole aqui o link lido pela câmera..." style="height:38px;font-size:13px">
+        <button type="button" class="action-btn primary" id="qrManualImportBtn" style="padding:0 12px;height:38px;font-size:13px;flex:none">✓ Importar</button>
       </div>
     </div>
-    <button type="button" class="action-btn secondary" id="openOfflineQrFromScanBtn" style="width:100%;margin-top:12px"><span class="btn-ico">📱</span> Gerar QR Offline (Celular → Celular)</button>
-    <button type="button" class="action-btn secondary" id="closeQrScanModal" style="width:100%;margin-top:8px"><span class="btn-ico">✕</span> Fechar Janela</button>
+    <button type="button" class="action-btn secondary qr-modal-footer-btn" id="closeQrScanModal" style="width:100%"><span class="btn-ico">✕</span> Fechar Câmera</button>
   </div>
 </div>
 
@@ -1424,6 +1624,15 @@ let hasUnsavedChanges = false;
 let isUpdatingApp = false;
 let waitingServiceWorker = null;
 let initialHtmlSignature = null;
+
+function syncBodyModalLock() {
+  const anyOpen = ['pcQrHubModal', 'mobileSendToPcModal', 'qrExportModal', 'qrScanModal']
+    .some(id => {
+      const el = document.getElementById(id);
+      return el && el.style.display === 'flex';
+    });
+  document.body.classList.toggle('modal-open', anyOpen);
+}
 
 function showUpdateBanner(worker = null) {
   waitingServiceWorker = worker;
@@ -1528,11 +1737,11 @@ function applyTheme(theme) {
   if (theme === 'dark') {
     document.body.classList.add('dark-mode');
     themeIcon.textContent = '☀️';
-    themeText.textContent = 'Modo Claro';
+    themeText.textContent = 'Tema Claro';
   } else {
     document.body.classList.remove('dark-mode');
     themeIcon.textContent = '🌙';
-    themeText.textContent = 'Modo Escuro';
+    themeText.textContent = 'Tema Escuro';
   }
 }
 
@@ -1703,12 +1912,12 @@ document.querySelectorAll('.btn-now[data-target]').forEach(btn => {
     saveDraft();
 
     btn.classList.add('confirmed');
-    btn.textContent = '✓ Definido';
+    btn.textContent = '✓ Preenchido';
     clearTimeout(btn._feedbackTimer);
     btn._feedbackTimer = setTimeout(() => {
       btn.classList.remove('confirmed');
-      btn.textContent = '⏱ Agora';
-    }, 900);
+      btn.textContent = '⏱ Hora Atual';
+    }, 950);
   });
 });
 
@@ -1787,7 +1996,8 @@ sections.forEach((s) => {
   const btnAllOk = document.createElement('button');
   btnAllOk.type = 'button';
   btnAllOk.className = 'btn-check-all';
-  btnAllOk.textContent = '✓ Tudo Ok';
+  btnAllOk.title = 'Marcar todos os itens desta seção como Ok';
+  btnAllOk.textContent = '✓ Marcar Todos Ok';
   btnAllOk.onclick = () => {
     hapticTap();
     if (!firstInteractionDone && !document.getElementById('started').value) {
@@ -1807,12 +2017,12 @@ sections.forEach((s) => {
     saveDraft();
 
     btnAllOk.classList.add('confirmed');
-    btnAllOk.textContent = '✓ Seção Ok!';
+    btnAllOk.textContent = '✓ Todos Marcados!';
     clearTimeout(btnAllOk._feedbackTimer);
     btnAllOk._feedbackTimer = setTimeout(() => {
       btnAllOk.classList.remove('confirmed');
-      btnAllOk.textContent = '✓ Tudo Ok';
-    }, 900);
+      btnAllOk.textContent = '✓ Marcar Todos Ok';
+    }, 950);
   };
 
   const count = document.createElement('span');
@@ -1823,6 +2033,12 @@ sections.forEach((s) => {
   head.append(h, controls);
   sectionEl.append(head);
   
+  const statusLabels = {
+    'Ok': { text: '✓ Ok', tip: 'Item verificado e funcionando normalmente' },
+    'N/A': { text: '— N/A', tip: 'Item não se aplica a este equipamento' },
+    'Pend.': { text: '⚠ Pendente', tip: 'Item com pendência ou problema (abre campo para descrever)' }
+  };
+
   s.items.forEach(item => {
     const currentIdx = globalIndex;
     const itemDiv = document.createElement('div');
@@ -1845,7 +2061,8 @@ sections.forEach((s) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'status-btn';
-      btn.textContent = st;
+      btn.textContent = statusLabels[st].text;
+      btn.title = statusLabels[st].tip;
       btn.dataset.status = st;
       btn.dataset.globalIndex = currentIdx;
       
@@ -2228,18 +2445,21 @@ function renderHistory() {
     const editBtn = document.createElement('button');
     editBtn.type = 'button';
     editBtn.className = 'btn-small';
-    editBtn.innerHTML = '<span class="btn-ico">✏️</span> Editar';
+    editBtn.title = 'Carregar esta máquina no formulário para editar';
+    editBtn.innerHTML = '<span class="btn-ico">✏️</span> Editar Registro';
     editBtn.onclick = () => { hapticTap(); loadRecordForEditing(originalIndex); };
 
     const pdfBtn = document.createElement('button');
     pdfBtn.type = 'button';
     pdfBtn.className = 'btn-small btn-pdf-item';
-    pdfBtn.innerHTML = '<span class="btn-ico">📄</span> Gerar PDF';
+    pdfBtn.title = 'Gerar relatório individual em PDF desta máquina';
+    pdfBtn.innerHTML = '<span class="btn-ico">📄</span> PDF Individual';
     pdfBtn.onclick = () => { hapticTap(); printHistoryRecord(originalIndex); };
 
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'btn-small btn-del';
+    delBtn.title = 'Excluir este registro do histórico';
     delBtn.innerHTML = '<span class="btn-ico">🗑️</span> Excluir';
     delBtn.onclick = () => {
       hapticTap();
@@ -2302,7 +2522,7 @@ function loadRecordForEditing(index) {
   updateProgress();
   updateDurationDisplay();
 
-  document.getElementById('finish').innerHTML = '<span class="btn-ico">✓</span> Salvar Alterações da Máquina';
+  document.getElementById('finish').innerHTML = '<span class="btn-ico">💾</span> Salvar Alterações desta Máquina';
   showNotice(`Editando o registro da máquina: ${r.machine}`);
 }
 
@@ -2315,7 +2535,7 @@ function resetMachine() {
   firstInteractionDone = false;
   editingIndex = null;
   hasUnsavedChanges = false;
-  document.getElementById('finish').innerHTML = '<span class="btn-ico">✓</span> Finalizar e Registrar Máquina';
+  document.getElementById('finish').innerHTML = '<span class="btn-ico">💾</span> Salvar e Concluir Máquina';
   document.getElementById('machine').value = '';
   document.getElementById('assetTag').value = '';
   syncNoAssetTagUI();
@@ -2639,8 +2859,8 @@ document.getElementById('finish').onclick = () => {
   const unmarkedCount = activeItems.filter(x => !x.state).length;
   if (unmarkedCount > 0) {
     const confirmMsg = unmarkedCount === 1
-      ? 'Existe 1 item sem marcação (ficará como "Não verificado"). Deseja finalizar e salvar a máquina mesmo assim?'
-      : `Existem ${unmarkedCount} itens sem marcação (ficarão como "Não verificado"). Deseja finalizar e salvar a máquina mesmo assim?`;
+      ? 'Existe 1 item sem marcação (ficará como "Não verificado"). Deseja salvar e concluir a máquina mesmo assim?'
+      : `Existem ${unmarkedCount} itens sem marcação (ficarão como "Não verificado"). Deseja salvar e concluir a máquina mesmo assim?`;
     if (!confirm(confirmMsg)) return;
   }
 
@@ -2669,7 +2889,7 @@ document.getElementById('finish').onclick = () => {
     showNotice(`Registro da máquina ${machine} alterado com sucesso!`);
   } else {
     history.push(r);
-    showNotice(`Máquina ${machine} registrada com sucesso!`);
+    showNotice(`Máquina ${machine} salva e concluída com sucesso!`);
   }
 
   localStorage.setItem(storageKey, JSON.stringify(history));
@@ -2680,7 +2900,7 @@ document.getElementById('finish').onclick = () => {
 document.getElementById('new').onclick = () => {
   hapticTap();
   if (hasUnsavedChanges || editingIndex !== null || itemStates.some(x => x !== null)) {
-    if (confirm('Limpar os dados da máquina atual e iniciar outra?')) resetMachine();
+    if (confirm('Limpar os dados do formulário atual para iniciar uma nova máquina? (O histórico já salvo será mantido)')) resetMachine();
   } else {
     resetMachine();
   }
@@ -2688,7 +2908,7 @@ document.getElementById('new').onclick = () => {
 
 document.getElementById('clear').onclick = () => {
   hapticTap();
-  if (confirm('Apagar permanentemente o histórico local?')) {
+  if (confirm('Apagar permanentemente todo o histórico salvo neste navegador?')) {
     history = [];
     localStorage.removeItem(storageKey);
     renderHistory();
@@ -2698,7 +2918,7 @@ document.getElementById('clear').onclick = () => {
 };
 </script>
 
-<!-- SCRIPT 2: Transferência via QR Code (PC <-> Celular e Offline) -->
+<!-- SCRIPT 2: Transferência Bidirecional via QR Code (PC <-> Celular e Offline) -->
 <script>
 let isMobileWithCameraMode = false;
 
@@ -2726,12 +2946,12 @@ function applySmartQrButtonMode(mobileWithCam) {
 
   if (mobileWithCam) {
     icon.textContent = '📷';
-    text.textContent = 'Ler QR Code';
-    btn.title = 'Ler QR Code do PC ou de outro celular';
+    text.textContent = 'QR Code PC / Celular';
+    btn.title = 'Ler QR Code do PC ou gerar QR Code deste celular';
   } else {
-    icon.textContent = '💻';
-    text.textContent = 'Receber via QR';
-    btn.title = 'Exibir QR Code no PC para receber atendimentos do celular';
+    icon.textContent = '🔄';
+    text.textContent = 'Enviar / Receber QR';
+    btn.title = 'Enviar ou receber atendimentos entre o PC e o celular via QR Code';
   }
 }
 
@@ -2753,13 +2973,13 @@ document.getElementById('smartQrBtn').addEventListener('click', () => {
   if (isMobileWithCameraMode) {
     openQrScannerModal();
   } else {
-    openPcReceiveModal();
+    openPcQrHubModal('receive');
   }
 });
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    if (document.getElementById('pcReceiveModal').style.display === 'flex') closePcReceiveModal();
+    if (document.getElementById('pcQrHubModal').style.display === 'flex') closePcQrHubModal();
     if (document.getElementById('mobileSendToPcModal').style.display === 'flex') closeMobileSendModal();
     if (document.getElementById('qrExportModal').style.display === 'flex') closeQrExportModal();
     if (document.getElementById('qrScanModal').style.display === 'flex') closeQrScanModal();
@@ -3115,7 +3335,7 @@ function renderQrToCanvas(canvas, text) {
   const matrix = generateQrMatrix(text);
   const quiet = 4;
   const modCount = matrix.length + quiet * 2;
-  const scale = Math.max(4, Math.floor(320 / modCount));
+  const scale = Math.max(4, Math.floor(280 / modCount));
   const pxSize = modCount * scale;
   canvas.width = pxSize;
   canvas.height = pxSize;
@@ -3296,39 +3516,56 @@ async function buildPaginatedQrChunks(records) {
   return pages;
 }
 
-/* RECEBIMENTO NO PC VIA QR CODE (PC exibe QR -> Celular lê -> Envia) */
+/* CENTRAL QR CODE DO PC: RECEBER DO CELULAR (#rx=) E ENVIAR PARA O CELULAR (#tx= ou offline #qr=) */
 let pcRxEventSource = null;
 let pcRxCryptoKey = null;
 let pcRxChunkBuffer = {};
+let pcSendOfflinePages = [];
+let pcSendOfflinePageIdx = 0;
 
 function setPcRxStatus(state, text) {
   const dot = document.getElementById('pcRxDot');
   const label = document.getElementById('pcRxStatusText');
-  if (dot) {
-    dot.className = 'rx-dot' + (state === 'online' ? ' online' : state === 'error' ? ' error' : '');
-  }
+  if (dot) dot.className = 'rx-dot' + (state === 'online' ? ' online' : state === 'error' ? ' error' : '');
   if (label) label.textContent = text;
 }
 
-function closePcReceiveModal() {
+function setPcTxStatus(state, text) {
+  const dot = document.getElementById('pcTxDot');
+  const label = document.getElementById('pcTxStatusText');
+  if (dot) dot.className = 'rx-dot' + (state === 'online' ? ' online' : state === 'error' ? ' error' : '');
+  if (label) label.textContent = text;
+}
+
+function stopPcReceiveListener() {
   if (pcRxEventSource) {
     pcRxEventSource.close();
     pcRxEventSource = null;
   }
   pcRxCryptoKey = null;
   pcRxChunkBuffer = {};
-  document.getElementById('pcReceiveModal').style.display = 'none';
+}
+
+function closePcQrHubModal() {
+  stopPcReceiveListener();
+  document.getElementById('pcQrHubModal').style.display = 'none';
+  syncBodyModalLock();
   forceWakeLockForQr = false;
   syncWakeLock();
 }
 
-async function openPcReceiveModal() {
+async function startPcReceiveMode() {
+  stopPcReceiveListener();
+  document.getElementById('btnPcModeReceive').classList.add('active');
+  document.getElementById('btnPcModeSend').classList.remove('active');
+  document.getElementById('pcReceivePane').style.display = 'block';
+  document.getElementById('pcSendPane').style.display = 'none';
+
   if (!navigator.onLine) {
-    alert('O computador precisa estar conectado à internet para receber atendimentos do celular.');
+    setPcRxStatus('error', 'PC sem internet. Conecte o PC para receber do celular.');
     return;
   }
 
-  closePcReceiveModal();
   const rndBytes = new Uint8Array(16);
   crypto.getRandomValues(rndBytes);
   const topicId = 'geset-rx-' + bytesToBase64Url(rndBytes);
@@ -3345,9 +3582,6 @@ async function openPcReceiveModal() {
   const rxUrl = `${baseUrl}#rx=${topicId}.${keyToken}`;
 
   renderQrToCanvas(document.getElementById('pcReceiveQrCanvas'), rxUrl);
-  document.getElementById('pcReceiveModal').style.display = 'flex';
-  forceWakeLockForQr = true;
-  syncWakeLock();
   setPcRxStatus('connecting', 'Abrindo canal temporário no PC...');
 
   const es = new EventSource(`https://ntfy.sh/${encodeURIComponent(topicId)}/sse`);
@@ -3394,8 +3628,8 @@ async function openPcReceiveModal() {
           tokenStr = new TextDecoder().decode(base64UrlToBytes(fullB64));
         }
 
-        closePcReceiveModal();
-        await importIncomingTokenToHistory(tokenStr, 'PC (via QR Code)');
+        closePcQrHubModal();
+        await importIncomingTokenToHistory(tokenStr, 'Celular (via QR Code)');
       }
     } catch (err) {
       setPcRxStatus('error', 'Erro ao processar pacote recebido. Tente enviar novamente.');
@@ -3403,19 +3637,199 @@ async function openPcReceiveModal() {
   };
 }
 
-document.getElementById('closePcReceiveModal').onclick = closePcReceiveModal;
-document.getElementById('pcReceiveModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('pcReceiveModal')) closePcReceiveModal();
+function populatePcSendClientSelect() {
+  const sel = document.getElementById('pcSendClientSelect');
+  const prevVal = sel.value;
+  sel.replaceChildren();
+
+  const optAll = document.createElement('option');
+  optAll.value = 'all';
+  optAll.textContent = `Todas as máquinas salvas no PC (${history.length})`;
+  sel.append(optAll);
+
+  const clients = [...new Set(history.map(r => (r.client || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  clients.forEach(c => {
+    const count = history.filter(r => (r.client || '').trim() === c).length;
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = `${c} (${count} máquina${count > 1 ? 's' : ''})`;
+    sel.append(opt);
+  });
+
+  if (prevVal === 'all' || clients.includes(prevVal)) sel.value = prevVal;
+}
+
+function renderPcSendOfflinePage() {
+  const page = pcSendOfflinePages[pcSendOfflinePageIdx];
+  if (!page) return;
+  renderQrToCanvas(document.getElementById('pcSendQrCanvas'), page.url);
+  const nav = document.getElementById('pcSendPageNav');
+  if (pcSendOfflinePages.length > 1) {
+    nav.style.display = 'grid';
+    document.getElementById('pcSendPrevBtn').disabled = (pcSendOfflinePageIdx === 0);
+    document.getElementById('pcSendNextBtn').disabled = (pcSendOfflinePageIdx === pcSendOfflinePages.length - 1);
+  } else {
+    nav.style.display = 'none';
+  }
+  setPcTxStatus('online', `Modo offline: QR ${pcSendOfflinePageIdx + 1} de ${pcSendOfflinePages.length} (${page.records.length} máquina(s)).`);
+}
+
+async function generatePcSendQr() {
+  const qrWrap = document.getElementById('pcSendQrWrap');
+  const nav = document.getElementById('pcSendPageNav');
+  nav.style.display = 'none';
+
+  if (!history.length) {
+    qrWrap.style.display = 'none';
+    setPcTxStatus('error', 'Nenhuma máquina salva no PC para enviar.');
+    return;
+  }
+
+  const clientVal = document.getElementById('pcSendClientSelect').value;
+  const recordsToSend = clientVal === 'all'
+    ? history.slice()
+    : history.filter(r => (r.client || '').trim() === clientVal);
+
+  if (!recordsToSend.length) {
+    qrWrap.style.display = 'none';
+    setPcTxStatus('error', 'Nenhuma máquina neste filtro.');
+    return;
+  }
+
+  qrWrap.style.display = 'block';
+  setPcTxStatus('connecting', `Preparando ${recordsToSend.length} máquina(s) para o celular...`);
+
+  if (!navigator.onLine) {
+    try {
+      pcSendOfflinePages = await buildPaginatedQrChunks(recordsToSend);
+      pcSendOfflinePageIdx = 0;
+      renderPcSendOfflinePage();
+    } catch (e) {
+      setPcTxStatus('error', 'Não foi possível gerar QR offline.');
+    }
+    return;
+  }
+
+  try {
+    const packedToken = await packRecordsToToken(recordsToSend);
+    const plainBytes = new TextEncoder().encode(packedToken);
+    const rndBytes = new Uint8Array(16);
+    crypto.getRandomValues(rndBytes);
+    const topicId = 'geset-tx-' + bytesToBase64Url(rndBytes);
+
+    let payloadB64 = '';
+    let encMode = 'none';
+    let keyToken = 'plain';
+
+    if (window.crypto && window.crypto.subtle) {
+      const rawKeyBytes = new Uint8Array(16);
+      crypto.getRandomValues(rawKeyBytes);
+      const aesKey = await crypto.subtle.importKey('raw', rawKeyBytes, { name: 'AES-GCM' }, false, ['encrypt']);
+      const iv = new Uint8Array(12);
+      crypto.getRandomValues(iv);
+      const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, plainBytes);
+      const combined = new Uint8Array(iv.length + cipherBuf.byteLength);
+      combined.set(iv, 0);
+      combined.set(new Uint8Array(cipherBuf), iv.length);
+      payloadB64 = bytesToBase64Url(combined);
+      encMode = 'aes';
+      keyToken = bytesToBase64Url(rawKeyBytes);
+    } else {
+      payloadB64 = bytesToBase64Url(plainBytes);
+    }
+
+    const CHUNK_SIZE = 2400;
+    const chunks = [];
+    for (let i = 0; i < payloadB64.length; i += CHUNK_SIZE) {
+      chunks.push(payloadB64.slice(i, i + CHUNK_SIZE));
+    }
+    if (chunks.length === 0) chunks.push('');
+
+    const transferId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    for (let seq = 0; seq < chunks.length; seq++) {
+      const res = await fetch(`https://ntfy.sh/${encodeURIComponent(topicId)}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          id: transferId,
+          seq,
+          tot: chunks.length,
+          enc: encMode,
+          data: chunks[seq]
+        })
+      });
+      if (!res.ok) throw new Error('Falha ao publicar pacote de envio.');
+    }
+
+    const baseUrl = window.location.origin + window.location.pathname;
+    const txUrl = `${baseUrl}#tx=${topicId}.${keyToken}`;
+    renderQrToCanvas(document.getElementById('pcSendQrCanvas'), txUrl);
+    setPcTxStatus('online', `Pronto! Leia este QR no celular para receber ${recordsToSend.length} máquina(s).`);
+  } catch (err) {
+    try {
+      pcSendOfflinePages = await buildPaginatedQrChunks(recordsToSend);
+      pcSendOfflinePageIdx = 0;
+      renderPcSendOfflinePage();
+    } catch (e2) {
+      setPcTxStatus('error', 'Erro ao gerar QR Code de envio.');
+    }
+  }
+}
+
+async function startPcSendMode() {
+  stopPcReceiveListener();
+  document.getElementById('btnPcModeReceive').classList.remove('active');
+  document.getElementById('btnPcModeSend').classList.add('active');
+  document.getElementById('pcReceivePane').style.display = 'none';
+  document.getElementById('pcSendPane').style.display = 'block';
+  populatePcSendClientSelect();
+  await generatePcSendQr();
+}
+
+async function openPcQrHubModal(initialMode = 'receive') {
+  document.getElementById('pcQrHubModal').style.display = 'flex';
+  syncBodyModalLock();
+  forceWakeLockForQr = true;
+  syncWakeLock();
+
+  if (initialMode === 'send') {
+    await startPcSendMode();
+  } else {
+    await startPcReceiveMode();
+  }
+}
+
+document.getElementById('btnPcModeReceive').onclick = () => { hapticTap(); startPcReceiveMode(); };
+document.getElementById('btnPcModeSend').onclick = () => { hapticTap(); startPcSendMode(); };
+document.getElementById('pcSendClientSelect').addEventListener('change', generatePcSendQr);
+document.getElementById('pcSendPrevBtn').onclick = () => {
+  hapticTap();
+  if (pcSendOfflinePageIdx > 0) {
+    pcSendOfflinePageIdx--;
+    renderPcSendOfflinePage();
+  }
+};
+document.getElementById('pcSendNextBtn').onclick = () => {
+  hapticTap();
+  if (pcSendOfflinePageIdx < pcSendOfflinePages.length - 1) {
+    pcSendOfflinePageIdx++;
+    renderPcSendOfflinePage();
+  }
+};
+document.getElementById('closePcReceiveModal').onclick = closePcQrHubModal;
+document.getElementById('closePcQrTopBtn').onclick = closePcQrHubModal;
+document.getElementById('pcQrHubModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('pcQrHubModal')) closePcQrHubModal();
 });
 
-/* Fluxo no Celular: Ao ler o QR Code de recebimento do PC (#rx=...) */
+/* Fluxo no Celular: Ao ler o QR Code de recebimento do PC (#rx=...) ou envio do PC (#tx=...) */
 let activeMobileSendTarget = null;
 
-function parseRxTargetFromText(rawText) {
+function parseSessionTokenFromText(rawText, prefix) {
   let token = String(rawText || '').trim();
-  const idx = token.indexOf('#rx=');
-  if (idx !== -1) token = token.slice(idx + 4);
-  else if (token.startsWith('rx=')) token = token.slice(3);
+  const hashPrefix = '#' + prefix;
+  const idx = token.indexOf(hashPrefix);
+  if (idx !== -1) token = token.slice(idx + hashPrefix.length);
+  else if (token.startsWith(prefix)) token = token.slice(prefix.length);
   else return null;
 
   const dotIdx = token.indexOf('.');
@@ -3424,6 +3838,92 @@ function parseRxTargetFromText(rawText) {
   const keyToken = token.slice(dotIdx + 1).trim();
   if (!topicId || !keyToken) return null;
   return { topicId, keyToken };
+}
+
+function parseRxTargetFromText(rawText) {
+  return parseSessionTokenFromText(rawText, 'rx=');
+}
+
+function parseTxTargetFromText(rawText) {
+  return parseSessionTokenFromText(rawText, 'tx=');
+}
+
+async function receiveRecordsFromPcTxTarget(txTarget) {
+  if (!navigator.onLine) {
+    showNotice('Conecte o celular à internet (Wi-Fi ou 4G) para receber os dados enviados pelo PC.', true);
+    return false;
+  }
+
+  showNotice('Recebendo máquinas enviadas pelo PC...');
+  try {
+    let parsedMessages = [];
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const res = await fetch(`https://ntfy.sh/${encodeURIComponent(txTarget.topicId)}/json?poll=1`, {
+        cache: 'no-store'
+      });
+      if (!res.ok) throw new Error('Falha ao buscar dados enviados pelo PC.');
+      const text = await res.text();
+      const lines = text.trim().split('\n').filter(Boolean);
+      const msgs = [];
+      for (const line of lines) {
+        try {
+          const env = JSON.parse(line);
+          if (env && env.event === 'message' && env.message) {
+            const payload = JSON.parse(env.message);
+            if (payload && payload.id && typeof payload.seq === 'number' && typeof payload.tot === 'number') {
+              msgs.push(payload);
+            }
+          }
+        } catch (e) {}
+      }
+      if (msgs.length > 0 && msgs.length >= msgs[0].tot) {
+        parsedMessages = msgs;
+        break;
+      }
+      parsedMessages = msgs;
+      if (attempt === 0) await new Promise(r => setTimeout(r, 600));
+    }
+
+    if (!parsedMessages.length) {
+      showNotice('Nenhum dado encontrado neste QR Code (sessão expirada). Gere um novo QR no PC.', true);
+      return false;
+    }
+
+    const first = parsedMessages[0];
+    const ordered = new Array(first.tot).fill(null);
+    parsedMessages.forEach(m => {
+      if (m.id === first.id && m.seq >= 0 && m.seq < first.tot) {
+        ordered[m.seq] = m.data;
+      }
+    });
+
+    if (ordered.some(part => part === null)) {
+      showNotice('Transferência incompleta. Leia o QR Code do PC novamente.', true);
+      return false;
+    }
+
+    const fullB64 = ordered.join('');
+    let tokenStr = '';
+    if (first.enc === 'aes') {
+      if (txTarget.keyToken === 'plain' || !window.crypto || !window.crypto.subtle) {
+        throw new Error('Navegador sem suporte à descriptografia.');
+      }
+      const rawKeyBytes = base64UrlToBytes(txTarget.keyToken);
+      const aesKey = await crypto.subtle.importKey('raw', rawKeyBytes, { name: 'AES-GCM' }, false, ['decrypt']);
+      const combined = base64UrlToBytes(fullB64);
+      const iv = combined.slice(0, 12);
+      const cipher = combined.slice(12);
+      const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, cipher);
+      tokenStr = new TextDecoder().decode(plainBuf);
+    } else {
+      tokenStr = new TextDecoder().decode(base64UrlToBytes(fullB64));
+    }
+
+    return await importIncomingTokenToHistory(tokenStr, 'PC (via QR Code)');
+  } catch (err) {
+    showNotice(err.message || 'Erro ao receber os dados do PC.', true);
+    return false;
+  }
 }
 
 function getRecordsForMobileSendSelection() {
@@ -3438,7 +3938,7 @@ function updateMobileSendSummary() {
   const sendBtn = document.getElementById('confirmMobileSendBtn');
 
   if (!selected.length) {
-    box.textContent = 'Nenhuma máquina salva neste navegador para enviar. Se você usa o ícone instalado na tela inicial, abra o app por ele e toque em "📷 Ler QR Code" no topo.';
+    box.textContent = 'Nenhuma máquina salva neste navegador para enviar. Abra o app pelo ícone instalado na tela inicial e toque em "📷 QR Code PC / Celular".';
     sendBtn.disabled = true;
     return;
   }
@@ -3471,15 +3971,18 @@ function openMobileSendToPcModal(rxTarget) {
 
   updateMobileSendSummary();
   document.getElementById('mobileSendToPcModal').style.display = 'flex';
+  syncBodyModalLock();
 }
 
 function closeMobileSendModal() {
   activeMobileSendTarget = null;
   document.getElementById('mobileSendToPcModal').style.display = 'none';
+  syncBodyModalLock();
 }
 
 document.getElementById('mobileSendClientSelect').addEventListener('change', updateMobileSendSummary);
 document.getElementById('closeMobileSendModal').onclick = closeMobileSendModal;
+document.getElementById('closeMobileSendTopBtn').onclick = closeMobileSendModal;
 document.getElementById('mobileSendToPcModal').addEventListener('click', (e) => {
   if (e.target === document.getElementById('mobileSendToPcModal')) closeMobileSendModal();
 });
@@ -3590,6 +4093,7 @@ async function openQrExportForRecords(records) {
     forceWakeLockForQr = true;
     syncWakeLock();
     document.getElementById('qrExportModal').style.display = 'flex';
+    syncBodyModalLock();
     renderCurrentQrPage();
   } catch (err) {
     alert('Não foi possível gerar o QR Code para esta seleção.');
@@ -3598,6 +4102,7 @@ async function openQrExportForRecords(records) {
 
 function closeQrExportModal() {
   document.getElementById('qrExportModal').style.display = 'none';
+  syncBodyModalLock();
   forceWakeLockForQr = false;
   syncWakeLock();
 }
@@ -3612,6 +4117,12 @@ document.getElementById('openOfflineQrFromScanBtn').onclick = () => {
   const filteredEntries = getFilteredHistoryEntries();
   const list = filteredEntries.length ? filteredEntries.map(e => e.r) : history;
   openQrExportForRecords(list);
+};
+
+document.getElementById('btnMobExportToScan').onclick = () => {
+  hapticTap();
+  closeQrExportModal();
+  openQrScannerModal();
 };
 
 document.getElementById('qrPrevBtn').onclick = () => {
@@ -3631,11 +4142,12 @@ document.getElementById('qrNextBtn').onclick = () => {
 };
 
 document.getElementById('closeQrExportModal').onclick = closeQrExportModal;
+document.getElementById('closeQrExportTopBtn').onclick = closeQrExportModal;
 document.getElementById('qrExportModal').addEventListener('click', (e) => {
   if (e.target === document.getElementById('qrExportModal')) closeQrExportModal();
 });
 
-/* IMPORTAÇÃO UNIFICADA (Detecta #rx= para enviar ao PC OU #qr= offline) */
+/* IMPORTAÇÃO UNIFICADA (Detecta #rx= para enviar ao PC, #tx= para receber do PC OU #qr= offline) */
 function getRecordFingerprint(r) {
   return [
     (r.machine || '').trim().toLowerCase(),
@@ -3698,12 +4210,16 @@ async function handleScannedOrUrlPayload(rawText) {
     openMobileSendToPcModal(rxTarget);
     return true;
   }
+  const txTarget = parseTxTargetFromText(rawText);
+  if (txTarget) {
+    return await receiveRecordsFromPcTxTarget(txTarget);
+  }
   return await importIncomingTokenToHistory(rawText, 'QR Code');
 }
 
 async function checkUrlHashForQrImport() {
   const hash = window.location.hash || '';
-  if (!hash.startsWith('#qr=') && !hash.startsWith('#rx=')) return;
+  if (!hash.startsWith('#qr=') && !hash.startsWith('#rx=') && !hash.startsWith('#tx=')) return;
   window.history.replaceState(null, '', window.location.pathname + window.location.search);
   await handleScannedOrUrlPayload(hash);
 }
@@ -3746,6 +4262,7 @@ function stopCameraScanner() {
 function closeQrScanModal() {
   stopCameraScanner();
   document.getElementById('qrScanModal').style.display = 'none';
+  syncBodyModalLock();
 }
 
 async function openQrScannerModal() {
@@ -3755,10 +4272,11 @@ async function openQrScannerModal() {
   const video = document.getElementById('scannerVideo');
   document.getElementById('qrManualPaste').value = '';
   modal.style.display = 'flex';
+  syncBodyModalLock();
 
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     statusEl.textContent =
-      'Abra o aplicativo Câmera normal do celular, aponte para o QR Code do PC e toque no link que aparecer.';
+      'Abra o app Câmera normal do celular, aponte para o QR Code do PC e toque no link.';
     return;
   }
 
@@ -3770,7 +4288,7 @@ async function openQrScannerModal() {
     video.srcObject = scannerMediaStream;
     await video.play();
     videoWrap.style.display = 'block';
-    statusEl.textContent = 'Aponte a câmera para o QR Code na tela do PC ou de outro celular:';
+    statusEl.textContent = 'Aponte a câmera traseira para o QR Code na tela do PC:';
 
     let nativeDetector = null;
     if ('BarcodeDetector' in window) {
@@ -3792,7 +4310,7 @@ async function openQrScannerModal() {
         offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
       } catch (e) {
         statusEl.textContent =
-          'Neste navegador sem internet, abra o aplicativo Câmera normal do celular, aponte para o QR Code e toque no link.';
+          'Sem internet para carregar leitor: use o app Câmera normal do celular no QR Code.';
         return;
       }
     }
@@ -3838,7 +4356,7 @@ async function openQrScannerModal() {
     scannerAnimationFrame = requestAnimationFrame(scanLoop);
   } catch (err) {
     statusEl.textContent =
-      'Permita o acesso à câmera ou use o app Câmera normal do celular para apontar para o QR Code e tocar no link.';
+      'Permita o acesso à câmera ou use o app Câmera normal do celular para ler o QR Code.';
   }
 }
 
@@ -3851,6 +4369,7 @@ document.getElementById('qrManualImportBtn').onclick = async () => {
 };
 
 document.getElementById('closeQrScanModal').onclick = closeQrScanModal;
+document.getElementById('closeQrScanTopBtn').onclick = closeQrScanModal;
 document.getElementById('qrScanModal').addEventListener('click', (e) => {
   if (e.target === document.getElementById('qrScanModal')) closeQrScanModal();
 });
