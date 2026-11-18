@@ -1,9 +1,8 @@
-const CACHE_NAME = 'geset-pwa-v18';
+const CACHE_NAME = 'geset-pwa-auto-v1';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './sw.js',
   './logo.png'
 ];
 
@@ -12,6 +11,12 @@ self.addEventListener('install', (e) => {
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
   self.skipWaiting();
+});
+
+self.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('activate', (e) => {
@@ -33,38 +38,26 @@ self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
 
   const url = new URL(e.request.url);
-  const isHTML = e.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/');
+  if (url.origin !== self.location.origin) return;
 
-  if (isHTML) {
-    // Network-First para páginas HTML: garante atualizações imediatas quando online
-    e.respondWith(
-      fetch(e.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseToCache));
-          }
-          return networkResponse;
-        })
-        .catch(() => caches.match(e.request).then((cached) => cached || caches.match('./index.html')))
-    );
-    return;
-  }
-
-  // Cache-First para ativos estáticos (ícones, manifesto)
+  // Quando online, busca sempre a versão mais recente no servidor e atualiza o cache.
+  // Quando offline, entrega instantaneamente a cópia salva no aparelho.
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(e.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
+    fetch(e.request, { cache: 'no-cache' })
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseToCache));
         }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseToCache));
         return networkResponse;
-      });
-    })
+      })
+      .catch(() => {
+        return caches.match(e.request).then((cached) => {
+          if (cached) return cached;
+          if (e.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
+      })
   );
 });

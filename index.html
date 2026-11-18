@@ -756,14 +756,84 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
 <div id="printConsolidatedReport"></div>
 
 <script>
+let hasUnsavedChanges = false;
+let isUpdatingApp = false;
+let waitingServiceWorker = null;
+let initialHtmlSignature = null;
+
+function showUpdateBanner(worker = null) {
+  waitingServiceWorker = worker;
+  const banner = document.getElementById('updateBanner');
+  if (banner) banner.style.display = 'flex';
+}
+
+async function getRemoteHtmlSignature() {
+  const res = await fetch('./index.html', { cache: 'no-cache' });
+  if (!res.ok) return null;
+  const etag = res.headers.get('etag') || res.headers.get('last-modified');
+  if (etag) return etag;
+  const text = await res.text();
+  return String(text.length) + ':' + text.slice(-200);
+}
+
+async function checkForContentUpdate() {
+  if (!navigator.onLine) return;
+  try {
+    const currentSig = await getRemoteHtmlSignature();
+    if (!currentSig) return;
+    if (!initialHtmlSignature) {
+      initialHtmlSignature = currentSig;
+    } else if (currentSig !== initialHtmlSignature) {
+      showUpdateBanner();
+    }
+  } catch (e) {}
+}
+
+document.getElementById('updateBanner').addEventListener('click', () => {
+  isUpdatingApp = true;
+  hasUnsavedChanges = false;
+  if (waitingServiceWorker) {
+    waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' });
+  } else {
+    window.location.reload();
+  }
+});
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => console.log('PWA Service Worker registado com sucesso.'))
+    checkForContentUpdate();
+
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+      .then((reg) => {
+        if (reg.waiting) {
+          showUpdateBanner(reg.waiting);
+        }
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateBanner(newWorker);
+            }
+          });
+        });
+      })
       .catch(err => console.log('Erro ao registar Service Worker:', err));
+
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
   });
 }
 
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    checkForContentUpdate();
+  }
+});
 function hapticTap() {
   if (navigator.vibrate) navigator.vibrate(15);
 }
