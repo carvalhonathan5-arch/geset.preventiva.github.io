@@ -85,6 +85,81 @@ body.dark-mode {
   --pend-border: #7f1d1d;
 }
 
+/* BARRA DE ROLAGEM CINZA MODERNA SEM SETAS */
+:root {
+  --sb-track: #f0f4f9;
+  --sb-thumb: #94a3b8;
+  --sb-thumb-hover: #64748b;
+  --sb-thumb-active: #475569;
+}
+
+html:has(body.dark-mode),
+body.dark-mode {
+  --sb-track: #0f172a;
+  --sb-thumb: #475569;
+  --sb-thumb-hover: #64748b;
+  --sb-thumb-active: #94a3b8;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mantém suporte apenas no Firefox sem anular o ::-webkit-scrollbar no Chrome/Edge */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-thumb) var(--sb-track);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-button:single-button,
+::-webkit-scrollbar-button:double-button,
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment,
+::-webkit-scrollbar-button:vertical:start:decrement,
+::-webkit-scrollbar-button:vertical:end:increment,
+::-webkit-scrollbar-button:horizontal:start:decrement,
+::-webkit-scrollbar-button:horizontal:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sb-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--sb-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--sb-track);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--sb-thumb-hover);
+  border: 2px solid var(--sb-track);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--sb-thumb-active);
+  border: 2px solid var(--sb-track);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--sb-track);
+}
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -3024,21 +3099,7 @@ function getConsolidatedMaintenanceDates(records) {
   };
 }
 
-async function waitImageReady(imgEl) {
-  if (!imgEl || !imgEl.getAttribute('src') || imgEl.style.display === 'none') return;
-  try {
-    if (typeof imgEl.decode === 'function') {
-      await imgEl.decode();
-    } else if (!imgEl.complete) {
-      await new Promise((resolve) => {
-        imgEl.onload = resolve;
-        imgEl.onerror = resolve;
-      });
-    }
-  } catch (e) {}
-}
-
-async function preparePrintReport(dataObj) {
+function preparePrintReport(dataObj) {
   const mins = calcDurationMinutes(dataObj.started, dataObj.ended);
   const durationSuffix = mins !== null ? ` (${formatDuration(mins)})` : '';
 
@@ -3054,15 +3115,15 @@ async function preparePrintReport(dataObj) {
   const techSigEl = document.getElementById('pTechSigImg');
   const clientSigEl = document.getElementById('pClientSigImg');
   if (dataObj.techSignature) {
-    techSigEl.style.display = 'block';
     techSigEl.src = dataObj.techSignature;
+    techSigEl.style.display = 'block';
   } else {
     techSigEl.removeAttribute('src');
     techSigEl.style.display = 'none';
   }
   if (dataObj.clientSignature) {
-    clientSigEl.style.display = 'block';
     clientSigEl.src = dataObj.clientSignature;
+    clientSigEl.style.display = 'block';
   } else {
     clientSigEl.removeAttribute('src');
     clientSigEl.style.display = 'none';
@@ -3109,17 +3170,14 @@ async function preparePrintReport(dataObj) {
       visibleCounter++;
     });
   });
-
-  await Promise.all([waitImageReady(techSigEl), waitImageReady(clientSigEl)]);
 }
 
-async function printHistoryRecord(index) {
+function printHistoryRecord(index) {
   const rec = history[index];
   if (!rec) return;
-  await preparePrintReport(rec);
+  preparePrintReport(rec);
   document.body.classList.remove('print-all');
   document.body.classList.add('print-single');
-  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   const machineFileName = (rec.machine || '').trim() || 'Relatorio_Individual';
   printWithCustomTitle(machineFileName);
 }
@@ -3372,7 +3430,6 @@ function setupSignaturePad(canvasId) {
     hasStroke = false;
 
     if (existingDataUrl) {
-      hasStroke = true;
       const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 0, 0, rect.width, rect.height);
@@ -3446,16 +3503,6 @@ document.getElementById('signatureModal').addEventListener('click', (e) => {
   if (e.target === document.getElementById('signatureModal')) closeSignatureModal();
 });
 
-function syncActiveEditSignatures() {
-  if (editingIndex !== null && history[editingIndex]) {
-    history[editingIndex].techSignature = currentTechSignature;
-    history[editingIndex].clientSignature = currentClientSignature;
-    history[editingIndex].signerName = currentSignerName;
-    localStorage.setItem(storageKey, JSON.stringify(history));
-    renderHistory();
-  }
-}
-
 document.getElementById('removeAllSigsBtn').onclick = () => {
   hapticTap();
   techPad.clear();
@@ -3466,7 +3513,6 @@ document.getElementById('removeAllSigsBtn').onclick = () => {
   document.getElementById('signerNameInput').value = '';
   updateSignatureTriggerUI();
   hasUnsavedChanges = true;
-  syncActiveEditSignatures();
   saveDraft();
   closeSignatureModal();
   showNotice('Assinaturas removidas.');
@@ -3479,7 +3525,6 @@ document.getElementById('confirmSigsBtn').onclick = () => {
   currentSignerName = document.getElementById('signerNameInput').value.trim();
   updateSignatureTriggerUI();
   hasUnsavedChanges = true;
-  syncActiveEditSignatures();
   saveDraft();
   closeSignatureModal();
   if (currentTechSignature || currentClientSignature) {
@@ -4024,7 +4069,7 @@ function base64UrlToBytes(b64url) {
   return bytes;
 }
 
-async function packRecordsToToken(records, includeSignatures = true) {
+async function packRecordsToToken(records) {
   const clients = [];
   const techs = [];
   const types = [];
@@ -4061,15 +4106,9 @@ async function packRecordsToToken(records, includeSignatures = true) {
       r.started || '',
       r.ended || '',
       r.notes || '',
-      stStr,
-      sparseNotes,
-      includeSignatures ? (r.techSignature || '') : '',
-      includeSignatures ? (r.clientSignature || '') : '',
-      r.signerName || ''
+      stStr
     ];
-    while (row.length > 9 && (!row[row.length - 1] || (typeof row[row.length - 1] === 'object' && Object.keys(row[row.length - 1]).length === 0))) {
-      row.pop();
-    }
+    if (Object.keys(sparseNotes).length > 0) row.push(sparseNotes);
     return row;
   });
 
@@ -4092,13 +4131,8 @@ async function packRecordsToToken(records, includeSignatures = true) {
 
 async function encodeRecordsChunkToQrUrl(records) {
   const baseUrl = window.location.origin + window.location.pathname;
-  let token = await packRecordsToToken(records, true);
-  let url = `${baseUrl}#qr=${token}`;
-  if (url.length > 2100) {
-    token = await packRecordsToToken(records, false);
-    url = `${baseUrl}#qr=${token}`;
-  }
-  return url;
+  const token = await packRecordsToToken(records);
+  return `${baseUrl}#qr=${token}`;
 }
 
 async function decodeQrStringToRecords(rawQrText) {
@@ -4153,10 +4187,7 @@ async function decodeQrStringToRecords(rawQrText) {
       ended: String(row[6] || ''),
       notes: String(row[7] || ''),
       itemStates: cleanStates,
-      itemNotes: cleanNotes,
-      techSignature: String(row[10] || ''),
-      clientSignature: String(row[11] || ''),
-      signerName: String(row[12] || '')
+      itemNotes: cleanNotes
     };
   });
 }
