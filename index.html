@@ -439,6 +439,9 @@ body.dark-mode::-webkit-scrollbar-corner {
 
 .two > div {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 input[type=text], input[type=number], input[type=datetime-local], select, textarea {
@@ -1341,19 +1344,102 @@ body.dark-mode .qr-mode-btn.active {
 
 /* ADAPTAÇÃO EXCLUSIVA PARA DISPOSITIVOS MÓVEIS (Botões maiores para toque) */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-width: 1024px) {
-  header { padding: 12px 14px; gap: 10px; }
-  .header-brand { gap: 10px; }
-  .logo-header-img { height: 36px; max-width: 125px; padding: 3px 6px; }
-  header h1 { font-size: 16px; margin-bottom: 0; }
+  header {
+    padding: 10px 12px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .header-brand {
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+  }
+  .logo-header-img {
+    height: 32px;
+    max-width: 105px;
+    padding: 2px 5px;
+  }
+  header h1 {
+    font-size: 15px;
+    margin-bottom: 0;
+  }
   header p { display: none; }
-  .header-actions { gap: 8px; }
-  .smart-qr-btn { min-height: 38px; padding: 7px 12px; font-size: 13px; }
-  .theme-toggle-btn { min-height: 38px; padding: 7px 11px; font-size: 13px; }
-  .wrap { padding: 14px 14px 84px; }
+  .header-actions {
+    gap: 6px;
+    flex: none;
+  }
+  .smart-qr-btn {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 11.5px;
+    border-width: 1.5px;
+    border-radius: 18px;
+    gap: 5px;
+    flex: none;
+  }
+  .theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 16px;
+    gap: 0;
+    flex: none;
+  }
+  .theme-text {
+    display: none;
+  }
+
+  /* Primeiro formulário: 1 coluna, campos alinhados e tamanho confortável para leitura/toque */
+  .wrap { padding: 14px 12px 84px; }
   .layout-container { grid-template-columns: 1fr; }
   .sidebar-panel { position: static; }
+  .sidebar-panel .panel { padding: 16px 14px; }
+  .sidebar-panel .two {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .sidebar-panel .meta {
+    margin-top: 12px;
+  }
+  .sidebar-panel .label {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .sidebar-panel .label-row {
+    min-height: 28px;
+    margin-bottom: 6px;
+  }
+  .sidebar-panel .label-row .label {
+    margin-bottom: 0;
+  }
+  .sidebar-panel input[type=text],
+  .sidebar-panel input[type=number],
+  .sidebar-panel input[type=datetime-local],
+  .sidebar-panel select {
+    height: 46px;
+    padding: 10px 12px;
+    font-size: 16px;
+    letter-spacing: normal;
+    border-radius: 10px;
+  }
+  .btn-now {
+    min-height: 30px;
+    padding: 4px 11px;
+    font-size: 12px;
+  }
+  .duration-badge {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .progress-row {
+    font-size: 14.5px;
+  }
+
+  /* Checklist e botões de ação */
   .section h2 { font-size: 15px; }
-  .btn-now { padding: 4px 10px; font-size: 12px; }
   .item { padding: 14px 0; }
   .item-row { flex-direction: column; align-items: stretch; gap: 10px; }
   .status-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
@@ -1367,40 +1453,22 @@ body.dark-mode .qr-mode-btn.active {
   .btn-small { min-height: 40px; padding: 8px 6px; font-size: 12.5px; text-align: center; }
 }
 
-/* EVITA SOBREPOSIÇÃO NO CABEÇALHO EM TELAS ESTREITAS DE CELULAR */
-@media (max-width: 540px) {
-  header {
-    flex-wrap: wrap;
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  .header-brand {
-    flex: 1 1 100%;
-    gap: 10px;
-  }
-  .logo-header-img {
-    height: 34px;
-    max-width: 115px;
-  }
-  header h1 {
-    font-size: 15.5px;
-  }
-  .header-actions {
-    width: 100%;
-    justify-content: space-between;
-    gap: 8px;
-    padding-top: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.16);
-  }
+/* AJUSTE FINO PARA TELAS MUITO ESTREITAS (até 400px) */
+@media (max-width: 400px) {
+  header { padding: 8px 10px; gap: 6px; }
+  .logo-header-img { height: 28px; max-width: 92px; }
+  header h1 { font-size: 14px; }
   .smart-qr-btn {
-    flex: 1;
-    min-height: 38px;
-    font-size: 12.5px;
+    min-height: 32px;
+    padding: 5px 8px;
+    font-size: 11px;
   }
   .theme-toggle-btn {
-    min-height: 38px;
-    padding: 7px 12px;
-    font-size: 12.5px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    font-size: 15px;
   }
 }
 
@@ -3832,7 +3900,7 @@ function applySmartQrButtonMode(mobileWithCam) {
   if (!btn || !text) return;
 
   if (mobileWithCam) {
-    text.textContent = 'QR Code PC / Celular';
+    text.textContent = 'QR Code';
     btn.title = 'Ler QR Code do PC ou gerar QR Code deste celular';
   } else {
     text.textContent = 'Enviar / Receber QR';
