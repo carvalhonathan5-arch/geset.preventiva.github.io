@@ -3024,7 +3024,21 @@ function getConsolidatedMaintenanceDates(records) {
   };
 }
 
-function preparePrintReport(dataObj) {
+async function waitImageReady(imgEl) {
+  if (!imgEl || !imgEl.getAttribute('src') || imgEl.style.display === 'none') return;
+  try {
+    if (typeof imgEl.decode === 'function') {
+      await imgEl.decode();
+    } else if (!imgEl.complete) {
+      await new Promise((resolve) => {
+        imgEl.onload = resolve;
+        imgEl.onerror = resolve;
+      });
+    }
+  } catch (e) {}
+}
+
+async function preparePrintReport(dataObj) {
   const mins = calcDurationMinutes(dataObj.started, dataObj.ended);
   const durationSuffix = mins !== null ? ` (${formatDuration(mins)})` : '';
 
@@ -3040,15 +3054,15 @@ function preparePrintReport(dataObj) {
   const techSigEl = document.getElementById('pTechSigImg');
   const clientSigEl = document.getElementById('pClientSigImg');
   if (dataObj.techSignature) {
-    techSigEl.src = dataObj.techSignature;
     techSigEl.style.display = 'block';
+    techSigEl.src = dataObj.techSignature;
   } else {
     techSigEl.removeAttribute('src');
     techSigEl.style.display = 'none';
   }
   if (dataObj.clientSignature) {
-    clientSigEl.src = dataObj.clientSignature;
     clientSigEl.style.display = 'block';
+    clientSigEl.src = dataObj.clientSignature;
   } else {
     clientSigEl.removeAttribute('src');
     clientSigEl.style.display = 'none';
@@ -3095,14 +3109,17 @@ function preparePrintReport(dataObj) {
       visibleCounter++;
     });
   });
+
+  await Promise.all([waitImageReady(techSigEl), waitImageReady(clientSigEl)]);
 }
 
-function printHistoryRecord(index) {
+async function printHistoryRecord(index) {
   const rec = history[index];
   if (!rec) return;
-  preparePrintReport(rec);
+  await preparePrintReport(rec);
   document.body.classList.remove('print-all');
   document.body.classList.add('print-single');
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   const machineFileName = (rec.machine || '').trim() || 'Relatorio_Individual';
   printWithCustomTitle(machineFileName);
 }
@@ -3355,6 +3372,7 @@ function setupSignaturePad(canvasId) {
     hasStroke = false;
 
     if (existingDataUrl) {
+      hasStroke = true;
       const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 0, 0, rect.width, rect.height);
@@ -3428,6 +3446,16 @@ document.getElementById('signatureModal').addEventListener('click', (e) => {
   if (e.target === document.getElementById('signatureModal')) closeSignatureModal();
 });
 
+function syncActiveEditSignatures() {
+  if (editingIndex !== null && history[editingIndex]) {
+    history[editingIndex].techSignature = currentTechSignature;
+    history[editingIndex].clientSignature = currentClientSignature;
+    history[editingIndex].signerName = currentSignerName;
+    localStorage.setItem(storageKey, JSON.stringify(history));
+    renderHistory();
+  }
+}
+
 document.getElementById('removeAllSigsBtn').onclick = () => {
   hapticTap();
   techPad.clear();
@@ -3438,6 +3466,7 @@ document.getElementById('removeAllSigsBtn').onclick = () => {
   document.getElementById('signerNameInput').value = '';
   updateSignatureTriggerUI();
   hasUnsavedChanges = true;
+  syncActiveEditSignatures();
   saveDraft();
   closeSignatureModal();
   showNotice('Assinaturas removidas.');
@@ -3450,6 +3479,7 @@ document.getElementById('confirmSigsBtn').onclick = () => {
   currentSignerName = document.getElementById('signerNameInput').value.trim();
   updateSignatureTriggerUI();
   hasUnsavedChanges = true;
+  syncActiveEditSignatures();
   saveDraft();
   closeSignatureModal();
   if (currentTechSignature || currentClientSignature) {
@@ -3994,7 +4024,7 @@ function base64UrlToBytes(b64url) {
   return bytes;
 }
 
-async function packRecordsToToken(records) {
+async function packRecordsToToken(records, includeSignatures = true) {
   const clients = [];
   const techs = [];
   const types = [];
@@ -4031,9 +4061,15 @@ async function packRecordsToToken(records) {
       r.started || '',
       r.ended || '',
       r.notes || '',
-      stStr
+      stStr,
+      sparseNotes,
+      includeSignatures ? (r.techSignature || '') : '',
+      includeSignatures ? (r.clientSignature || '') : '',
+      r.signerName || ''
     ];
-    if (Object.keys(sparseNotes).length > 0) row.push(sparseNotes);
+    while (row.length > 9 && (!row[row.length - 1] || (typeof row[row.length - 1] === 'object' && Object.keys(row[row.length - 1]).length === 0))) {
+      row.pop();
+    }
     return row;
   });
 
@@ -4056,8 +4092,13 @@ async function packRecordsToToken(records) {
 
 async function encodeRecordsChunkToQrUrl(records) {
   const baseUrl = window.location.origin + window.location.pathname;
-  const token = await packRecordsToToken(records);
-  return `${baseUrl}#qr=${token}`;
+  let token = await packRecordsToToken(records, true);
+  let url = `${baseUrl}#qr=${token}`;
+  if (url.length > 2100) {
+    token = await packRecordsToToken(records, false);
+    url = `${baseUrl}#qr=${token}`;
+  }
+  return url;
 }
 
 async function decodeQrStringToRecords(rawQrText) {
@@ -4112,7 +4153,10 @@ async function decodeQrStringToRecords(rawQrText) {
       ended: String(row[6] || ''),
       notes: String(row[7] || ''),
       itemStates: cleanStates,
-      itemNotes: cleanNotes
+      itemNotes: cleanNotes,
+      techSignature: String(row[10] || ''),
+      clientSignature: String(row[11] || ''),
+      signerName: String(row[12] || '')
     };
   });
 }
