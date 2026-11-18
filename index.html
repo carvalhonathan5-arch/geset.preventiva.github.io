@@ -1884,6 +1884,8 @@ let hasUnsavedChanges = false;
 let isUpdatingApp = false;
 let waitingServiceWorker = null;
 let initialHtmlSignature = null;
+const STORAGE_QUOTA_BYTES = 5 * 1024 * 1024;
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 function syncBodyModalLock() {
   const anyOpen = ['pcQrHubModal', 'mobileSendToPcModal', 'qrExportModal', 'qrScanModal', 'signatureModal']
@@ -3456,9 +3458,6 @@ document.getElementById('confirmSigsBtn').onclick = () => {
 };
 
 /* INDICADOR DE MEMÓRIA LOCAL (localStorage) E LIMPEZA (+30 DIAS) */
-const STORAGE_QUOTA_BYTES = 5 * 1024 * 1024;
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-
 function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -4906,7 +4905,6 @@ function ensureJsQrLoaded() {
   if (jsQrLoadPromise) return jsQrLoadPromise;
 
   const cdnUrls = [
-    './jsqr.min.js',
     'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js',
     'https://unpkg.com/jsqr@1.4.0/dist/jsQR.min.js'
   ];
