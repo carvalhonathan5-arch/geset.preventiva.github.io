@@ -124,6 +124,8 @@ button:hover:not(:disabled) .btn-ico {
 }
 
 header {
+  position: relative;
+  z-index: 10;
   background: linear-gradient(135deg, #000C7B 0%, #004fb0 100%);
   color: white;
   padding: 14px 20px;
@@ -139,6 +141,12 @@ header {
   align-items: center;
   gap: 14px;
   min-width: 0;
+  flex: 1;
+}
+
+.header-title-wrap {
+  min-width: 0;
+  flex: 1;
 }
 
 .logo-header-img {
@@ -158,6 +166,8 @@ header h1 {
   margin: 0 0 2px;
   font-weight: 800;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 header p {
@@ -165,6 +175,9 @@ header p {
   color: #b3dbff;
   font-size: 13px;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-actions {
@@ -1013,13 +1026,15 @@ body.dark-mode .btn-small:hover {
 
 /* ADAPTAÇÃO EXCLUSIVA PARA DISPOSITIVOS MÓVEIS (Botões maiores para toque) */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-width: 1024px) {
-  header { padding: 12px 14px; }
-  .logo-header-img { height: 38px; padding: 3px 6px; }
-  header h1 { font-size: 16px; }
+  header { padding: 12px 14px; gap: 10px; }
+  .header-brand { gap: 10px; }
+  .logo-header-img { height: 36px; max-width: 125px; padding: 3px 6px; }
+  header h1 { font-size: 16px; margin-bottom: 0; }
   header p { display: none; }
   .theme-text { display: none; }
-  .smart-qr-btn { min-height: 40px; padding: 8px 13px; font-size: 13.5px; }
-  .theme-toggle-btn { min-height: 40px; padding: 8px 11px; font-size: 15px; }
+  .header-actions { gap: 8px; }
+  .smart-qr-btn { min-height: 38px; padding: 7px 12px; font-size: 13px; }
+  .theme-toggle-btn { min-height: 38px; padding: 7px 11px; font-size: 15px; }
   .wrap { padding: 14px 14px 84px; }
   .layout-container { grid-template-columns: 1fr; }
   .sidebar-panel { position: static; }
@@ -1036,6 +1051,43 @@ body.dark-mode .btn-small:hover {
   .record { flex-direction: column; }
   .record-actions { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .btn-small { min-height: 44px; padding: 10px 8px; font-size: 13.5px; text-align: center; }
+}
+
+/* EVITA SOBREPOSIÇÃO NO CABEÇALHO EM TELAS ESTREITAS DE CELULAR */
+@media (max-width: 540px) {
+  header {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .header-brand {
+    flex: 1 1 100%;
+    gap: 10px;
+  }
+  .logo-header-img {
+    height: 34px;
+    max-width: 115px;
+  }
+  header h1 {
+    font-size: 15.5px;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  .smart-qr-btn {
+    flex: 1;
+    max-width: 210px;
+    min-height: 38px;
+    font-size: 13px;
+  }
+  .theme-toggle-btn {
+    min-height: 38px;
+    padding: 7px 13px;
+  }
 }
 
 @media print {
@@ -1080,7 +1132,7 @@ body.dark-mode .btn-small:hover {
 <header>
   <div class="header-brand">
     <img id="headerLogoImg" src="logo.png" alt="Geset Logo" class="logo-header-img">
-    <div>
+    <div class="header-title-wrap">
       <h1>Preventiva TI | Geset</h1>
       <p>Procedimento Operacional Padrão de Manutenção</p>
     </div>
@@ -2281,6 +2333,82 @@ function resetMachine() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function printWithCustomTitle(customTitle) {
+  const originalTitle = document.title;
+  const safeTitle = String(customTitle || originalTitle)
+    .replace(/[\\/:*?"<>|]+/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  document.title = safeTitle || originalTitle;
+
+  let restored = false;
+  const restoreTitle = () => {
+    if (restored) return;
+    restored = true;
+    document.title = originalTitle;
+    window.removeEventListener('afterprint', restoreTitle);
+    window.removeEventListener('focus', onReturnFocus);
+  };
+
+  const onReturnFocus = () => {
+    setTimeout(restoreTitle, 400);
+  };
+
+  window.addEventListener('afterprint', restoreTitle);
+  window.addEventListener('focus', onReturnFocus);
+  window.print();
+}
+
+function getConsolidatedMaintenanceDates(records) {
+  const isoDates = new Set();
+  records.forEach(r => {
+    const raw = (r.started || r.ended || '').trim();
+    if (!raw) return;
+    const datePart = raw.slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+      isoDates.add(datePart);
+    } else {
+      const d = new Date(raw);
+      if (!isNaN(d.getTime())) {
+        const z = n => String(n).padStart(2, '0');
+        isoDates.add(`${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`);
+      }
+    }
+  });
+
+  const sorted = [...isoDates].sort();
+  if (!sorted.length) {
+    const now = new Date();
+    const z = n => String(n).padStart(2, '0');
+    const fallback = `${z(now.getDate())}-${z(now.getMonth() + 1)}-${now.getFullYear()}`;
+    return { fileLabel: fallback, displayLabel: fallback.replace(/-/g, '/') };
+  }
+
+  const toBrHyphen = iso => {
+    const [y, m, d] = iso.split('-');
+    return `${d}-${m}-${y}`;
+  };
+  const toBrSlash = iso => {
+    const [y, m, d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+  };
+
+  if (sorted.length === 1) {
+    return {
+      fileLabel: toBrHyphen(sorted[0]),
+      displayLabel: toBrSlash(sorted[0])
+    };
+  }
+
+  const first = sorted[0];
+  const last = sorted[sorted.length - 1];
+  return {
+    fileLabel: `${toBrHyphen(first)}_a_${toBrHyphen(last)}`,
+    displayLabel: `${toBrSlash(first)} a ${toBrSlash(last)}`
+  };
+}
+
 function preparePrintReport(dataObj) {
   const mins = calcDurationMinutes(dataObj.started, dataObj.ended);
   const durationSuffix = mins !== null ? ` (${formatDuration(mins)})` : '';
@@ -2336,10 +2464,13 @@ function preparePrintReport(dataObj) {
 }
 
 function printHistoryRecord(index) {
-  preparePrintReport(history[index]);
+  const rec = history[index];
+  if (!rec) return;
+  preparePrintReport(rec);
   document.body.classList.remove('print-all');
   document.body.classList.add('print-single');
-  window.print();
+  const machineFileName = (rec.machine || '').trim() || 'Relatorio_Individual';
+  printWithCustomTitle(machineFileName);
 }
 
 document.getElementById('printAllPDF').onclick = () => {
@@ -2353,6 +2484,7 @@ document.getElementById('printAllPDF').onclick = () => {
   }
 
   const recordsToPrint = filteredEntries.map(entry => entry.r);
+  const maintDates = getConsolidatedMaintenanceDates(recordsToPrint);
   const container = document.getElementById('printConsolidatedBody');
   container.replaceChildren();
 
@@ -2418,7 +2550,7 @@ document.getElementById('printAllPDF').onclick = () => {
   statsDiv.style.gridTemplateColumns = 'repeat(5, 1fr)';
   statsDiv.innerHTML = `
     <div><strong>Equipamentos:</strong> ${recordsToPrint.length}</div>
-    <div><strong>Data Emissão:</strong> ${new Date().toLocaleDateString('pt-BR')}</div>
+    <div><strong>Data Manutenção:</strong> ${escapeHtml(maintDates.displayLabel)}</div>
     <div><strong>Itens OK:</strong> ${totalOk}</div>
     <div><strong>Pendências:</strong> ${totalPend}</div>
     <div><strong>Tempo Total:</strong> ${escapeHtml(totalTimeStr)}</div>
@@ -2446,7 +2578,8 @@ document.getElementById('printAllPDF').onclick = () => {
         const mins = calcDurationMinutes(r.started, r.ended);
         const durCell = mins !== null ? formatDuration(mins) : '-';
         const isPend = hasRecordPending(r);
-        const dateStr = r.ended ? new Date(r.ended).toLocaleDateString('pt-BR') : '-';
+        const refDate = r.started || r.ended;
+        const dateStr = refDate ? new Date(refDate).toLocaleDateString('pt-BR') : '-';
         return `<tr>
           <td>${i + 1}</td>
           <td><strong>${escapeHtml(r.machine)}</strong></td>
@@ -2492,7 +2625,10 @@ document.getElementById('printAllPDF').onclick = () => {
 
   document.body.classList.remove('print-single');
   document.body.classList.add('print-all');
-  window.print();
+  const consolidatedFileName = clientVal !== 'all'
+    ? `Relatorio_Consolidado_${clientVal}_${maintDates.fileLabel}`
+    : `Relatorio_Consolidado_Preventiva_${maintDates.fileLabel}`;
+  printWithCustomTitle(consolidatedFileName);
 };
 
 document.getElementById('finish').onclick = () => {
