@@ -2788,14 +2788,16 @@ function generateQrMatrix(text) {
     }
     const fbits = qrGetFormatBits(mask);
     for (let i = 0; i < 15; i++) {
-      const bit = (fbits >> i) & 1;
-      if (i < 6) m[8][i] = bit;
-      else if (i < 8) m[8][i + 1] = bit;
-      else m[8][size - 15 + i] = bit;
+      const bit = (fbits >> (14 - i)) & 1;
 
-      if (i < 8) m[size - 1 - i][8] = bit;
-      else if (i < 9) m[15 - i][8] = bit;
+      if (i < 6) m[8][i] = bit;
+      else if (i === 6) m[8][7] = bit;
+      else if (i === 7) m[8][8] = bit;
+      else if (i === 8) m[7][8] = bit;
       else m[14 - i][8] = bit;
+
+      if (i < 7) m[size - 1 - i][8] = bit;
+      else m[8][size - 15 + i] = bit;
     }
     return m;
   };
@@ -3474,9 +3476,23 @@ async function checkUrlHashForQrImport() {
 window.addEventListener('load', checkUrlHashForQrImport);
 window.addEventListener('hashchange', checkUrlHashForQrImport);
 
-/* Leitor Interno de QR Code (Dispositivo Móvel) */
+/* Leitor Interno de QR Code (Nativo via BarcodeDetector + fallback jsQR para iOS/Safari) */
 let scannerMediaStream = null;
 let scannerAnimationFrame = null;
+let jsQrLoadPromise = null;
+
+function ensureJsQrLoaded() {
+  if (window.jsQR) return Promise.resolve(window.jsQR);
+  if (jsQrLoadPromise) return jsQrLoadPromise;
+  jsQrLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+    script.onload = () => resolve(window.jsQR);
+    script.onerror = () => reject(new Error('Falha ao carregar decodificador JS.'));
+    document.head.appendChild(script);
+  });
+  return jsQrLoadPromise;
+}
 
 function stopCameraScanner() {
   if (scannerAnimationFrame) {
@@ -3505,14 +3521,13 @@ async function openQrScannerModal() {
   document.getElementById('qrManualPaste').value = '';
   modal.style.display = 'flex';
 
-  if (!('BarcodeDetector' in window) || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     statusEl.textContent =
-      'Para ler no iPhone ou neste navegador, abra o aplicativo Câmera normal do celular, aponte para o QR Code do PC (ou do outro celular) e toque no link que aparecer.';
+      'Abra o aplicativo Câmera normal do celular, aponte para o QR Code do PC e toque no link que aparecer.';
     return;
   }
 
   try {
-    const detector = new BarcodeDetector({ formats: ['qr_code'] });
     scannerMediaStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: 'environment' } },
       audio: false
@@ -3522,18 +3537,63 @@ async function openQrScannerModal() {
     videoWrap.style.display = 'block';
     statusEl.textContent = 'Aponte a câmera para o QR Code na tela do PC ou de outro celular:';
 
+    let nativeDetector = null;
+    if ('BarcodeDetector' in window) {
+      try {
+        nativeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+      } catch (e) {
+        nativeDetector = null;
+      }
+    }
+
+    let fallbackJsQr = null;
+    let offCanvas = null;
+    let offCtx = null;
+
+    if (!nativeDetector) {
+      try {
+        fallbackJsQr = await ensureJsQrLoaded();
+        offCanvas = document.createElement('canvas');
+        offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+      } catch (e) {
+        statusEl.textContent =
+          'Neste navegador sem internet, abra o aplicativo Câmera normal do celular, aponte para o QR Code e toque no link.';
+        return;
+      }
+    }
+
     let handling = false;
     const scanLoop = async () => {
       if (!scannerMediaStream || handling) return;
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
         try {
-          const codes = await detector.detect(video);
-          if (codes && codes.length > 0 && codes[0].rawValue) {
+          let detectedVal = null;
+          if (nativeDetector) {
+            const codes = await nativeDetector.detect(video);
+            if (codes && codes.length > 0 && codes[0].rawValue) {
+              detectedVal = codes[0].rawValue;
+            }
+          } else if (fallbackJsQr && offCtx && video.videoWidth > 0) {
+            const scale = Math.min(1, 640 / video.videoWidth);
+            const w = Math.floor(video.videoWidth * scale);
+            const h = Math.floor(video.videoHeight * scale);
+            if (offCanvas.width !== w || offCanvas.height !== h) {
+              offCanvas.width = w;
+              offCanvas.height = h;
+            }
+            offCtx.drawImage(video, 0, 0, w, h);
+            const imgData = offCtx.getImageData(0, 0, w, h);
+            const res = fallbackJsQr(imgData.data, w, h, { inversionAttempts: 'dontInvert' });
+            if (res && res.data) {
+              detectedVal = res.data;
+            }
+          }
+
+          if (detectedVal) {
             handling = true;
             hapticTap();
-            const val = codes[0].rawValue;
             closeQrScanModal();
-            await handleScannedOrUrlPayload(val);
+            await handleScannedOrUrlPayload(detectedVal);
             return;
           }
         } catch (e) {}
@@ -3543,7 +3603,7 @@ async function openQrScannerModal() {
     scannerAnimationFrame = requestAnimationFrame(scanLoop);
   } catch (err) {
     statusEl.textContent =
-      'Não foi possível acessar a câmera aqui. Use o app Câmera normal do celular para apontar para o QR Code e tocar no link.';
+      'Permita o acesso à câmera ou use o app Câmera normal do celular para apontar para o QR Code e tocar no link.';
   }
 }
 
