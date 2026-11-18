@@ -169,6 +169,36 @@ header p {
   margin: 0 0 6px;
 }
 
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin: 0 0 6px;
+}
+
+.label-row .label {
+  margin: 0;
+}
+
+.btn-now {
+  background: transparent;
+  border: 1px solid var(--primary-blue);
+  color: var(--heading-color);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1.25;
+  flex: none;
+}
+
+.btn-now:hover {
+  background: var(--primary-blue);
+  color: #ffffff;
+}
+
 .two {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -225,6 +255,25 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+}
+
+.duration-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wakelock-pill {
+  display: none;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(5, 150, 105, 0.14);
+  color: var(--ok-color);
+  border: 1px solid rgba(5, 150, 105, 0.35);
+  white-space: nowrap;
 }
 
 .progress-card {
@@ -444,6 +493,32 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   border-color: transparent;
 }
 
+.update-banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #000C7B 0%, #0092FD 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 146, 253, 0.25);
+}
+
+.update-banner-cta {
+  background: #ffffff;
+  color: #000C7B;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 .notice {
   padding: 12px 14px;
   border-radius: 10px;
@@ -516,6 +591,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   .layout-container { grid-template-columns: 1fr; }
   .sidebar-panel { position: static; }
   .section h2 { font-size: 15px; }
+  .btn-now { padding: 4px 9px; font-size: 12px; }
   .item { padding: 14px 0; }
   .item-row { flex-direction: column; align-items: stretch; gap: 10px; }
   .status-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
@@ -546,6 +622,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   .print-title h2 { margin: 0; font-size: 13pt; color: #000C7B; text-transform: uppercase; font-weight: 800; }
   .print-title p { margin: 2px 0 0; font-size: 8.5pt; color: #475569; }
   
+  .print-filter-note { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; padding: 6px 10px; border-radius: 6px; font-size: 8.5pt; margin-bottom: 10px; }
   .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 15px; background: #f8fafc; padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 12px; font-size: 9pt; }
   .print-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 8.5pt; }
   .print-table th { background: #000C7B; color: white; padding: 6px 8px; text-align: left; }
@@ -557,7 +634,7 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
   .status-pend-print { color: #dc2626; font-weight: bold; }
   
   .print-box { border: 1px solid #cbd5e1; padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; font-size: 8.5pt; page-break-inside: avoid; }
-  .print-box h4 { margin: 0 0 4px; font-size: 9pt; color: #000C7B; }
+  .print-box h4 { margin: 0 0 6px; font-size: 9pt; color: #000C7B; }
   .print-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 25px; page-break-inside: avoid; }
   .print-sig-line { border-top: 1px solid #334155; text-align: center; padding-top: 5px; font-size: 8.5pt; color: #334155; }
 }
@@ -580,6 +657,11 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
 </header>
 
 <main class="wrap">
+  <div id="updateBanner" class="update-banner" role="button" tabindex="0">
+    <span>🔄 Nova versão do aplicativo disponível!</span>
+    <span class="update-banner-cta">Atualizar agora</span>
+  </div>
+
   <div id="notice" class="notice" role="status"></div>
 
   <div class="layout-container">
@@ -620,18 +702,27 @@ button.danger { background: var(--btn-danger-bg); color: var(--btn-danger-color)
         
         <div class="two meta">
           <div>
-            <label class="label" for="started">Data/Hora de Início *</label>
+            <div class="label-row">
+              <label class="label" for="started">Início *</label>
+              <button type="button" class="btn-now" data-target="started" title="Preencher com data/hora atual">Agora</button>
+            </div>
             <input id="started" type="datetime-local">
           </div>
           <div>
-            <label class="label" for="ended">Data/Hora de Conclusão</label>
+            <div class="label-row">
+              <label class="label" for="ended">Conclusão</label>
+              <button type="button" class="btn-now" data-target="ended" title="Preencher com data/hora atual">Agora</button>
+            </div>
             <input id="ended" type="datetime-local">
           </div>
         </div>
 
         <div class="duration-badge">
-          <span>⏱️ Tempo de atendimento:</span>
-          <span id="durationDisplay">--</span>
+          <span>⏱️ Atendimento:</span>
+          <div class="duration-right">
+            <span id="wakeLockPill" class="wakelock-pill" title="A tela permanecerá acesa durante o atendimento">🔆 Tela ativa</span>
+            <span id="durationDisplay">--</span>
+          </div>
         </div>
         
         <div class="progress-card">
@@ -829,11 +920,13 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    checkForContentUpdate();
+window.addEventListener('beforeunload', (e) => {
+  if (hasUnsavedChanges && !isUpdatingApp) {
+    e.preventDefault();
+    e.returnValue = '';
   }
 });
+
 function hapticTap() {
   if (navigator.vibrate) navigator.vibrate(15);
 }
@@ -944,10 +1037,58 @@ function formatDuration(minutes) {
   return `${h}h ${String(m).padStart(2, '0')}min`;
 }
 
+/* Gerenciador de Screen Wake Lock (mantém a tela acesa durante o atendimento) */
+let wakeLockSentinel = null;
+
+function updateWakeLockBadge(active) {
+  const pill = document.getElementById('wakeLockPill');
+  if (pill) pill.style.display = active ? 'inline-block' : 'none';
+}
+
+function shouldKeepScreenAwake() {
+  const started = document.getElementById('started').value;
+  const ended = document.getElementById('ended').value;
+  return Boolean(started && !ended);
+}
+
+async function syncWakeLock() {
+  if (!('wakeLock' in navigator)) return;
+  const wantAwake = shouldKeepScreenAwake();
+
+  if (wantAwake && !wakeLockSentinel && document.visibilityState === 'visible') {
+    try {
+      wakeLockSentinel = await navigator.wakeLock.request('screen');
+      updateWakeLockBadge(true);
+      wakeLockSentinel.addEventListener('release', () => {
+        wakeLockSentinel = null;
+        updateWakeLockBadge(false);
+      });
+    } catch (err) {
+      wakeLockSentinel = null;
+      updateWakeLockBadge(false);
+    }
+  } else if (!wantAwake && wakeLockSentinel) {
+    try {
+      await wakeLockSentinel.release();
+    } catch (err) {}
+    wakeLockSentinel = null;
+    updateWakeLockBadge(false);
+  }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    checkForContentUpdate();
+    syncWakeLock();
+  }
+});
+
 function updateDurationDisplay() {
   const started = document.getElementById('started').value;
   const ended = document.getElementById('ended').value;
   const el = document.getElementById('durationDisplay');
+  syncWakeLock();
+
   if (!started) {
     el.textContent = '--';
     return;
@@ -963,6 +1104,24 @@ function updateDurationDisplay() {
   const mins = calcDurationMinutes(started, ended);
   el.textContent = mins !== null ? formatDuration(mins) : 'Hora final anterior à inicial';
 }
+
+/* Botões rápidos "Agora" */
+document.querySelectorAll('.btn-now').forEach(btn => {
+  btn.addEventListener('click', () => {
+    hapticTap();
+    const targetId = btn.dataset.target;
+    const input = document.getElementById(targetId);
+    if (!input) return;
+    input.value = localDateTime();
+    input.style.borderColor = 'var(--border-color)';
+    if (targetId === 'started') {
+      firstInteractionDone = true;
+    }
+    hasUnsavedChanges = true;
+    updateDurationDisplay();
+    saveDraft();
+  });
+});
 
 const storageKey = 'geset_preventiva_v3';
 const draftKey = 'geset_preventiva_draft_v3';
@@ -1014,6 +1173,7 @@ sections.forEach((s) => {
       const idx = allItemsFlat.findIndex(x => x.id === item.id);
       if (idx !== -1) itemStates[idx] = 'Ok';
     });
+    hasUnsavedChanges = true;
     updateUIStates();
     updateProgress();
     saveDraft();
@@ -1075,6 +1235,7 @@ sections.forEach((s) => {
     pendInput.dataset.globalIndex = currentIdx;
     pendInput.addEventListener('input', () => {
       itemNotes[currentIdx] = pendInput.value;
+      hasUnsavedChanges = true;
       saveDraft();
     });
 
@@ -1091,6 +1252,7 @@ function setEstadoItem(idx, status) {
   const wasPend = itemStates[idx] === 'Pend.';
   itemStates[idx] = (itemStates[idx] === status) ? null : status;
   const isNowPend = itemStates[idx] === 'Pend.';
+  hasUnsavedChanges = true;
 
   updateUIStates();
   updateProgress();
@@ -1204,6 +1366,7 @@ function updateProgress() {
 }
 
 document.getElementById('deviceType').addEventListener('change', () => {
+  hasUnsavedChanges = true;
   updateUIStates();
   updateProgress();
   saveDraft();
@@ -1261,6 +1424,7 @@ function saveDraft() {
   if (el) {
     el.addEventListener('input', () => {
       el.style.borderColor = 'var(--border-color)';
+      hasUnsavedChanges = true;
       if (id === 'started' || id === 'ended') updateDurationDisplay();
       saveDraft();
     });
@@ -1326,18 +1490,13 @@ function updateAutocompletesAndClientFilter() {
   }
 }
 
-function renderHistory() {
-  updateAutocompletesAndClientFilter();
-
-  const histContainer = document.getElementById('history');
+function getFilteredHistoryEntries() {
   const searchTerm = (document.getElementById('historySearch').value || '').trim().toLowerCase();
   const statusFilter = document.getElementById('historyStatusFilter').value;
   const clientFilter = document.getElementById('historyClientFilter').value;
 
-  histContainer.replaceChildren();
-
   const indexedHistory = history.map((r, originalIndex) => ({ r, originalIndex }));
-  const filtered = indexedHistory.filter(({ r }) => {
+  return indexedHistory.filter(({ r }) => {
     const isPend = hasRecordPending(r);
     if (statusFilter === 'pend' && !isPend) return false;
     if (statusFilter === 'ok' && isPend) return false;
@@ -1357,6 +1516,15 @@ function renderHistory() {
     }
     return true;
   });
+}
+
+function renderHistory() {
+  updateAutocompletesAndClientFilter();
+
+  const histContainer = document.getElementById('history');
+  const filtered = getFilteredHistoryEntries();
+
+  histContainer.replaceChildren();
 
   if (filtered.length !== history.length) {
     document.getElementById('recordCount').textContent = `${filtered.length} de ${history.length} máquina(s)`;
@@ -1478,6 +1646,7 @@ function loadRecordForEditing(index) {
   if (!r) return;
 
   editingIndex = index;
+  hasUnsavedChanges = true;
   document.getElementById('machine').value = r.machine || '';
   document.getElementById('assetTag').value = r.assetTag || '';
   document.getElementById('deviceType').value = r.deviceType || 'Desktop';
@@ -1516,6 +1685,7 @@ function resetMachine() {
   itemNotes.fill('');
   firstInteractionDone = false;
   editingIndex = null;
+  hasUnsavedChanges = false;
   document.getElementById('finish').textContent = '✓ Finalizar e Registrar Máquina';
   document.getElementById('machine').value = '';
   document.getElementById('assetTag').value = '';
@@ -1563,6 +1733,8 @@ function generateTextReportFromData(r) {
   return rep;
 }
 
+const reportModal = document.getElementById('reportModal');
+
 document.getElementById('openReportModal').onclick = () => {
   hapticTap();
   if (!validateHeader()) return;
@@ -1581,10 +1753,22 @@ document.getElementById('openReportModal').onclick = () => {
     itemStates: cleanStates,
     itemNotes: cleanNotes
   });
-  document.getElementById('reportModal').style.display = 'flex';
+  reportModal.style.display = 'flex';
 };
 
-document.getElementById('closeModal').onclick = () => { document.getElementById('reportModal').style.display = 'none'; };
+document.getElementById('closeModal').onclick = () => { reportModal.style.display = 'none'; };
+
+reportModal.addEventListener('click', (e) => {
+  if (e.target === reportModal) {
+    reportModal.style.display = 'none';
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && reportModal.style.display === 'flex') {
+    reportModal.style.display = 'none';
+  }
+});
 
 document.getElementById('copyReport').onclick = () => {
   hapticTap();
@@ -1706,6 +1890,14 @@ document.getElementById('printPDF').onclick = () => {
 document.getElementById('printAllPDF').onclick = () => {
   hapticTap();
   if (!history.length) { alert('Nenhuma máquina salva no histórico.'); return; }
+
+  const filteredEntries = getFilteredHistoryEntries();
+  if (!filteredEntries.length) {
+    alert('Nenhuma máquina corresponde aos filtros ativos para gerar o relatório.');
+    return;
+  }
+
+  const recordsToPrint = filteredEntries.map(entry => entry.r);
   const container = document.getElementById('printConsolidatedReport');
   container.replaceChildren();
 
@@ -1714,19 +1906,53 @@ document.getElementById('printAllPDF').onclick = () => {
   headerDiv.innerHTML = `<div class="print-logo"><img src="logo.png" alt="Geset Logo" class="print-logo-img"></div><div class="print-title"><h2>Relatório Geral Consolidado</h2><p>Geset Gestão de Tecnologia</p></div>`;
   container.append(headerDiv);
 
+  /* Exibe nota se houver filtros ativos */
+  const searchVal = (document.getElementById('historySearch').value || '').trim();
+  const clientVal = document.getElementById('historyClientFilter').value;
+  const statusVal = document.getElementById('historyStatusFilter').value;
+  const activeFilterLabels = [];
+  if (clientVal !== 'all') activeFilterLabels.push(`Cliente: ${clientVal}`);
+  if (statusVal === 'ok') activeFilterLabels.push('Status: Somente OK');
+  if (statusVal === 'pend') activeFilterLabels.push('Status: Com Pendência');
+  if (searchVal) activeFilterLabels.push(`Busca: "${searchVal}"`);
+
+  if (activeFilterLabels.length > 0) {
+    const filterNote = document.createElement('div');
+    filterNote.className = 'print-filter-note';
+    filterNote.innerHTML = `<strong>Filtro aplicado:</strong> ${escapeHtml(activeFilterLabels.join(' • '))}`;
+    container.append(filterNote);
+  }
+
   let totalOk = 0;
   let totalPend = 0;
   let totalMinutes = 0;
   let timedCount = 0;
+  const pendingDetailsList = [];
 
-  history.forEach(r => {
+  recordsToPrint.forEach(r => {
     const isNotebook = (r.deviceType === 'Notebook');
     if (Array.isArray(r.itemStates)) {
-      allItemsFlat.forEach((item, idx) => {
-        if (isNotebook && item.desktopOnly) return;
-        const st = r.itemStates[idx];
-        if (st === 'Ok') totalOk++;
-        if (st === 'Pend.') totalPend++;
+      sections.forEach((s, secIdx) => {
+        let visibleCounter = 1;
+        s.items.forEach(item => {
+          if (isNotebook && item.desktopOnly) return;
+          const idx = allItemsFlat.findIndex(x => x.id === item.id);
+          const st = r.itemStates[idx];
+          if (st === 'Ok') totalOk++;
+          if (st === 'Pend.') {
+            totalPend++;
+            const displayId = `${secIdx + 1}.${visibleCounter}`;
+            const note = (r.itemNotes && r.itemNotes[idx]) ? r.itemNotes[idx].trim() : '';
+            pendingDetailsList.push({
+              machine: r.machine || '-',
+              assetTag: r.assetTag || '',
+              client: r.client || '-',
+              itemLabel: `${displayId} - ${item.text}`,
+              note: note || 'Sem detalhe adicional registrado.'
+            });
+          }
+          visibleCounter++;
+        });
       });
     }
     const mins = calcDurationMinutes(r.started, r.ended);
@@ -1742,7 +1968,7 @@ document.getElementById('printAllPDF').onclick = () => {
   statsDiv.className = 'print-grid';
   statsDiv.style.gridTemplateColumns = 'repeat(5, 1fr)';
   statsDiv.innerHTML = `
-    <div><strong>Equipamentos:</strong> ${history.length}</div>
+    <div><strong>Equipamentos:</strong> ${recordsToPrint.length}</div>
     <div><strong>Data Emissão:</strong> ${new Date().toLocaleDateString('pt-BR')}</div>
     <div><strong>Itens OK:</strong> ${totalOk}</div>
     <div><strong>Pendências:</strong> ${totalPend}</div>
@@ -1767,7 +1993,7 @@ document.getElementById('printAllPDF').onclick = () => {
       </tr>
     </thead>
     <tbody>
-      ${history.map((r, i) => {
+      ${recordsToPrint.map((r, i) => {
         const mins = calcDurationMinutes(r.started, r.ended);
         const durCell = mins !== null ? formatDuration(mins) : '-';
         const isPend = hasRecordPending(r);
@@ -1788,6 +2014,34 @@ document.getElementById('printAllPDF').onclick = () => {
   `;
   container.append(summaryTable);
 
+  /* Seção de detalhamento das pendências no consolidado */
+  if (pendingDetailsList.length > 0) {
+    const pendBox = document.createElement('div');
+    pendBox.className = 'print-box';
+    pendBox.innerHTML = `
+      <h4>Detalhamento de Pendências Identificadas (${pendingDetailsList.length})</h4>
+      <table class="print-table" style="margin-bottom:0">
+        <thead>
+          <tr>
+            <th style="width:24%">Equipamento</th>
+            <th style="width:38%">Item Pendente</th>
+            <th>Observação / Detalhe</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${pendingDetailsList.map(p => `
+            <tr>
+              <td><strong>${escapeHtml(p.machine)}</strong>${p.assetTag ? ` (ID: ${escapeHtml(p.assetTag)})` : ''}<br><span style="font-size:7.5pt;color:#475569">${escapeHtml(p.client)}</span></td>
+              <td>${escapeHtml(p.itemLabel)}</td>
+              <td class="status-pend-print" style="font-weight:normal">${escapeHtml(p.note)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+    container.append(pendBox);
+  }
+
   document.body.classList.remove('print-single');
   document.body.classList.add('print-all');
   window.print();
@@ -1796,6 +2050,16 @@ document.getElementById('printAllPDF').onclick = () => {
 document.getElementById('finish').onclick = () => {
   hapticTap();
   if (!validateHeader()) return;
+
+  const activeItems = getActiveItems();
+  const unmarkedCount = activeItems.filter(x => !x.state).length;
+  if (unmarkedCount > 0) {
+    const confirmMsg = unmarkedCount === 1
+      ? 'Existe 1 item sem marcação (ficará como "Não verificado"). Deseja finalizar e salvar a máquina mesmo assim?'
+      : `Existem ${unmarkedCount} itens sem marcação (ficarão como "Não verificado"). Deseja finalizar e salvar a máquina mesmo assim?`;
+    if (!confirm(confirmMsg)) return;
+  }
+
   const endedInput = document.getElementById('ended');
   const ended = endedInput.value || localDateTime();
   endedInput.value = ended;
@@ -1831,7 +2095,7 @@ document.getElementById('finish').onclick = () => {
 
 document.getElementById('new').onclick = () => {
   hapticTap();
-  if (editingIndex !== null || itemStates.some(x => x !== null)) {
+  if (hasUnsavedChanges || editingIndex !== null || itemStates.some(x => x !== null)) {
     if (confirm('Limpar os dados da máquina atual e iniciar outra?')) resetMachine();
   } else {
     resetMachine();
